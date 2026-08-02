@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -213,7 +214,7 @@
     </div>
     <div class="step">
       <div class="num">2</div>
-      <div><h4>在群內留言下單</h4><p>用下方的「代購委託小幫手」整理好格式，直接複製貼到群組裡即可，不用自己打字整理。</p></div>
+      <div><h4>在群內留言下單</h4><p>用下方的「代購委託小幫手」整理好格式，點「傳送到 LINE」直接送出，不用自己打字整理。</p></div>
     </div>
     <div class="step">
       <div class="num">3</div>
@@ -247,7 +248,11 @@
       <input id="cNote" placeholder="例：不加香菜、放在管理室">
     </div>
     <div class="preview" id="preview"></div>
-    <button class="copy-btn" id="copyBtn">複製，貼到 LINE 群組</button>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
+      <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「傳送到 LINE」會開啟 LINE App，訊息已自動填好，選擇「成功代購外送社群」後按傳送即可。</div>
   </div>
 </main>
 
@@ -291,6 +296,9 @@
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
+
+    const encoded = encodeURIComponent(text);
+    document.getElementById('sendLineBtn').href = `https://line.me/R/msg/text/?${encoded}`;
   }
   updatePreview();
 
@@ -298,7 +306,7 @@
     const text = document.getElementById('preview').textContent;
     try{
       await navigator.clipboard.writeText(text);
-      toast('已複製！貼到 LINE 群組送出吧');
+      toast('已複製！可貼到任何地方使用');
     }catch(e){
       toast('複製失敗，請手動選取文字');
     }
