@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成功代購外送社群</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22302E;
+    --paper:#F3E9D2;
+    --card:#FBF6E9;
+    --ocean:#1E5B67;
+    --ocean-dark:#153F48;
+    --seafoam:#7FADA9;
+    --coral:#E2532F;
+    --coral-dark:#B93F22;
+    --gold:#E3A94B;
+    --radius:14px;
+    --shadow:0 2px 0 var(--ink), 0 8px 20px -10px rgba(34,48,46,.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;
+    background-image:repeating-linear-gradient(135deg, rgba(34,48,46,0.035) 0px, rgba(34,48,46,0.035) 1px, transparent 1px, transparent 22px);
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3,.display{font-family:'Noto Serif TC',serif; font-weight:900;}
+  a{color:inherit;}
+  ::selection{background:var(--coral); color:var(--paper);}
+
+  header.top{position:sticky; top:0; z-index:50; background:var(--paper); border-bottom:3px solid var(--ink);}
+  .top-inner{max-width:920px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .stamp{width:42px; height:42px; border-radius:50%; background:var(--coral); color:var(--paper); display:flex; align-items:center; justify-content:center; font-family:'Noto Serif TC',serif; font-weight:900; font-size:14px; border:2.5px solid var(--ink); transform:rotate(-6deg); flex-shrink:0;}
+  .brand-text .name{font-size:18px; line-height:1.1;}
+  .brand-text .sub{font-size:10.5px; letter-spacing:.14em; color:var(--ocean-dark); font-family:'JetBrains Mono',monospace;}
+  .join-btn{border:2px solid var(--ink); background:#06C755; color:#fff; padding:9px 18px; border-radius:999px; font-weight:700; font-size:13.5px; box-shadow:0 3px 0 var(--ink); text-decoration:none; display:flex; align-items:center; gap:6px; white-space:nowrap;}
+  .join-btn:active{transform:translateY(2px); box-shadow:none;}
+
+  main{max-width:920px; margin:0 auto; padding:0 20px 80px;}
+
+  .hero{padding:38px 0 10px;}
+  .hero .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.18em; border:1.5px solid var(--coral-dark); color:var(--coral-dark); padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:14px;}
+  .hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.2; margin:0 0 12px;}
+  .hero p{font-size:15px; color:var(--ocean-dark); max-width:520px; margin:0 0 22px; line-height:1.7;}
+
+  .rules-box{
+    background:var(--ink); color:var(--paper); border-radius:var(--radius); padding:22px 24px;
+    margin:30px 0; box-shadow:var(--shadow); position:relative;
+  }
+  .rules-box h2{font-size:17px; margin:0 0 14px; color:var(--gold);}
+  .rules-box ul{list-style:none; margin:0; padding:0; display:grid; gap:10px;}
+  .rules-box li{display:flex; gap:10px; font-size:14px; line-height:1.6;}
+  .rules-box li .mark{font-family:'JetBrains Mono',monospace; color:var(--coral); font-weight:700; flex-shrink:0;}
+  .rules-box li.warn{background:rgba(226,83,47,.15); border:1px dashed var(--coral); padding:10px 12px; border-radius:8px;}
+  .rules-box li.warn .mark{color:var(--coral);}
+
+  .section-title{display:flex; align-items:baseline; gap:10px; margin:36px 0 16px;}
+  .section-title .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; border:1.5px solid var(--coral-dark); color:var(--coral-dark); padding:2px 8px; border-radius:999px;}
+  .section-title h2{font-size:20px; margin:0;}
+
+  .fee-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:600px){ .fee-grid{grid-template-columns:1fr;} }
+  .fee-card{background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px;}
+  .fee-card .zone{font-size:12px; font-family:'JetBrains Mono',monospace; background:var(--seafoam); color:var(--ocean-dark); padding:2px 10px; border-radius:999px; display:inline-block; font-weight:700; margin-bottom:10px;}
+  .fee-card .price{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:34px; color:var(--coral-dark); line-height:1;}
+  .fee-card .price span{font-size:14px; font-weight:600; color:var(--ink);}
+  .fee-card .range{font-size:13px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;}
+
+  .range-map{margin-top:18px; padding:18px 20px; background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);}
+  .range-map .label{font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--ocean-dark); margin-bottom:10px;}
+
+  .hours-card{
+    display:flex; align-items:center; gap:20px; background:var(--card); border:2px solid var(--ink);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:22px; flex-wrap:wrap;
+  }
+  .hours-card .clock{
+    width:64px; height:64px; border-radius:50%; border:3px solid var(--ink); background:var(--paper);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative;
+  }
+  .hours-card .clock::before{content:''; position:absolute; width:2px; height:18px; background:var(--ink); top:8px; left:calc(50% - 1px); transform-origin:bottom; transform:rotate(35deg);}
+  .hours-card .clock::after{content:''; position:absolute; width:2px; height:22px; background:var(--coral); top:10px; left:calc(50% - 1px); transform-origin:bottom; transform:rotate(150deg);}
+  .hours-card .time{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;}
+  .hours-card .note{font-size:12.5px; color:var(--ocean-dark); margin-top:4px;}
+  .hours-card .provisional{font-size:11px; background:var(--gold); color:var(--ink); padding:2px 8px; border-radius:999px; font-weight:700; margin-left:8px; vertical-align:middle;}
+
+  .steps{display:grid; gap:14px;}
+  .step{display:flex; gap:14px; align-items:flex-start; background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px;}
+  .step .num{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; width:30px; height:30px; border-radius:50%; background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .step h4{margin:0 0 4px; font-size:14.5px;}
+  .step p{margin:0; font-size:13px; color:var(--ink); opacity:.7; line-height:1.6;}
+
+  .composer{background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px;}
+  .composer label{font-size:12px; font-weight:700; color:var(--ocean-dark); display:block; margin-bottom:5px;}
+  .composer .field{margin-bottom:14px;}
+  .composer input, .composer select, .composer textarea{
+    width:100%; padding:10px 12px; border:2px solid var(--ink); border-radius:8px; background:var(--paper);
+    font-family:inherit; font-size:14px;
+  }
+  .composer textarea{min-height:60px; resize:vertical;}
+  .zone-toggle{display:flex; gap:8px;}
+  .zone-toggle button{
+    flex:1; padding:10px; border:2px solid var(--ink); border-radius:8px; background:var(--paper);
+    font-weight:700; font-size:13px; opacity:.55;
+  }
+  .zone-toggle button.active{background:var(--ocean); color:var(--paper); opacity:1;}
+
+  .preview{margin-top:18px; background:var(--ink); color:var(--paper); border-radius:10px; padding:16px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; white-space:pre-wrap; line-height:1.8; position:relative;}
+  .preview .fee-line{color:var(--gold); font-weight:700;}
+  .copy-btn{
+    margin-top:12px; border:2px solid var(--ink); background:var(--coral); color:var(--paper); padding:10px 20px;
+    border-radius:999px; font-weight:700; font-size:14px; box-shadow:0 3px 0 var(--ink); cursor:pointer;
+  }
+  .copy-btn:active{transform:translateY(2px); box-shadow:none;}
+
+  footer{max-width:920px; margin:0 auto; padding:24px 20px; font-size:11.5px; color:var(--ocean-dark); text-align:center; font-family:'JetBrains Mono',monospace;}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--paper); padding:12px 22px; border-radius:999px;
+    font-size:13.5px; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:200;
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="stamp">成功</div>
+      <div class="brand-text">
+        <div class="name display">成功代購外送社群</div>
+        <div class="sub">CHENGGONG · COMMUNITY DELIVERY</div>
+      </div>
+    </div>
+    <a class="join-btn" href="https://line.me/ti/g2/AxGSDaW9MPa0N9j9tlOjv_aKHuXgHcmWsEJBXQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" rel="noopener" id="joinLineBtn">加入 LINE 社群 →</a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <span class="eyebrow">歡迎加入</span>
+    <h1>你買，我送。<br>成功鎮在地代購外送。</h1>
+    <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
+  </div>
+
+  <div class="rules-box">
+    <h2>📌 社群守則</h2>
+    <ul>
+      <li class="warn"><span class="mark">禁止</span>切勿在群內打廣告！！本群只提供代購外送服務，其餘一律禁止。</li>
+      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式</li>
+      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計</li>
+      <li><span class="mark">03</span>服務時間內下單，超時將於隔日營業時間內優先處理</li>
+    </ul>
+  </div>
+
+  <div class="section-title"><span class="eyebrow">收費方式</span><h2>外送費一覽</h2></div>
+  <div class="fee-grid">
+    <div class="fee-card">
+      <span class="zone">鎮內外送</span>
+      <div class="price">$30 <span>／單</span></div>
+      <div class="range">成功鎮市區範圍內，統一收費，不分距離遠近。</div>
+    </div>
+    <div class="fee-card">
+      <span class="zone">鎮外外送</span>
+      <div class="price">$60 <span>／單</span></div>
+      <div class="range">服務範圍：北至<strong>小港</strong>，南到<strong>和平</strong>，超出此範圍暫不提供服務。</div>
+    </div>
+  </div>
+
+  <div class="range-map">
+    <div class="label">服務範圍示意 · 沿海岸線 北 → 南</div>
+    <svg viewBox="0 0 640 90" width="100%" height="90" role="img" aria-label="服務範圍：北至小港，南到和平，成功鎮為中心">
+      <line x1="30" y1="45" x2="610" y2="45" stroke="#22302E" stroke-width="2" stroke-linecap="round" opacity=".25"/>
+      <line x1="120" y1="45" x2="520" y2="45" stroke="#1E5B67" stroke-width="4" stroke-linecap="round"/>
+      <g font-family="Noto Sans TC" font-size="12.5" fill="#153F48" font-weight="600" text-anchor="middle">
+        <circle cx="120" cy="45" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
+        <text x="120" y="28">小港</text>
+        <text x="120" y="70" font-size="10.5" fill="#22302E" opacity=".55">北界</text>
+
+        <circle cx="320" cy="45" r="9" fill="#E2532F" stroke="#22302E" stroke-width="2.5"/>
+        <text x="320" y="28" font-weight="900">成功鎮</text>
+        <text x="320" y="70" font-size="10.5" fill="#22302E" opacity=".55">起點</text>
+
+        <circle cx="520" cy="45" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
+        <text x="520" y="28">和平</text>
+        <text x="520" y="70" font-size="10.5" fill="#22302E" opacity=".55">南界</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="section-title"><span class="eyebrow">服務時間</span><h2>營業時段</h2></div>
+  <div class="hours-card">
+    <div class="clock" aria-hidden="true"></div>
+    <div>
+      <div class="time">08:00 – 20:00<span class="provisional">目前暫定</span></div>
+      <div class="note">時段將依配送人力狀況調整，異動會在社群公告</div>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <div><h4>加入 LINE 社群</h4><p>點擊上方「加入 LINE 社群」按鈕，或掃描社群公告的 QR code。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div><h4>在群內留言下單</h4><p>用下方的「代購委託小幫手」整理好格式，直接複製貼到群組裡即可，不用自己打字整理。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div><h4>等待接單與送達</h4><p>有空的成員會回覆接單，完成代購後送達，現場付款（商品費 + 外送費）。</p></div>
+    </div>
+  </div>
+
+  <div class="section-title"><span class="eyebrow">工具</span><h2>代購委託小幫手</h2></div>
+  <div class="composer">
+    <div class="field">
+      <label>要幫忙買什麼？（商家 / 品項）</label>
+      <textarea id="cItems" placeholder="例：新港早餐店 蛋餅一份、紅茶一杯"></textarea>
+    </div>
+    <div class="field">
+      <label>送達地址</label>
+      <input id="cAddress" placeholder="例：成功鎮○○路○號，或明顯地標">
+    </div>
+    <div class="field">
+      <label>範圍</label>
+      <div class="zone-toggle">
+        <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
+        <button type="button" class="zone-btn" data-fee="60">鎮外・小港～和平（$60）</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>聯絡方式（電話 / LINE ID）</label>
+      <input id="cContact" placeholder="方便聯繫的電話或 LINE ID">
+    </div>
+    <div class="field">
+      <label>備註（選填）</label>
+      <input id="cNote" placeholder="例：不加香菜、放在管理室">
+    </div>
+    <div class="preview" id="preview"></div>
+    <button class="copy-btn" id="copyBtn">複製，貼到 LINE 群組</button>
+  </div>
+</main>
+
+<footer>成功代購外送社群 · 本頁僅供社群公告與下單參考使用</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const toastEl = document.getElementById('toast');
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=>toastEl.classList.remove('show'), 2200);
+  }
+
+  let fee = 30;
+  document.querySelectorAll('.zone-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.zone-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      fee = parseInt(btn.dataset.fee, 10);
+      updatePreview();
+    });
+  });
+
+  const ids = ['cItems','cAddress','cContact','cNote'];
+  ids.forEach(id=>document.getElementById(id).addEventListener('input', updatePreview));
+
+  function updatePreview(){
+    const items = document.getElementById('cItems').value.trim() || '（尚未填寫）';
+    const address = document.getElementById('cAddress').value.trim() || '（尚未填寫）';
+    const contact = document.getElementById('cContact').value.trim() || '（尚未填寫）';
+    const note = document.getElementById('cNote').value.trim();
+    const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港～和平）';
+    let text =
+`【代購委託】
+品項：${items}
+地址：${address}
+範圍：${zoneLabel}
+聯絡：${contact}`;
+    if(note) text += `\n備註：${note}`;
+    text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
+    document.getElementById('preview').textContent = text;
+  }
+  updatePreview();
+
+  document.getElementById('copyBtn').addEventListener('click', async ()=>{
+    const text = document.getElementById('preview').textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      toast('已複製！貼到 LINE 群組送出吧');
+    }catch(e){
+      toast('複製失敗，請手動選取文字');
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
