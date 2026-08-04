@@ -302,8 +302,8 @@
       </div>
     </div>
     <div class="field">
-      <label>客戶聯絡電話（必填）</label>
-      <input id="cPhone" type="tel" placeholder="例：0912-345-678" required>
+      <label>客戶聯絡電話（必填，格式：0000-000-000 或 000-000000）</label>
+      <input id="cPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678 或 089-123456" maxlength="12" required>
     </div>
     <div class="field">
       <label>社群暱稱（必填）</label>
@@ -462,8 +462,15 @@
 
   function maskPhone(raw){
     const digits = raw.replace(/\D/g, '');
-    if(digits.length < 6) return raw ? '（電話格式不足，未顯示）' : '（尚未填寫）';
-    return digits.slice(0, 4) + '-***-' + digits.slice(-3);
+    if(digits.length === 10){
+      // 手機：0912-***-678
+      return digits.slice(0, 4) + '-***-' + digits.slice(-3);
+    }
+    if(digits.length === 9){
+      // 市話：089-***456
+      return digits.slice(0, 3) + '-***' + digits.slice(-3);
+    }
+    return raw ? '（電話格式不足，未顯示）' : '（尚未填寫）';
   }
 
   function maskAddress(raw){
@@ -543,9 +550,21 @@
   }
 
   function isValidPhone(raw){
-    const digits = raw.replace(/\D/g, '');
-    return /^0\d{7,9}$/.test(digits); // 台灣市話／手機常見長度：0開頭共8~10碼
+    // 只接受兩種固定格式：手機 0000-000-000（10碼）或市話 000-000000（9碼）
+    return /^\d{4}-\d{3}-\d{3}$/.test(raw) || /^\d{3}-\d{6}$/.test(raw);
   }
+
+  function formatPhoneOnBlur(){
+    const el = document.getElementById('cPhone');
+    const digits = el.value.replace(/\D/g, '');
+    if(digits.length === 10){
+      el.value = digits.slice(0,4) + '-' + digits.slice(4,7) + '-' + digits.slice(7);
+    } else if(digits.length === 9){
+      el.value = digits.slice(0,3) + '-' + digits.slice(3);
+    }
+    updatePreview();
+  }
+  document.getElementById('cPhone').addEventListener('blur', formatPhoneOnBlur);
 
   function isBot(){
     // 蜜罐欄位：正常使用者看不到也不會填，機器人通常會自動填入
@@ -608,7 +627,7 @@
       return false;
     }
     if(!isValidPhone(data.phone)){
-      toast('電話格式看起來不正確，請確認');
+      toast('電話格式需為 0000-000-000 或 000-000000，請確認');
       document.getElementById('cPhone').focus();
       return false;
     }
@@ -625,20 +644,27 @@
     return true;
   }
 
-  document.getElementById('sendLineBtn').addEventListener('click', async (e)=>{
+  document.getElementById('sendLineBtn').addEventListener('click', (e)=>{
     e.preventDefault();
     if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
     if(isBot()) return; // 疑似機器人，靜默略過
+    formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
     const data = getFormData();
     if(!validateRequired(data)) return;
-    const btn = e.currentTarget; // 先存好，await之後e.currentTarget可能會變成null
-    const href = btn.href; // 先存好，避免resetForm後href被清空的內容跑掉
-    const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在傳給群組的內容裡
+    const btn = e.currentTarget;
+    const href = btn.href;
 
+    // 先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單），
+    // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象
     window.open(href, '_blank');
     flashSuccess(btn, '✓ 已送出');
-    toast(result && result.queueNumber ? `已記錄訂單，今日第 ${result.queueNumber} 張委託單，正在開啟 LINE...` : '已記錄訂單，正在開啟 LINE...');
+    toast('已記錄訂單，正在開啟 LINE...');
     resetForm();
+
+    // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
+    logOrder(data).then(result => {
+      if(result && result.queueNumber) toast(`今日第 ${result.queueNumber} 張委託單`);
+    });
   });
 
   function legacyCopy(text){
@@ -660,11 +686,10 @@
   document.getElementById('copyBtn').addEventListener('click', async (e)=>{
     if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
     if(isBot()) return; // 疑似機器人，靜默略過
+    formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
     const data = getFormData();
     if(!validateRequired(data)) return;
-    const btn = e.currentTarget; // 先存好，await之後e.currentTarget可能會變成null
-    const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在複製的文字裡
-
+    const btn = e.currentTarget;
     const text = document.getElementById('preview').textContent;
     let copied = false;
 
@@ -677,11 +702,16 @@
 
     if(copied){
       flashSuccess(btn, '✓ 已複製');
-      toast(result && result.queueNumber ? `已複製！今日第 ${result.queueNumber} 張委託單` : '已複製！可貼到任何地方使用');
+      toast('已複製！可貼到任何地方使用');
       resetForm();
     }else{
       toast('複製失敗，請長按下方文字方塊手動選取複製');
     }
+
+    // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
+    logOrder(data).then(result => {
+      if(result && result.queueNumber) toast(`今日第 ${result.queueNumber} 張委託單`);
+    });
   });
 
 })();
