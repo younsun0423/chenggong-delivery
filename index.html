@@ -339,7 +339,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLwn8jt2cIMMVyqB1gIMnz1BZVMOKQEvug0hNPHNVz-IFWCpPFlOelBTXxkiwa-NwK/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnc--MOTgmdpxsIbryruoan-Ds2yzQ1QOqMhIO_eZHSSV6vNpmScVdVNwZavUMHD_c/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -446,14 +446,18 @@
     setTimeout(()=>toastEl.classList.remove('show'), 2200);
   }
 
-  function logOrder(orderData){
-    // no-cors: 送出去但無法讀回應內容，Apps Script 仍會正常寫入試算表
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(orderData)
-    }).catch(()=>{ /* 記錄失敗不影響使用者操作 */ });
+  async function logOrder(orderData){
+    // 改用一般模式（不是 no-cors），才能讀到後台回傳的當日單號
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(orderData)
+      });
+      return await res.json(); // { result:'success', queueNumber: N }
+    } catch (err) {
+      return null; // 記錄失敗、或讀不到單號都不影響下單流程
+    }
   }
 
   function maskPhone(raw){
@@ -621,17 +625,18 @@
     return true;
   }
 
-  document.getElementById('sendLineBtn').addEventListener('click', (e)=>{
+  document.getElementById('sendLineBtn').addEventListener('click', async (e)=>{
     e.preventDefault();
     if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
     if(isBot()) return; // 疑似機器人，靜默略過
     const data = getFormData();
     if(!validateRequired(data)) return;
-    logOrder(data); // 完整電話只送進你的後台試算表，不會出現在傳給群組的內容裡
+    const href = e.currentTarget.href; // 先存好，避免resetForm後href被清空的內容跑掉
+    const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在傳給群組的內容裡
 
-    window.open(e.currentTarget.href, '_blank');
+    window.open(href, '_blank');
     flashSuccess(e.currentTarget, '✓ 已送出');
-    toast('已記錄訂單，正在開啟 LINE...');
+    toast(result && result.queueNumber ? `已記錄訂單，今日第 ${result.queueNumber} 張委託單，正在開啟 LINE...` : '已記錄訂單，正在開啟 LINE...');
     resetForm();
   });
 
@@ -656,7 +661,7 @@
     if(isBot()) return; // 疑似機器人，靜默略過
     const data = getFormData();
     if(!validateRequired(data)) return;
-    logOrder(data); // 完整電話只送進你的後台試算表，不會出現在複製的文字裡
+    const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在複製的文字裡
 
     const text = document.getElementById('preview').textContent;
     let copied = false;
@@ -670,7 +675,7 @@
 
     if(copied){
       flashSuccess(e.currentTarget, '✓ 已複製');
-      toast('已複製！可貼到任何地方使用');
+      toast(result && result.queueNumber ? `已複製！今日第 ${result.queueNumber} 張委託單` : '已複製！可貼到任何地方使用');
       resetForm();
     }else{
       toast('複製失敗，請長按下方文字方塊手動選取複製');
