@@ -70,6 +70,16 @@
   .utility-btn:hover{opacity:1; background:var(--card);}
   .utility-btn:disabled{opacity:.3; cursor:not-allowed;}
 
+  .queue-badge{
+    display:none; align-items:center; gap:14px; margin-top:14px;
+    background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:16px 20px;
+  }
+  .queue-badge .num{font-family:'JetBrains Mono',monospace; font-size:34px; font-weight:900; line-height:1;}
+  .queue-badge .label{font-size:13px; line-height:1.6;}
+  .queue-badge .close-x{margin-left:auto; background:none; border:none; color:var(--paper); font-size:18px; cursor:pointer; opacity:.7; align-self:flex-start;}
+  .queue-badge .close-x:hover{opacity:1;}
+
   .rules-box{
     background:var(--ink); color:var(--paper); border-radius:var(--radius); padding:22px 24px;
     margin:30px 0; box-shadow:var(--shadow); position:relative;
@@ -310,7 +320,7 @@
       <input id="cContact" placeholder="在成功小蜜丰群組裡使用的暱稱" required>
     </div>
     <div class="field">
-      <label>預約時間（選填，不填代表現在立即送）</label>
+      <label>預約時間（選填，不填代表依委託單順序處理）</label>
       <input id="cSchedule" type="datetime-local">
     </div>
     <div class="field">
@@ -325,6 +335,11 @@
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
       <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
+    </div>
+    <div class="queue-badge" id="queueBadge">
+      <div class="num" id="queueNum">#0</div>
+      <div class="label">您的委託單號<br>我們將依單號順序為您服務</div>
+      <button class="close-x" id="queueClose" aria-label="關閉">✕</button>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
       <button type="button" class="utility-btn" id="clearBtn">🗑️ 清除表單</button>
@@ -525,7 +540,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：現在立即送出`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依委託單順序處理`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
@@ -620,6 +635,15 @@
     setTimeout(()=>{ btn.innerHTML = original; }, 1600);
   }
 
+  function showQueueBadge(n){
+    document.getElementById('queueNum').textContent = '#' + n;
+    document.getElementById('queueBadge').style.display = 'flex';
+  }
+  function hideQueueBadge(){
+    document.getElementById('queueBadge').style.display = 'none';
+  }
+  document.getElementById('queueClose').addEventListener('click', hideQueueBadge);
+
   function validateRequired(data){
     if(!data.phone){
       toast('請先填寫客戶聯絡電話');
@@ -663,7 +687,7 @@
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(result && result.queueNumber) toast(`今日第 ${result.queueNumber} 張委託單`);
+      if(result && result.queueNumber) showQueueBadge(result.queueNumber);
     });
   });
 
@@ -710,7 +734,7 @@
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(result && result.queueNumber) toast(`今日第 ${result.queueNumber} 張委託單`);
+      if(result && result.queueNumber) showQueueBadge(result.queueNumber);
     });
   });
 
