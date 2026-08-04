@@ -1,10 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>成功代購外送社群</title>
+<title>成功小蜜丰</title>
+<meta name="description" content="成功鎮在地代購外送社群，價格透明、範圍清楚，一鍵下單通知群組。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="成功小蜜丰｜成功鎮在地代購外送">
+<meta property="og:description" content="成功鎮還沒有外送平台，所以我們用LINE社群自己來。加入社群，一鍵下單、透明計價。">
+<meta property="og:url" content="https://chenggongdelivery.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -49,6 +53,23 @@
   .hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.2; margin:0 0 12px;}
   .hero p{font-size:15px; color:var(--ocean-dark); max-width:520px; margin:0 0 22px; line-height:1.7;}
 
+  .status-banner{
+    display:none; align-items:center; gap:10px; background:var(--coral); color:var(--paper);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 18px; margin:20px 0; font-weight:700; font-size:14px; line-height:1.5;
+  }
+  .disabled-btn{opacity:.4; pointer-events:none; cursor:not-allowed;}
+
+  .honeypot-field{position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;}
+
+  .utility-btn{
+    background:transparent; border:2px solid var(--ink); color:var(--ink);
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:600;
+    padding:7px 14px; border-radius:999px; cursor:pointer; opacity:.75;
+  }
+  .utility-btn:hover{opacity:1; background:var(--card);}
+  .utility-btn:disabled{opacity:.3; cursor:not-allowed;}
+
   .rules-box{
     background:var(--ink); color:var(--paper); border-radius:var(--radius); padding:22px 24px;
     margin:30px 0; box-shadow:var(--shadow); position:relative;
@@ -74,6 +95,21 @@
 
   .range-map{margin-top:18px; padding:18px 20px; background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);}
   .range-map .label{font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--ocean-dark); margin-bottom:10px;}
+
+  .extra-services{display:grid; gap:12px;}
+  .extra-service{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap;
+  }
+  .extra-service .info h4{margin:0 0 4px; font-size:14.5px;}
+  .extra-service .info p{margin:0; font-size:13px; color:var(--ink); opacity:.75; line-height:1.6;}
+  .extra-service .note{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--coral-dark); font-size:13.5px; white-space:nowrap; flex-shrink:0;}
+  .extra-services .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px;}
+
+  .payment-box{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px 20px; font-size:13.5px; color:var(--ocean-dark); line-height:1.8; white-space:pre-wrap;
+  }
 
   .hours-card{
     display:flex; align-items:center; gap:20px; background:var(--card); border:2px solid var(--ink);
@@ -135,10 +171,10 @@
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <div class="stamp">成功</div>
+      <div class="stamp">蜜丰</div>
       <div class="brand-text">
-        <div class="name display">成功代購外送社群</div>
-        <div class="sub">CHENGGONG · COMMUNITY DELIVERY</div>
+        <div class="name display">成功小蜜丰</div>
+        <div class="sub">CHENGGONG · MIFENG DELIVERY</div>
       </div>
     </div>
     <a class="join-btn" href="https://line.me/ti/g2/AxGSDaW9MPa0N9j9tlOjv_aKHuXgHcmWsEJBXQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" rel="noopener" id="joinLineBtn">加入 LINE 社群 →</a>
@@ -148,17 +184,22 @@
 <main>
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
-    <h1>你買，我送。<br>成功鎮在地代購外送。</h1>
+    <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
     <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
   </div>
 
+  <div class="status-banner" id="statusBanner"></div>
+
   <div class="rules-box">
     <h2>📌 社群守則</h2>
-    <ul>
+    <ul id="rulesList">
       <li class="warn"><span class="mark">禁止</span>切勿在群內打廣告！！本群只提供代購外送服務，其餘一律禁止。</li>
       <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式</li>
       <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計</li>
-      <li><span class="mark">03</span>服務時間內下單，超時將於隔日營業時間內優先處理</li>
+      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失</li>
+      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
+      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
+      <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
     </ul>
   </div>
 
@@ -167,32 +208,41 @@
     <div class="fee-card">
       <span class="zone">鎮內外送</span>
       <div class="price">$30 <span>／單</span></div>
-      <div class="range">成功鎮市區範圍內，統一收費，不分距離遠近。</div>
+      <div class="range">範圍：北到<strong>三仙台加油站</strong>，南到<strong>全滿加油站</strong>，統一收費，不分距離遠近。</div>
     </div>
     <div class="fee-card">
       <span class="zone">鎮外外送</span>
       <div class="price">$60 <span>／單</span></div>
-      <div class="range">服務範圍：北至<strong>小港</strong>，南到<strong>和平</strong>，超出此範圍暫不提供服務。</div>
+      <div class="range">範圍：<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>，<strong>全滿加油站</strong>以南到<strong>和平國小</strong>，超出此範圍暫不提供服務。</div>
     </div>
   </div>
 
   <div class="range-map">
     <div class="label">服務範圍示意 · 沿海岸線 北 → 南</div>
-    <svg viewBox="0 0 640 90" width="100%" height="90" role="img" aria-label="服務範圍：北至小港，南到和平，成功鎮為中心">
-      <line x1="30" y1="45" x2="610" y2="45" stroke="#22302E" stroke-width="2" stroke-linecap="round" opacity=".25"/>
-      <line x1="120" y1="45" x2="520" y2="45" stroke="#1E5B67" stroke-width="4" stroke-linecap="round"/>
-      <g font-family="Noto Sans TC" font-size="12.5" fill="#153F48" font-weight="600" text-anchor="middle">
-        <circle cx="120" cy="45" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
-        <text x="120" y="28">小港</text>
-        <text x="120" y="70" font-size="10.5" fill="#22302E" opacity=".55">北界</text>
+    <svg viewBox="0 0 700 100" width="100%" height="100" role="img" aria-label="服務範圍：北至小港天后宮，南到和平國小，鎮內範圍為三仙台加油站到全滿加油站">
+      <line x1="30" y1="50" x2="670" y2="50" stroke="#22302E" stroke-width="2" stroke-linecap="round" opacity=".25"/>
+      <line x1="70" y1="50" x2="630" y2="50" stroke="#7FADA9" stroke-width="4" stroke-linecap="round"/>
+      <line x1="220" y1="50" x2="470" y2="50" stroke="#1E5B67" stroke-width="5" stroke-linecap="round"/>
+      <g font-family="Noto Sans TC" font-size="11.5" fill="#153F48" font-weight="600" text-anchor="middle">
+        <circle cx="70" cy="50" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
+        <text x="70" y="30">小港天后宮</text>
+        <text x="70" y="76" font-size="10" fill="#22302E" opacity=".55">鎮外北界</text>
 
-        <circle cx="320" cy="45" r="9" fill="#E2532F" stroke="#22302E" stroke-width="2.5"/>
-        <text x="320" y="28" font-weight="900">成功鎮</text>
-        <text x="320" y="70" font-size="10.5" fill="#22302E" opacity=".55">起點</text>
+        <circle cx="220" cy="50" r="7" fill="#E2532F" stroke="#22302E" stroke-width="2"/>
+        <text x="220" y="30" font-weight="700">三仙台加油站</text>
+        <text x="220" y="76" font-size="10" fill="#22302E" opacity=".55">鎮內北界</text>
 
-        <circle cx="520" cy="45" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
-        <text x="520" y="28">和平</text>
-        <text x="520" y="70" font-size="10.5" fill="#22302E" opacity=".55">南界</text>
+        <circle cx="345" cy="50" r="8" fill="#E2532F" stroke="#22302E" stroke-width="2.5"/>
+        <text x="345" y="30" font-weight="900">成功鎮</text>
+        <text x="345" y="76" font-size="10" fill="#22302E" opacity=".55">起點</text>
+
+        <circle cx="470" cy="50" r="7" fill="#E2532F" stroke="#22302E" stroke-width="2"/>
+        <text x="470" y="30" font-weight="700">全滿加油站</text>
+        <text x="470" y="76" font-size="10" fill="#22302E" opacity=".55">鎮內南界</text>
+
+        <circle cx="630" cy="50" r="6" fill="#E3A94B" stroke="#22302E" stroke-width="2"/>
+        <text x="630" y="30">和平國小</text>
+        <text x="630" y="76" font-size="10" fill="#22302E" opacity=".55">鎮外南界</text>
       </g>
     </svg>
   </div>
@@ -201,10 +251,18 @@
   <div class="hours-card">
     <div class="clock" aria-hidden="true"></div>
     <div>
-      <div class="time">08:00 – 20:00<span class="provisional">目前暫定</span></div>
+      <div class="time" id="hoursTime">08:00 – 20:00<span class="provisional">目前暫定</span></div>
       <div class="note">時段將依配送人力狀況調整，異動會在社群公告</div>
     </div>
   </div>
+
+  <div class="section-title"><span class="eyebrow">加值服務</span><h2>額外服務</h2></div>
+  <div class="extra-services" id="extraServices">
+    <div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>
+  </div>
+
+  <div class="section-title"><span class="eyebrow">付款方式</span><h2>收款資訊</h2></div>
+  <div class="payment-box" id="paymentBox">目前僅提供現場付款（商品費 + 外送費），若日後開放線上轉帳／收款帳號，會公告在這裡。</div>
 
   <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
   <div class="steps">
@@ -225,8 +283,12 @@
   <div class="section-title"><span class="eyebrow">工具</span><h2>代購委託小幫手</h2></div>
   <div class="composer">
     <div class="field">
-      <label>要幫忙買什麼？（商家 / 品項）</label>
-      <textarea id="cItems" placeholder="例：新港早餐店 蛋餅一份、紅茶一杯"></textarea>
+      <label>商家名稱</label>
+      <input id="cMerchant" placeholder="例：新港早餐店">
+    </div>
+    <div class="field">
+      <label>購買品項</label>
+      <textarea id="cItems" placeholder="例：蛋餅一份、紅茶一杯（去冰半糖）"></textarea>
     </div>
     <div class="field">
       <label>送達地址</label>
@@ -236,36 +298,182 @@
       <label>範圍</label>
       <div class="zone-toggle">
         <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
-        <button type="button" class="zone-btn" data-fee="60">鎮外・小港～和平（$60）</button>
+        <button type="button" class="zone-btn" data-fee="60">鎮外・小港天后宮～和平國小（$60）</button>
       </div>
     </div>
     <div class="field">
-      <label>聯絡方式（電話 / LINE ID）</label>
-      <input id="cContact" placeholder="方便聯繫的電話或 LINE ID">
+      <label>客戶聯絡電話（必填）</label>
+      <input id="cPhone" type="tel" placeholder="例：0912-345-678" required>
+    </div>
+    <div class="field">
+      <label>社群暱稱（必填）</label>
+      <input id="cContact" placeholder="在成功小蜜丰群組裡使用的暱稱" required>
+    </div>
+    <div class="field">
+      <label>預約時間（選填，不填代表現在立即送）</label>
+      <input id="cSchedule" type="datetime-local">
     </div>
     <div class="field">
       <label>備註（選填）</label>
       <input id="cNote" placeholder="例：不加香菜、放在管理室">
+    </div>
+    <div class="honeypot-field" aria-hidden="true">
+      <label for="cHoneypot">請勿填寫此欄位</label>
+      <input id="cHoneypot" name="extra_note_field" tabindex="-1" autocomplete="off">
     </div>
     <div class="preview" id="preview"></div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
       <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
     </div>
-    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「傳送到 LINE」會開啟 LINE App，訊息已自動填好，選擇「成功代購外送社群」後按傳送即可。</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+      <button type="button" class="utility-btn" id="clearBtn">🗑️ 清除表單</button>
+      <button type="button" class="utility-btn" id="undoBtn" disabled>↩️ 返回上一步</button>
+    </div>
+    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「傳送到 LINE」會開啟 LINE App，訊息已自動填好，選擇「成功小蜜丰」後按傳送即可。<br>🔒 為保護客戶隱私，傳到群組的訊息中電話號碼與門牌號碼會自動遮蔽，完整資訊僅記錄於後台管理表，接單者可私訊客戶核對詳細地址。</div>
   </div>
 </main>
 
-<footer>成功代購外送社群 · 本頁僅供社群公告與下單參考使用</footer>
+<footer>成功小蜜丰 · 本頁僅供社群公告與下單參考使用</footer>
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnc--MOTgmdpxsIbryruoan-Ds2yzQ1QOqMhIO_eZHSSV6vNpmScVdVNwZavUMHD_c/exec';
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderRules(rules){
+    if(!rules || !rules.length) return; // 沒資料就維持頁面上寫死的預設守則
+    const ul = document.getElementById('rulesList');
+    ul.innerHTML = '';
+    rules.forEach(rule => {
+      const li = document.createElement('li');
+      if(rule.mark === '禁止') li.className = 'warn';
+      li.innerHTML = `<span class="mark">${escapeHtml(rule.mark)}</span>${escapeHtml(rule.text)}`;
+      ul.appendChild(li);
+    });
+  }
+
+  function renderServices(services){
+    const box = document.getElementById('extraServices');
+    if(!services || !services.length){
+      box.innerHTML = '<div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>';
+      return;
+    }
+    box.innerHTML = '';
+    services.forEach(svc => {
+      const card = document.createElement('div');
+      card.className = 'extra-service';
+      card.innerHTML = `
+        <div class="info">
+          <h4>${escapeHtml(svc.name)}</h4>
+          ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
+        </div>
+        ${svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : ''}
+      `;
+      box.appendChild(card);
+    });
+  }
+
+  let orderingDisabled = false;
+
+  function renderSettings(settings){
+    if(!settings) return;
+    const note = (settings['收款帳號說明'] || '').trim();
+    if(note){
+      document.getElementById('paymentBox').textContent = note;
+    }
+    // 沒填寫就維持頁面上預設的「僅提供現場付款」說明
+
+    const openTime = settings['營業開始時間'] || '08:00';
+    const closeTime = settings['營業結束時間'] || '20:00';
+    const hoursEl = document.getElementById('hoursTime');
+    if(hoursEl) hoursEl.textContent = `${openTime} – ${closeTime}`;
+
+    const isOpen = (settings['是否營業'] || 'TRUE').toString().toUpperCase() !== 'FALSE';
+    const banner = document.getElementById('statusBanner');
+    const sendBtn = document.getElementById('sendLineBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    if(!isOpen){
+      const msg = (settings['暫停服務公告'] || `目前非營業時間，服務時段為 ${openTime}–${closeTime}`).trim();
+      banner.textContent = `⏸️ ${msg}`;
+      banner.style.display = 'flex';
+      sendBtn.classList.add('disabled-btn');
+      copyBtn.classList.add('disabled-btn');
+      copyBtn.disabled = true;
+      orderingDisabled = true;
+    } else {
+      banner.style.display = 'none';
+      sendBtn.classList.remove('disabled-btn');
+      copyBtn.classList.remove('disabled-btn');
+      copyBtn.disabled = false;
+      orderingDisabled = false;
+    }
+  }
+
+  function loadContent(){
+    // 加上時間戳記 + no-store，避免瀏覽器快取舊版本的守則／服務／營業狀態設定
+    const freshUrl = SCRIPT_URL + '?t=' + Date.now();
+    fetch(freshUrl, { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        renderRules(data.rules);
+        renderServices(data.services);
+        renderSettings(data.settings);
+      })
+      .catch(()=>{ /* 讀取失敗就維持頁面上原本寫死的預設內容 */ });
+  }
+  loadContent();
+
+  // 預約時間欄位不能選過去的時間
+  (function setScheduleMin(){
+    const el = document.getElementById('cSchedule');
+    const now = new Date(Date.now() - Date.now() % 60000); // 去掉秒數
+    const pad = n => String(n).padStart(2, '0');
+    el.min = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  })();
+
   const toastEl = document.getElementById('toast');
   function toast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     setTimeout(()=>toastEl.classList.remove('show'), 2200);
+  }
+
+  function logOrder(orderData){
+    // no-cors: 送出去但無法讀回應內容，Apps Script 仍會正常寫入試算表
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(orderData)
+    }).catch(()=>{ /* 記錄失敗不影響使用者操作 */ });
+  }
+
+  function maskPhone(raw){
+    const digits = raw.replace(/\D/g, '');
+    if(digits.length < 6) return raw ? '（電話格式不足，未顯示）' : '（尚未填寫）';
+    return digits.slice(0, 4) + '-***-' + digits.slice(-3);
+  }
+
+  function maskAddress(raw){
+    if(!raw) return '（尚未填寫）';
+    // 嘗試遮蔽門牌號碼，例如「成功路123號」→「成功路***號」
+    const masked = raw.replace(/(\d+)(號)/g, (m, num, suffix) => '*'.repeat(Math.min(num.length, 3)) + suffix);
+    if(masked !== raw){
+      return masked + '（門牌將由接單者私訊核對）';
+    }
+    // 找不到「號」的格式，就只保留前段大致區域，避免完整地址曝光
+    if(raw.length > 8){
+      return raw.slice(0, 8) + '…（詳細地址將由接單者私訊核對）';
+    }
+    return raw + '（詳細地址將由接單者私訊核對）';
   }
 
   let fee = 30;
@@ -278,21 +486,35 @@
     });
   });
 
-  const ids = ['cItems','cAddress','cContact','cNote'];
+  const ids = ['cMerchant','cItems','cAddress','cPhone','cContact','cSchedule','cNote'];
   ids.forEach(id=>document.getElementById(id).addEventListener('input', updatePreview));
 
+  function formatSchedule(raw){
+    if(!raw) return '';
+    const d = new Date(raw);
+    if(isNaN(d.getTime())) return raw;
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   function updatePreview(){
+    const merchant = document.getElementById('cMerchant').value.trim() || '（尚未填寫）';
     const items = document.getElementById('cItems').value.trim() || '（尚未填寫）';
-    const address = document.getElementById('cAddress').value.trim() || '（尚未填寫）';
+    const addressRaw = document.getElementById('cAddress').value.trim();
+    const phoneRaw = document.getElementById('cPhone').value.trim();
     const contact = document.getElementById('cContact').value.trim() || '（尚未填寫）';
+    const schedule = document.getElementById('cSchedule').value;
     const note = document.getElementById('cNote').value.trim();
-    const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港～和平）';
+    const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）';
     let text =
 `【代購委託】
+商家：${merchant}
 品項：${items}
-地址：${address}
+地址：${maskAddress(addressRaw)}
 範圍：${zoneLabel}
-聯絡：${contact}`;
+社群暱稱：${contact}
+聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：現在立即送出`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
@@ -302,13 +524,156 @@
   }
   updatePreview();
 
-  document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  function getFormData(){
+    return {
+      merchant: document.getElementById('cMerchant').value.trim(),
+      items: document.getElementById('cItems').value.trim(),
+      address: document.getElementById('cAddress').value.trim(),
+      phone: document.getElementById('cPhone').value.trim(),
+      contact: document.getElementById('cContact').value.trim(),
+      schedule: document.getElementById('cSchedule').value,
+      note: document.getElementById('cNote').value.trim(),
+      zone: fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）',
+      fee
+    };
+  }
+
+  function isValidPhone(raw){
+    const digits = raw.replace(/\D/g, '');
+    return /^0\d{7,9}$/.test(digits); // 台灣市話／手機常見長度：0開頭共8~10碼
+  }
+
+  function isBot(){
+    // 蜜罐欄位：正常使用者看不到也不會填，機器人通常會自動填入
+    return document.getElementById('cHoneypot').value.trim() !== '';
+  }
+
+  let undoSnapshot = null;
+  const undoBtn = document.getElementById('undoBtn');
+
+  function snapshotForm(){
+    const data = {};
+    ids.forEach(id => { data[id] = document.getElementById(id).value; });
+    data.fee = fee;
+    return data;
+  }
+
+  function restoreForm(snapshot){
+    if(!snapshot) return;
+    ids.forEach(id => { document.getElementById(id).value = snapshot[id] || ''; });
+    fee = snapshot.fee || 30;
+    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.zone-btn[data-fee="${fee}"]`).classList.add('active');
+    updatePreview();
+  }
+
+  function resetForm(){
+    undoSnapshot = snapshotForm(); // 清空前先存一份快照，供「返回上一步」使用
+    undoBtn.disabled = false;
+    ids.forEach(id => { document.getElementById(id).value = ''; });
+    fee = 30;
+    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
+    updatePreview();
+  }
+
+  document.getElementById('clearBtn').addEventListener('click', ()=>{
+    resetForm();
+    toast('表單已清除');
+  });
+
+  undoBtn.addEventListener('click', ()=>{
+    if(!undoSnapshot) return;
+    restoreForm(undoSnapshot);
+    undoBtn.disabled = true;
+    undoSnapshot = null;
+    toast('已還原剛剛的內容');
+  });
+
+  function flashSuccess(btn, tempLabel){
+    const original = btn.dataset.originalLabel || btn.innerHTML;
+    btn.dataset.originalLabel = original;
+    btn.innerHTML = tempLabel;
+    setTimeout(()=>{ btn.innerHTML = original; }, 1600);
+  }
+
+  function validateRequired(data){
+    if(!data.phone){
+      toast('請先填寫客戶聯絡電話');
+      document.getElementById('cPhone').focus();
+      return false;
+    }
+    if(!isValidPhone(data.phone)){
+      toast('電話格式看起來不正確，請確認');
+      document.getElementById('cPhone').focus();
+      return false;
+    }
+    if(!data.contact){
+      toast('請先填寫社群暱稱');
+      document.getElementById('cContact').focus();
+      return false;
+    }
+    if(data.schedule && new Date(data.schedule).getTime() < Date.now()){
+      toast('預約時間不能是過去的時間，請重新選擇');
+      document.getElementById('cSchedule').focus();
+      return false;
+    }
+    return true;
+  }
+
+  document.getElementById('sendLineBtn').addEventListener('click', (e)=>{
+    e.preventDefault();
+    if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
+    if(isBot()) return; // 疑似機器人，靜默略過
+    const data = getFormData();
+    if(!validateRequired(data)) return;
+    logOrder(data); // 完整電話只送進你的後台試算表，不會出現在傳給群組的內容裡
+
+    window.open(e.currentTarget.href, '_blank');
+    flashSuccess(e.currentTarget, '✓ 已送出');
+    toast('已記錄訂單，正在開啟 LINE...');
+    resetForm();
+  });
+
+  function legacyCopy(text){
+    // 備援複製方式：適用不支援或封鎖 navigator.clipboard 的瀏覽器（例如部分 App 內建瀏覽器）
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(err){ ok = false; }
+    document.body.removeChild(textarea);
+    return ok;
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', async (e)=>{
+    if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
+    if(isBot()) return; // 疑似機器人，靜默略過
+    const data = getFormData();
+    if(!validateRequired(data)) return;
+    logOrder(data); // 完整電話只送進你的後台試算表，不會出現在複製的文字裡
+
     const text = document.getElementById('preview').textContent;
+    let copied = false;
+
     try{
       await navigator.clipboard.writeText(text);
+      copied = true;
+    }catch(err){
+      copied = legacyCopy(text); // 新式複製失敗就改用舊式方法再試一次
+    }
+
+    if(copied){
+      flashSuccess(e.currentTarget, '✓ 已複製');
       toast('已複製！可貼到任何地方使用');
-    }catch(e){
-      toast('複製失敗，請手動選取文字');
+      resetForm();
+    }else{
+      toast('複製失敗，請長按下方文字方塊手動選取複製');
     }
   });
 
