@@ -310,7 +310,7 @@
       <input id="cContact" placeholder="在成功小蜜丰群組裡使用的暱稱" required>
     </div>
     <div class="field">
-      <label>預約時間（選填，不填代表現在立即送）</label>
+      <label>預約時間（選填，不填代表依序委託訂單順序處理）</label>
       <input id="cSchedule" type="datetime-local">
     </div>
     <div class="field">
@@ -514,7 +514,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：現在立即送出`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依委託訂單順序處理`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
