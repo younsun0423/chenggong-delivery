@@ -310,7 +310,7 @@
       <input id="cContact" placeholder="在成功小蜜丰群組裡使用的暱稱" required>
     </div>
     <div class="field">
-      <label>預約時間（選填，不填代表依委託單順序處理）</label>
+      <label>預約時間（選填，不填代表現在立即送）</label>
       <input id="cSchedule" type="datetime-local">
     </div>
     <div class="field">
@@ -339,7 +339,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLwn8jt2cIMMVyqB1gIMnz1BZVMOKQEvug0hNPHNVz-IFWCpPFlOelBTXxkiwa-NwK/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnc--MOTgmdpxsIbryruoan-Ds2yzQ1QOqMhIO_eZHSSV6vNpmScVdVNwZavUMHD_c/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -518,7 +518,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依委託單順序處理`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：現在立即送出`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
@@ -631,11 +631,12 @@
     if(isBot()) return; // 疑似機器人，靜默略過
     const data = getFormData();
     if(!validateRequired(data)) return;
-    const href = e.currentTarget.href; // 先存好，避免resetForm後href被清空的內容跑掉
+    const btn = e.currentTarget; // 先存好，await之後e.currentTarget可能會變成null
+    const href = btn.href; // 先存好，避免resetForm後href被清空的內容跑掉
     const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在傳給群組的內容裡
 
     window.open(href, '_blank');
-    flashSuccess(e.currentTarget, '✓ 已送出');
+    flashSuccess(btn, '✓ 已送出');
     toast(result && result.queueNumber ? `已記錄訂單，今日第 ${result.queueNumber} 張委託單，正在開啟 LINE...` : '已記錄訂單，正在開啟 LINE...');
     resetForm();
   });
@@ -661,6 +662,7 @@
     if(isBot()) return; // 疑似機器人，靜默略過
     const data = getFormData();
     if(!validateRequired(data)) return;
+    const btn = e.currentTarget; // 先存好，await之後e.currentTarget可能會變成null
     const result = await logOrder(data); // 完整電話只送進你的後台試算表，不會出現在複製的文字裡
 
     const text = document.getElementById('preview').textContent;
@@ -674,7 +676,7 @@
     }
 
     if(copied){
-      flashSuccess(e.currentTarget, '✓ 已複製');
+      flashSuccess(btn, '✓ 已複製');
       toast(result && result.queueNumber ? `已複製！今日第 ${result.queueNumber} 張委託單` : '已複製！可貼到任何地方使用');
       resetForm();
     }else{
