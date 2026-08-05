@@ -106,14 +106,20 @@
   .utility-btn:disabled{opacity:.3; cursor:not-allowed;}
 
   .queue-badge{
-    display:none; align-items:center; gap:14px; margin-top:14px;
+    display:none; flex-direction:column; gap:12px; margin-top:14px;
     background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:var(--radius);
     box-shadow:var(--shadow); padding:16px 20px;
   }
+  .queue-badge-top{display:flex; align-items:center; gap:14px;}
   .queue-badge .num{font-family:'JetBrains Mono',monospace; font-size:34px; font-weight:900; line-height:1;}
   .queue-badge .label{font-size:13px; line-height:1.6;}
-  .queue-badge .close-x{margin-left:auto; background:none; border:none; color:var(--paper); font-size:18px; cursor:pointer; opacity:.7; align-self:flex-start;}
+  .queue-badge .close-x{margin-left:auto; background:none; border:none; color:var(--paper); font-size:18px; cursor:pointer; opacity:.7; align-self:flex-start; padding:4px 6px;}
   .queue-badge .close-x:hover{opacity:1;}
+  .queue-query-btn{
+    background:var(--paper); color:var(--ink); border:2px solid var(--ink); border-radius:999px;
+    padding:10px 16px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; width:100%;
+  }
+  .queue-query-btn:hover{filter:brightness(.96);}
 
   .rules-box{
     background:var(--ink); color:var(--paper); border-radius:var(--radius); padding:22px 24px;
@@ -192,6 +198,22 @@
   .zone-toggle button.active{background:var(--ocean); color:var(--paper); opacity:1;}
 
   .extra-service-picker{display:grid; gap:8px;}
+
+  #stopsContainer{display:grid; gap:14px;}
+  .stop-row{
+    background:var(--paper); border:2px solid var(--ink); border-radius:10px; padding:14px; display:grid; gap:8px;
+  }
+  .stop-row-header{display:flex; align-items:center; justify-content:space-between;}
+  .stop-label{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--ocean-dark);}
+  .stop-remove{
+    background:none; border:none; color:var(--coral-dark); font-size:12px; font-weight:700; cursor:pointer; padding:2px 6px;
+  }
+  .stop-remove:hover{text-decoration:underline;}
+  .stop-row select, .stop-row input, .stop-row textarea{
+    width:100%; padding:9px 11px; border:2px solid var(--ink); border-radius:8px; background:var(--card);
+    font-family:inherit; font-size:13.5px;
+  }
+  .stop-hours-hint{font-size:11.5px; color:var(--ocean-dark); font-weight:600;}
   .extra-service-option{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     background:var(--paper); border:2px solid var(--ink); border-radius:8px; padding:10px 12px; cursor:pointer;
@@ -376,17 +398,10 @@
   <div class="section-title"><span class="eyebrow">工具</span><h2>代購委託小幫手</h2></div>
   <div class="composer">
     <div class="field">
-      <label>商家名稱</label>
-      <select id="cMerchant">
-        <option value="">請選擇商家</option>
-        <option value="其他">其他（自行輸入）</option>
-      </select>
-      <input id="cMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
-      <div id="merchantHoursHint" style="display:none; font-size:12px; color:var(--ocean-dark); margin-top:6px; font-weight:600;"></div>
-    </div>
-    <div class="field">
-      <label>購買品項</label>
-      <textarea id="cItems" placeholder="例：蛋餅一份、紅茶一杯（去冰半糖）"></textarea>
+      <label>採購站點</label>
+      <div id="stopsContainer"></div>
+      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點）</button>
+      <div id="transferFeeHint" style="display:none; font-size:12px; color:var(--coral-dark); margin-top:8px; font-weight:600; line-height:1.6;"></div>
     </div>
     <div class="field">
       <label>送達地址</label>
@@ -404,7 +419,7 @@
       <div class="extra-service-picker" id="extraServicePicker"></div>
     </div>
     <div class="field">
-      <label>客戶聯絡電話（必填，格式：0000-000-000 或 000-000000）</label>
+      <label>客戶聯絡電話（必填，格式：0988-168-168 或 089-777777）</label>
       <input id="cPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678 或 089-123456" maxlength="12" required>
     </div>
     <div class="field">
@@ -428,6 +443,12 @@
       </div>
       <div style="font-size:11px; color:var(--ocean-dark); opacity:.75; margin-top:4px;">照片只會存進後台管理表供接單者確認，不會出現在傳給群組的訊息裡</div>
     </div>
+    <div class="field" style="background:var(--paper); border:2px solid var(--ink); border-radius:10px; padding:12px 14px;">
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:12.5px; line-height:1.7; font-weight:600;">
+        <input type="checkbox" id="cLegalConfirm" style="width:auto; margin-top:2px; flex-shrink:0; accent-color:var(--ocean);">
+        <span>本人確認已年滿 18 歲，委託內容合法、如實填寫，不含毒品、槍砲彈藥或其他依法禁止／限制販售之物品；如有不實，願自行承擔相關法律責任。</span>
+      </label>
+    </div>
     <div class="honeypot-field" aria-hidden="true">
       <label for="cHoneypot">請勿填寫此欄位</label>
       <input id="cHoneypot" name="extra_note_field" tabindex="-1" autocomplete="off">
@@ -438,9 +459,12 @@
       <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
     </div>
     <div class="queue-badge" id="queueBadge">
-      <div class="num" id="queueNum">#0</div>
-      <div class="label" id="queueLabel">您的委託單號<br>我們將依單號順序為您服務</div>
-      <button class="close-x" id="queueClose" aria-label="關閉">✕</button>
+      <div class="queue-badge-top">
+        <div class="num" id="queueNum">#0</div>
+        <div class="label" id="queueLabel">您的委託單號<br>我們將依單號順序為您服務</div>
+        <button class="close-x" id="queueClose" aria-label="關閉">✕</button>
+      </div>
+      <button type="button" class="queue-query-btn" id="queueQueryBtn">🔍 查詢訂單狀態</button>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
       <button type="button" class="utility-btn" id="clearBtn">🗑️ 清除表單</button>
@@ -496,49 +520,61 @@
   let availableExtraServices = [];
 
   let merchantHoursMap = {};
+  let merchantGroups = {};
+  let merchantGroupOrder = [];
+  let transferFeePerStop = 15;
+  let stopCount = 0;
 
   function renderMerchants(merchants){
-    const sel = document.getElementById('cMerchant');
-    const currentValue = sel.value; // 保留原本選擇（若還在清單裡）
-    sel.innerHTML = '<option value="">請選擇商家</option>';
     merchantHoursMap = {};
+    merchantGroups = {};
+    merchantGroupOrder = [];
 
     // 依「分類」欄位分組，沒填分類的歸到「其他商家」
-    const groups = {};
-    const groupOrder = [];
     (merchants || []).forEach(m => {
       const cat = m.category && m.category.trim() ? m.category.trim() : '其他商家';
-      if(!groups[cat]){ groups[cat] = []; groupOrder.push(cat); }
-      groups[cat].push(m);
+      if(!merchantGroups[cat]){ merchantGroups[cat] = []; merchantGroupOrder.push(cat); }
+      merchantGroups[cat].push(m);
       merchantHoursMap[m.name] = m.hours || '';
     });
 
-    groupOrder.forEach(cat => {
+    // 重新套用選單內容到目前所有站點的下拉選單（保留原本已選的值）
+    document.querySelectorAll('.stop-merchant').forEach(sel => populateMerchantSelect(sel));
+
+    // 第一次載入時，畫面上還沒有任何站點，先建立一個空白站點
+    if(document.getElementById('stopsContainer').children.length === 0){
+      createStopRow(true);
+    }
+    updatePreview();
+  }
+
+  function populateMerchantSelect(selectEl){
+    const currentValue = selectEl.value;
+    selectEl.innerHTML = '<option value="">請選擇商家</option>';
+    merchantGroupOrder.forEach(cat => {
       const optgroup = document.createElement('optgroup');
       optgroup.label = cat;
-      groups[cat].forEach(m => {
+      merchantGroups[cat].forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.name;
         opt.textContent = m.hours ? `${m.name}（${m.hours}）` : m.name;
         optgroup.appendChild(opt);
       });
-      sel.appendChild(optgroup);
+      selectEl.appendChild(optgroup);
     });
-
     const otherOpt = document.createElement('option');
     otherOpt.value = '其他';
     otherOpt.textContent = '其他（自行輸入）';
-    sel.appendChild(otherOpt);
+    selectEl.appendChild(otherOpt);
 
-    if(currentValue && Array.from(sel.options).some(o => o.value === currentValue)){
-      sel.value = currentValue;
+    if(currentValue && Array.from(selectEl.options).some(o => o.value === currentValue)){
+      selectEl.value = currentValue;
     }
-    updateMerchantHoursHint();
   }
 
-  function updateMerchantHoursHint(){
-    const val = document.getElementById('cMerchant').value;
-    const hintEl = document.getElementById('merchantHoursHint');
+  function updateStopHoursHint(row){
+    const val = row.querySelector('.stop-merchant').value;
+    const hintEl = row.querySelector('.stop-hours-hint');
     const hours = merchantHoursMap[val];
     if(val && val !== '其他' && hours){
       hintEl.textContent = `🕒 營業時間：${hours}`;
@@ -547,6 +583,102 @@
       hintEl.style.display = 'none';
     }
   }
+
+  function renumberStops(){
+    document.querySelectorAll('.stop-row').forEach((row, i) => {
+      row.querySelector('.stop-label').textContent = `站點 ${i + 1}`;
+      const removeBtn = row.querySelector('.stop-remove');
+      if(removeBtn) removeBtn.style.display = (i === 0) ? 'none' : 'inline-block';
+    });
+  }
+
+  function updateTransferHint(){
+    const stops = collectStops();
+    const hintEl = document.getElementById('transferFeeHint');
+    if(stops.length > 1){
+      const total = (stops.length - 1) * transferFeePerStop;
+      hintEl.textContent = `🔀 已新增 ${stops.length} 個商家，將自動加收中途轉點費 $${total}（每多一站 +$${transferFeePerStop}，已計入外送費）`;
+      hintEl.style.display = 'block';
+    } else {
+      hintEl.style.display = 'none';
+    }
+  }
+
+  function createStopRow(isFirst){
+    const id = stopCount++;
+    const row = document.createElement('div');
+    row.className = 'stop-row';
+    row.dataset.stopId = id;
+    row.innerHTML = `
+      <div class="stop-row-header">
+        <span class="stop-label">站點</span>
+        <button type="button" class="stop-remove" style="display:none;">✕ 移除</button>
+      </div>
+      <select class="stop-merchant"><option value="">請選擇商家</option><option value="其他">其他（自行輸入）</option></select>
+      <input class="stop-merchant-other" placeholder="請輸入商家名稱" style="display:none;">
+      <div class="stop-hours-hint" style="display:none;"></div>
+      <textarea class="stop-items" placeholder="購買品項，例如：便當一個、飲料一杯"></textarea>
+    `;
+    document.getElementById('stopsContainer').appendChild(row);
+    populateMerchantSelect(row.querySelector('.stop-merchant'));
+
+    row.querySelector('.stop-merchant').addEventListener('change', (e)=>{
+      const isOther = e.target.value === '其他';
+      row.querySelector('.stop-merchant-other').style.display = isOther ? 'block' : 'none';
+      updateStopHoursHint(row);
+      updatePreview();
+    });
+    row.querySelector('.stop-merchant-other').addEventListener('input', updatePreview);
+    row.querySelector('.stop-items').addEventListener('input', updatePreview);
+
+    const removeBtn = row.querySelector('.stop-remove');
+    removeBtn.addEventListener('click', ()=>{
+      row.remove();
+      renumberStops();
+      updateTransferHint();
+      updatePreview();
+    });
+
+    renumberStops();
+    return row;
+  }
+
+  function collectStops(){
+    return Array.from(document.querySelectorAll('.stop-row')).map(row => {
+      const sel = row.querySelector('.stop-merchant').value;
+      const other = row.querySelector('.stop-merchant-other').value.trim();
+      const merchant = sel === '其他' ? other : sel;
+      const items = row.querySelector('.stop-items').value.trim();
+      return { merchant, items };
+    });
+  }
+
+  function rebuildStops(stopsData){
+    document.getElementById('stopsContainer').innerHTML = '';
+    stopCount = 0;
+    const list = (stopsData && stopsData.length) ? stopsData : [{ merchant: '', items: '' }];
+    list.forEach((s, i) => {
+      const row = createStopRow(i === 0);
+      const sel = row.querySelector('.stop-merchant');
+      const matched = s.merchant && Array.from(sel.options).some(o => o.value === s.merchant);
+      if(matched){
+        sel.value = s.merchant;
+      } else if(s.merchant){
+        sel.value = '其他';
+        row.querySelector('.stop-merchant-other').style.display = 'block';
+        row.querySelector('.stop-merchant-other').value = s.merchant;
+      }
+      row.querySelector('.stop-items').value = s.items || '';
+      updateStopHoursHint(row);
+    });
+    updateTransferHint();
+  }
+
+  document.getElementById('addStopBtn').addEventListener('click', ()=>{
+    createStopRow(false);
+    updateTransferHint();
+    updatePreview();
+  });
 
   function renderServices(services){
     const box = document.getElementById('extraServices');
@@ -617,6 +749,11 @@
     }
     // 沒填寫就維持頁面上預設的「僅提供現場付款」說明
 
+    const transferFeeVal = Number(settings['轉點費(每站)']);
+    transferFeePerStop = isNaN(transferFeeVal) ? 15 : transferFeeVal;
+    updateTransferHint();
+    updatePreview();
+
     const openTime = settings['營業開始時間'] || '08:00';
     const closeTime = settings['營業結束時間'] || '20:00';
     const hoursEl = document.getElementById('hoursTimeText');
@@ -657,15 +794,18 @@
     }
   }
 
-  // ---------- 訂單查詢：點進度公告開啟，需輸入單號+電話末三碼驗證 ----------
+  // ---------- 訂單查詢：點進度公告或號碼牌上的查詢按鈕開啟，需輸入單號+電話末三碼驗證 ----------
   const lookupOverlay = document.getElementById('lookupOverlay');
-  function openLookup(){
-    document.getElementById('lookupQueue').value = '';
+  function openLookup(prefillQueue){
+    document.getElementById('lookupQueue').value = prefillQueue || '';
     document.getElementById('lookupPhone3').value = '';
     const resultEl = document.getElementById('lookupResult');
     resultEl.style.display = 'none';
     resultEl.textContent = '';
     lookupOverlay.style.display = 'flex';
+    if(prefillQueue){
+      document.getElementById('lookupPhone3').focus();
+    }
   }
   function closeLookup(){
     lookupOverlay.style.display = 'none';
@@ -782,13 +922,13 @@
     // 嘗試遮蔽門牌號碼，例如「成功路123號」→「成功路***號」
     const masked = raw.replace(/(\d+)(號)/g, (m, num, suffix) => '*'.repeat(Math.min(num.length, 3)) + suffix);
     if(masked !== raw){
-      return masked + '（門牌將由接單者後台確認）';
+      return masked + '（門牌將由接單者 後臺確認）';
     }
     // 找不到「號」的格式，就只保留前段大致區域，避免完整地址曝光
     if(raw.length > 8){
-      return raw.slice(0, 8) + '…（詳細地址將由接單者後台確認）';
+      return raw.slice(0, 8) + '…（詳細地址將由接單者 後臺確認）';
     }
-    return raw + '（詳細地址將由接單者後台確認）';
+    return raw + '（詳細地址將由接單者 後臺確認）';
   }
 
   let fee = 30;
@@ -801,7 +941,7 @@
     });
   });
 
-  const ids = ['cMerchant','cMerchantOther','cItems','cAddress','cPhone','cContact','cSchedule','cNote'];
+  const ids = ['cAddress','cPhone','cContact','cSchedule','cNote'];
   ids.forEach(id=>document.getElementById(id).addEventListener('input', updatePreview));
 
   function formatSchedule(raw){
@@ -812,27 +952,8 @@
     return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
-  function getMerchantValue(){
-    const sel = document.getElementById('cMerchant').value;
-    if(sel === '其他'){
-      return document.getElementById('cMerchantOther').value.trim();
-    }
-    return sel;
-  }
-
-  function toggleMerchantOther(){
-    const isOther = document.getElementById('cMerchant').value === '其他';
-    document.getElementById('cMerchantOther').style.display = isOther ? 'block' : 'none';
-  }
-  document.getElementById('cMerchant').addEventListener('change', ()=>{
-    toggleMerchantOther();
-    updateMerchantHoursHint();
-    updatePreview();
-  });
-
   function updatePreview(){
-    const merchant = getMerchantValue() || '（尚未填寫）';
-    const items = document.getElementById('cItems').value.trim() || '（尚未填寫）';
+    const stops = collectStops();
     const addressRaw = document.getElementById('cAddress').value.trim();
     const phoneRaw = document.getElementById('cPhone').value.trim();
     const contact = document.getElementById('cContact').value.trim() || '（尚未填寫）';
@@ -840,24 +961,30 @@
     const note = document.getElementById('cNote').value.trim();
     const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）';
     const selectedExtras = getSelectedExtraServices();
-    const extraTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
-    const totalFee = fee + extraTotal;
+    const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
+    const transferTotal = stops.length > 1 ? (stops.length - 1) * transferFeePerStop : 0;
+    const totalFee = fee + extraServiceTotal + transferTotal;
+
+    const stopsText = stops.map((s, i) => `【站點${i+1}】${s.merchant || '（尚未填寫）'}：${s.items || '（尚未填寫）'}`).join('\n');
+
     let text =
 `【代購委託】
-商家：${merchant}
-品項：${items}
+${stopsText}
 地址：${maskAddress(addressRaw)}
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
     text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序處理`;
+    if(stops.length > 1){
+      text += `\n🔀 中途轉點：共 ${stops.length} 個商家（加收 $${transferTotal}）`;
+    }
     if(selectedExtras.length){
       const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
       text += `\n加購服務：${extraNames}`;
     }
     if(note) text += `\n備註：${note}`;
-    text += extraTotal
-      ? `\n外送費：$${fee} + 加購 $${extraTotal} = $${totalFee}（商品費用另計，現場付款）`
+    text += (extraServiceTotal || transferTotal)
+      ? `\n外送費：$${totalFee}（基本 $${fee}${transferTotal ? ` + 轉點 $${transferTotal}` : ''}${extraServiceTotal ? ` + 加購 $${extraServiceTotal}` : ''}，商品費用另計，現場付款）`
       : `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
 
@@ -923,19 +1050,30 @@
   document.getElementById('photoRemoveBtn').addEventListener('click', clearPhoto);
 
   function getFormData(){
+    const stops = collectStops();
+    const merchantNames = stops.map(s => s.merchant).filter(Boolean).join('、');
+    const itemsCombined = stops.map((s, i) => `【站點${i+1}】${s.merchant || '未填商家'}：${s.items || ''}`).join('\n');
+
     const selectedExtras = getSelectedExtraServices();
-    const extraTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
-    const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
+    const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
+    const transferTotal = stops.length > 1 ? (stops.length - 1) * transferFeePerStop : 0;
+
+    let extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
+    if(transferTotal){
+      const transferLabel = `中途轉點x${stops.length - 1}(+$${transferTotal})`;
+      extraNames = extraNames ? `${extraNames}、${transferLabel}` : transferLabel;
+    }
+
     return {
-      merchant: getMerchantValue(),
-      items: document.getElementById('cItems').value.trim(),
+      merchant: merchantNames,
+      items: itemsCombined,
       address: document.getElementById('cAddress').value.trim(),
       phone: document.getElementById('cPhone').value.trim(),
       contact: document.getElementById('cContact').value.trim(),
       schedule: document.getElementById('cSchedule').value,
       note: document.getElementById('cNote').value.trim(),
       zone: fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）',
-      fee: fee + extraTotal,
+      fee: fee + extraServiceTotal + transferTotal,
       extraServices: extraNames,
       photoBase64,
       photoMime
@@ -972,6 +1110,8 @@
     ids.forEach(id => { data[id] = document.getElementById(id).value; });
     data.fee = fee;
     data.extraIdx = Array.from(document.querySelectorAll('#extraServicePicker input:checked')).map(cb => cb.dataset.idx);
+    data.stops = collectStops();
+    data.legalConfirm = document.getElementById('cLegalConfirm').checked;
     return data;
   }
 
@@ -979,13 +1119,13 @@
     if(!snapshot) return;
     ids.forEach(id => { document.getElementById(id).value = snapshot[id] || ''; });
     fee = snapshot.fee || 30;
-    toggleMerchantOther();
-    updateMerchantHoursHint();
+    rebuildStops(snapshot.stops);
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.zone-btn[data-fee="${fee}"]`).classList.add('active');
     document.querySelectorAll('#extraServicePicker input').forEach(cb => {
       cb.checked = (snapshot.extraIdx || []).includes(cb.dataset.idx);
     });
+    document.getElementById('cLegalConfirm').checked = !!snapshot.legalConfirm;
     updatePreview();
   }
 
@@ -995,9 +1135,9 @@
     ids.forEach(id => { document.getElementById(id).value = ''; });
     fee = 30;
     clearPhoto();
-    toggleMerchantOther();
-    updateMerchantHoursHint();
+    rebuildStops([{ merchant: '', items: '' }]);
     document.querySelectorAll('#extraServicePicker input').forEach(cb => { cb.checked = false; });
+    document.getElementById('cLegalConfirm').checked = false;
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
     updatePreview();
@@ -1030,28 +1170,39 @@
     el.classList.add('pop');
   }
 
+  let lastQueueNumber = '';
+
   function showQueueBadge(n){
+    lastQueueNumber = String(n);
     document.getElementById('queueNum').textContent = '#' + n;
     document.getElementById('queueLabel').innerHTML = '您的委託單號<br>我們將依單號順序為您服務';
     document.getElementById('queueBadge').style.display = 'flex';
+    document.getElementById('queueQueryBtn').style.display = 'block';
     popBadge();
   }
   function showQueuePending(){
+    lastQueueNumber = '';
     document.getElementById('queueNum').textContent = '⏳';
     document.getElementById('queueLabel').innerHTML = '訂單已送出，委託單號查詢中<br>請稍候幾秒不要離開頁面';
     document.getElementById('queueBadge').style.display = 'flex';
+    document.getElementById('queueQueryBtn').style.display = 'none';
     popBadge();
   }
   function showReservedBadge(){
+    lastQueueNumber = '';
     document.getElementById('queueNum').textContent = '📅';
     document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
     document.getElementById('queueBadge').style.display = 'flex';
+    document.getElementById('queueQueryBtn').style.display = 'none';
     popBadge();
   }
   function hideQueueBadge(){
     document.getElementById('queueBadge').style.display = 'none';
   }
   document.getElementById('queueClose').addEventListener('click', hideQueueBadge);
+  document.getElementById('queueQueryBtn').addEventListener('click', ()=>{
+    openLookup(lastQueueNumber);
+  });
 
   function validateRequired(data){
     if(!data.phone){
@@ -1072,6 +1223,11 @@
     if(data.schedule && new Date(data.schedule).getTime() < Date.now()){
       toast('預約時間不能是過去的時間，請重新選擇');
       document.getElementById('cSchedule').focus();
+      return false;
+    }
+    if(!document.getElementById('cLegalConfirm').checked){
+      toast('請先勾選最下方的年齡與合法性確認');
+      document.getElementById('cLegalConfirm').focus();
       return false;
     }
     return true;
