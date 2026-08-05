@@ -28,9 +28,15 @@
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
-    margin:0; background:var(--paper); color:var(--ink);
+    margin:0; color:var(--ink);
     font-family:'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;
-    background-image:repeating-linear-gradient(135deg, rgba(34,48,46,0.035) 0px, rgba(34,48,46,0.035) 1px, transparent 1px, transparent 22px);
+    background-color:var(--paper);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 50% -8%, rgba(255,255,255,.75), transparent 62%),
+      linear-gradient(180deg, #EAF6FB 0%, #DDEFF8 38%, #CFE6F2 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='70' viewBox='0 0 180 70'%3E%3Cpath d='M0 22 Q45 -3 90 22 T180 22' stroke='%231E5B67' stroke-width='1.4' fill='none' opacity='0.07'/%3E%3Cpath d='M0 45 Q45 20 90 45 T180 45' stroke='%237FADA9' stroke-width='1.4' fill='none' opacity='0.1'/%3E%3C/svg%3E");
+    background-repeat:no-repeat, no-repeat, repeat;
+    background-attachment:scroll, scroll, fixed;
   }
   .mono{font-family:'JetBrains Mono',monospace;}
   h1,h2,h3,.display{font-family:'Noto Serif TC',serif; font-weight:900;}
@@ -400,7 +406,7 @@
     <div class="field">
       <label>採購站點</label>
       <div id="stopsContainer"></div>
-      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點$15）</button>
+      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點）</button>
       <div id="transferFeeHint" style="display:none; font-size:12px; color:var(--coral-dark); margin-top:8px; font-weight:600; line-height:1.6;"></div>
     </div>
     <div class="field">
@@ -419,7 +425,7 @@
       <div class="extra-service-picker" id="extraServicePicker"></div>
     </div>
     <div class="field">
-      <label>客戶聯絡電話（必填，格式：0988-168-168 或 089-888888）</label>
+      <label>客戶聯絡電話（必填，格式：0000-000-000 或 000-000000）</label>
       <input id="cPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678 或 089-123456" maxlength="12" required>
     </div>
     <div class="field">
@@ -1081,7 +1087,7 @@ ${stopsText}
   }
 
   function isValidPhone(raw){
-    // 只接受兩種固定格式：手機 0000-000-000（10碼）或市話 000-000000（9碼）
+    // 只接受兩種固定格式：手機 0988-168-168（10碼）或市話 089-888888（9碼）
     return /^\d{4}-\d{3}-\d{3}$/.test(raw) || /^\d{3}-\d{6}$/.test(raw);
   }
 
