@@ -69,6 +69,11 @@
     text-align:center; padding:60px 20px; color:var(--ocean-dark); opacity:.7; font-size:13.5px; line-height:1.8;
   }
 
+  .section-heading{
+    font-size:13px; font-weight:700; color:var(--ocean-dark); margin:20px 0 10px; padding-left:2px;
+  }
+  .section-heading:first-child{margin-top:0;}
+
   /* ---- 訂單卡片 ---- */
   .order-card{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
@@ -262,6 +267,67 @@
   });
 
   // ---------- 畫面渲染 ----------
+  function formatScheduleDisplay(schedule){
+    if(!schedule) return '';
+    const d = new Date(schedule);
+    if(isNaN(d.getTime())) return schedule.replace('T', ' ');
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function createOrderCard(order){
+    const card = document.createElement('div');
+    card.className = `order-card status-${order.status || '待處理'}`;
+
+    const queueDisplay = order.queueNumber ? `#${order.queueNumber}` : (order.isReservation ? '📅' : '—');
+    const timeLabel = order.isReservation
+      ? `預約 ${formatScheduleDisplay(order.schedule)}`
+      : `${order.time || ''} 下單`;
+
+    let infoHtml = `
+      <div class="row"><span class="label">商家</span><span>${escapeHtml(order.merchant || '—')}</span></div>
+      <div class="row"><span class="label">品項</span><span class="items-block">${escapeHtml(order.items || '—')}</span></div>
+      <div class="row"><span class="label">地址</span><span>${escapeHtml(order.address || '—')}</span></div>
+      <div class="row"><span class="label">範圍</span><span>${escapeHtml(order.zone || '—')}　外送費 $${escapeHtml(String(order.fee || '—'))}</span></div>
+      <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
+      <div class="row"><span class="label">暱稱</span><span>${escapeHtml(order.contact || '—')}</span></div>
+    `;
+    if(order.extraServices) infoHtml += `<div class="row"><span class="label">加購</span><span>${escapeHtml(order.extraServices)}</span></div>`;
+    if(order.note) infoHtml += `<div class="row"><span class="label">備註</span><span>${escapeHtml(order.note)}</span></div>`;
+
+    card.innerHTML = `
+      <div class="order-top">
+        <div>
+          <div class="order-queue">${queueDisplay}</div>
+          <div class="order-time">${escapeHtml(timeLabel)}</div>
+        </div>
+        <div class="status-badge ${order.status || '待處理'}">${escapeHtml(order.status || '待處理')}</div>
+      </div>
+      <div class="order-info">${infoHtml}</div>
+      ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
+      <div class="status-actions">
+        <button data-status="待處理" class="${order.status === '待處理' || !order.status ? 'current' : ''}">待處理</button>
+        <button data-status="處理中" class="${order.status === '處理中' ? 'current' : ''}">處理中</button>
+        <button data-status="運送中" class="${order.status === '運送中' ? 'current' : ''}">運送中</button>
+        <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
+      </div>
+    `;
+
+    const photoImg = card.querySelector('.order-photo img');
+    if(photoImg){
+      photoImg.addEventListener('click', ()=>{
+        document.getElementById('lightboxImg').src = order.photo;
+        document.getElementById('lightbox').style.display = 'flex';
+      });
+    }
+
+    card.querySelectorAll('.status-actions button').forEach(btn=>{
+      btn.addEventListener('click', ()=> updateStatus(order, btn.dataset.status, card));
+    });
+
+    return card;
+  }
+
   function renderOrders(){
     const list = document.getElementById('orderList');
     const filtered = currentFilter === '全部'
@@ -273,59 +339,26 @@
       return;
     }
 
+    const immediate = filtered.filter(o => !o.isReservation);
+    const reservations = filtered.filter(o => o.isReservation);
+
     list.innerHTML = '';
-    filtered.forEach(order => {
-      const card = document.createElement('div');
-      card.className = `order-card status-${order.status || '待處理'}`;
 
-      const queueDisplay = order.queueNumber ? `#${order.queueNumber}` : (order.schedule ? '📅 預約' : '—');
+    if(immediate.length){
+      const h = document.createElement('div');
+      h.className = 'section-heading';
+      h.textContent = `📦 今日訂單（${immediate.length}）`;
+      list.appendChild(h);
+      immediate.forEach(order => list.appendChild(createOrderCard(order)));
+    }
 
-      let infoHtml = `
-        <div class="row"><span class="label">商家</span><span>${escapeHtml(order.merchant || '—')}</span></div>
-        <div class="row"><span class="label">品項</span><span class="items-block">${escapeHtml(order.items || '—')}</span></div>
-        <div class="row"><span class="label">地址</span><span>${escapeHtml(order.address || '—')}</span></div>
-        <div class="row"><span class="label">範圍</span><span>${escapeHtml(order.zone || '—')}　外送費 $${escapeHtml(String(order.fee || '—'))}</span></div>
-        <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
-        <div class="row"><span class="label">暱稱</span><span>${escapeHtml(order.contact || '—')}</span></div>
-      `;
-      if(order.schedule) infoHtml += `<div class="row"><span class="label">預約</span><span>${escapeHtml(order.schedule.replace('T',' '))}</span></div>`;
-      if(order.extraServices) infoHtml += `<div class="row"><span class="label">加購</span><span>${escapeHtml(order.extraServices)}</span></div>`;
-      if(order.note) infoHtml += `<div class="row"><span class="label">備註</span><span>${escapeHtml(order.note)}</span></div>`;
-
-      card.innerHTML = `
-        <div class="order-top">
-          <div>
-            <div class="order-queue">${queueDisplay}</div>
-            <div class="order-time">${escapeHtml(order.time || '')} 下單</div>
-          </div>
-          <div class="status-badge ${order.status || '待處理'}">${escapeHtml(order.status || '待處理')}</div>
-        </div>
-        <div class="order-info">${infoHtml}</div>
-        ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
-        <div class="status-actions">
-          <button data-status="待處理" class="${order.status === '待處理' || !order.status ? 'current' : ''}">待處理</button>
-          <button data-status="處理中" class="${order.status === '處理中' ? 'current' : ''}">處理中</button>
-          <button data-status="運送中" class="${order.status === '運送中' ? 'current' : ''}">運送中</button>
-          <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
-        </div>
-      `;
-
-      // 照片放大
-      const photoImg = card.querySelector('.order-photo img');
-      if(photoImg){
-        photoImg.addEventListener('click', ()=>{
-          document.getElementById('lightboxImg').src = order.photo;
-          document.getElementById('lightbox').style.display = 'flex';
-        });
-      }
-
-      // 狀態切換按鈕
-      card.querySelectorAll('.status-actions button').forEach(btn=>{
-        btn.addEventListener('click', ()=> updateStatus(order, btn.dataset.status, card));
-      });
-
-      list.appendChild(card);
-    });
+    if(reservations.length){
+      const h = document.createElement('div');
+      h.className = 'section-heading';
+      h.textContent = `📅 預約訂單・依預約時間排序（${reservations.length}）`;
+      list.appendChild(h);
+      reservations.forEach(order => list.appendChild(createOrderCard(order)));
+    }
   }
 
   document.getElementById('lightbox').addEventListener('click', ()=>{
