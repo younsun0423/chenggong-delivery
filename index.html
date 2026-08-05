@@ -63,10 +63,37 @@
     display:none; align-items:center; gap:10px; background:var(--ocean); color:var(--paper);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:12px 18px; margin:0 0 20px; font-weight:700; font-size:13.5px; line-height:1.5;
-    animation:fadeSlideIn .3s ease;
+    animation:fadeSlideIn .3s ease; cursor:pointer;
   }
+  .progress-banner:hover{filter:brightness(1.08);}
   @keyframes fadeSlideIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
   .disabled-btn{opacity:.4; pointer-events:none; cursor:not-allowed;}
+
+  .lookup-overlay{
+    display:none; position:fixed; inset:0; background:rgba(34,48,46,.75); z-index:300;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .lookup-box{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:24px; max-width:380px; width:100%; position:relative; animation:popIn .25s ease;
+  }
+  .lookup-box h3{margin:0 0 6px; font-size:17px;}
+  .lookup-box .hint{font-size:12px; color:var(--ocean-dark); opacity:.8; margin-bottom:16px; line-height:1.6;}
+  .lookup-box .field{margin-bottom:12px;}
+  .lookup-box .field label{font-size:12px; font-weight:700; color:var(--ocean-dark); display:block; margin-bottom:5px;}
+  .lookup-box input{
+    width:100%; padding:10px 12px; border:2px solid var(--ink); border-radius:8px; background:var(--paper);
+    font-family:inherit; font-size:14px;
+  }
+  .lookup-box .close-btn{
+    position:absolute; top:14px; right:14px; background:none; border:none; font-size:18px;
+    cursor:pointer; opacity:.6; padding:2px 6px;
+  }
+  .lookup-box .close-btn:hover{opacity:1;}
+  .lookup-result{
+    margin-top:14px; padding:14px 16px; background:var(--ink); color:var(--paper); border-radius:10px;
+    font-size:13px; line-height:1.85; white-space:pre-wrap; display:none; font-family:'JetBrains Mono',monospace;
+  }
 
   .honeypot-field{position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;}
 
@@ -406,6 +433,24 @@
 <footer>成功小蜜丰 · 本頁僅供社群公告與下單參考使用</footer>
 <div class="toast" id="toast"></div>
 
+<div class="lookup-overlay" id="lookupOverlay">
+  <div class="lookup-box">
+    <button class="close-btn" id="lookupClose" aria-label="關閉">✕</button>
+    <h3>🔍 查詢我的訂單</h3>
+    <div class="hint">輸入你下單時拿到的委託單號，以及聯絡電話末三碼進行核對</div>
+    <div class="field">
+      <label>委託單號</label>
+      <input id="lookupQueue" type="number" inputmode="numeric" placeholder="例：5">
+    </div>
+    <div class="field">
+      <label>聯絡電話末三碼</label>
+      <input id="lookupPhone3" type="text" inputmode="numeric" maxlength="3" placeholder="例：678">
+    </div>
+    <button class="copy-btn" id="lookupSubmit" style="width:100%; background:var(--ocean); display:block;">查詢</button>
+    <div class="lookup-result" id="lookupResult"></div>
+  </div>
+</div>
+
 <script>
 (function(){
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOHX1Oriv5tTLaJhUcaXu2iXKnXU-7q3NlUNm0J2WkI0HGomMrFu2QAPzXQJE8edq-iw/exec';
@@ -492,12 +537,72 @@
     const progress = (settings['目前處理進度'] || '').trim();
     const progressEl = document.getElementById('progressBanner');
     if(progress){
-      progressEl.textContent = `📋 目前處理進度：第 ${progress} 張委託單`;
+      progressEl.textContent = `📋 目前處理進度：第 ${progress} 張委託單（點我查詢我的訂單）`;
       progressEl.style.display = 'flex';
     } else {
       progressEl.style.display = 'none';
     }
   }
+
+  // ---------- 訂單查詢：點進度公告開啟，需輸入單號+電話末三碼驗證 ----------
+  const lookupOverlay = document.getElementById('lookupOverlay');
+  function openLookup(){
+    document.getElementById('lookupQueue').value = '';
+    document.getElementById('lookupPhone3').value = '';
+    const resultEl = document.getElementById('lookupResult');
+    resultEl.style.display = 'none';
+    resultEl.textContent = '';
+    lookupOverlay.style.display = 'flex';
+  }
+  function closeLookup(){
+    lookupOverlay.style.display = 'none';
+  }
+  document.getElementById('progressBanner').addEventListener('click', openLookup);
+  document.getElementById('lookupClose').addEventListener('click', closeLookup);
+  lookupOverlay.addEventListener('click', (e)=>{ if(e.target === lookupOverlay) closeLookup(); });
+
+  document.getElementById('lookupSubmit').addEventListener('click', async ()=>{
+    const queue = document.getElementById('lookupQueue').value.trim();
+    const phone3 = document.getElementById('lookupPhone3').value.trim();
+    const resultEl = document.getElementById('lookupResult');
+
+    if(!queue || !phone3){
+      toast('請填寫委託單號與電話末三碼');
+      return;
+    }
+    if(!/^\d{3}$/.test(phone3)){
+      toast('電話末三碼請輸入 3 碼數字');
+      return;
+    }
+
+    resultEl.style.display = 'block';
+    resultEl.textContent = '查詢中...';
+
+    try{
+      const url = `${SCRIPT_URL}?action=lookup&queue=${encodeURIComponent(queue)}&phone3=${encodeURIComponent(phone3)}&t=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      const data = await res.json();
+
+      if(data.found){
+        resultEl.textContent =
+`✅ 查詢成功
+
+單號：#${data.queueNumber}
+商家：${data.merchant || '—'}
+品項：${data.items || '—'}
+範圍：${data.zone || '—'}
+外送費：$${data.fee || '—'}
+備註：${data.note || '—'}
+下單時間：${data.time || '—'}
+
+目前狀態：${data.status || '待處理'}`;
+      } else {
+        resultEl.textContent = '❌ 查無資料，請確認委託單號與電話末三碼是否正確。';
+      }
+    }catch(err){
+      resultEl.textContent = '查詢失敗，請稍後再試一次。';
+    }
+  });
 
   function loadContent(){
     // 加上時間戳記 + no-store，避免瀏覽器快取舊版本的守則／服務／營業狀態設定
