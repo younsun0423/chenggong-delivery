@@ -502,13 +502,29 @@
     const currentValue = sel.value; // 保留原本選擇（若還在清單裡）
     sel.innerHTML = '<option value="">請選擇商家</option>';
     merchantHoursMap = {};
+
+    // 依「分類」欄位分組，沒填分類的歸到「其他商家」
+    const groups = {};
+    const groupOrder = [];
     (merchants || []).forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.name;
-      opt.textContent = m.hours ? `${m.name}（${m.hours}）` : m.name;
-      sel.appendChild(opt);
+      const cat = m.category && m.category.trim() ? m.category.trim() : '其他商家';
+      if(!groups[cat]){ groups[cat] = []; groupOrder.push(cat); }
+      groups[cat].push(m);
       merchantHoursMap[m.name] = m.hours || '';
     });
+
+    groupOrder.forEach(cat => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = cat;
+      groups[cat].forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.name;
+        opt.textContent = m.hours ? `${m.name}（${m.hours}）` : m.name;
+        optgroup.appendChild(opt);
+      });
+      sel.appendChild(optgroup);
+    });
+
     const otherOpt = document.createElement('option');
     otherOpt.value = '其他';
     otherOpt.textContent = '其他（自行輸入）';
