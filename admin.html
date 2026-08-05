@@ -83,6 +83,7 @@
     border:1.5px solid var(--ink);
   }
   .status-badge.待處理{background:var(--gold); color:var(--ink);}
+  .status-badge.處理中{background:var(--coral); color:var(--paper);}
   .status-badge.運送中{background:var(--ocean); color:var(--paper);}
   .status-badge.已送達{background:var(--seafoam); color:var(--ink);}
 
@@ -96,9 +97,9 @@
   .order-photo{margin-top:8px;}
   .order-photo img{width:70px; height:70px; object-fit:cover; border-radius:8px; border:2px solid var(--ink); cursor:pointer;}
 
-  .status-actions{display:flex; gap:8px; margin-top:14px;}
+  .status-actions{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;}
   .status-actions button{
-    flex:1; padding:10px 4px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    padding:10px 4px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
     font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit; color:var(--ink);
   }
   .status-actions button.current{background:var(--ink); color:var(--paper);}
@@ -144,6 +145,7 @@
     <div class="filter-tabs">
       <button class="active" data-filter="全部">全部</button>
       <button data-filter="待處理">待處理</button>
+      <button data-filter="處理中">處理中</button>
       <button data-filter="運送中">運送中</button>
       <button data-filter="已送達">已送達</button>
     </div>
@@ -302,6 +304,7 @@
         ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
         <div class="status-actions">
           <button data-status="待處理" class="${order.status === '待處理' || !order.status ? 'current' : ''}">待處理</button>
+          <button data-status="處理中" class="${order.status === '處理中' ? 'current' : ''}">處理中</button>
           <button data-status="運送中" class="${order.status === '運送中' ? 'current' : ''}">運送中</button>
           <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
         </div>
