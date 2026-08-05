@@ -57,12 +57,15 @@
     display:none; align-items:center; gap:10px; background:var(--coral); color:var(--paper);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:14px 18px; margin:20px 0; font-weight:700; font-size:14px; line-height:1.5;
+    animation:fadeSlideIn .3s ease;
   }
   .progress-banner{
     display:none; align-items:center; gap:10px; background:var(--ocean); color:var(--paper);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:12px 18px; margin:0 0 20px; font-weight:700; font-size:13.5px; line-height:1.5;
+    animation:fadeSlideIn .3s ease;
   }
+  @keyframes fadeSlideIn{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
   .disabled-btn{opacity:.4; pointer-events:none; cursor:not-allowed;}
 
   .honeypot-field{position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;}
@@ -175,10 +178,46 @@
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
     background:var(--ink); color:var(--paper); padding:12px 22px; border-radius:999px;
     font-size:13.5px; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:200;
-    box-shadow:0 8px 24px rgba(0,0,0,.3);
+    box-shadow:0 8px 24px rgba(0,0,0,.3); max-width:min(90vw, 380px); text-align:center;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+
+  /* ---- 最終視覺美化：焦點狀態、hover回饋、動畫細節 ---- */
+  a, button, .zone-toggle button, .utility-btn{-webkit-tap-highlight-color:transparent;}
+
+  .composer input:focus, .composer textarea:focus, .composer select:focus{
+    outline:none; border-color:var(--ocean); box-shadow:0 0 0 3px rgba(30,91,103,.18);
+  }
+  .copy-btn:focus-visible, .join-btn:focus-visible, .zone-toggle button:focus-visible,
+  .utility-btn:focus-visible, .queue-badge .close-x:focus-visible{
+    outline:2.5px solid var(--ocean); outline-offset:2px;
+  }
+
+  @media (hover:hover){
+    .copy-btn:hover{ filter:brightness(1.06); }
+    .join-btn:hover{ filter:brightness(1.06); }
+    .zone-toggle button:not(.active):hover{ opacity:.85; background:var(--card); }
+    .fee-card, .step, .extra-service{ transition:transform .15s ease, box-shadow .15s ease; }
+    .fee-card:hover, .step:hover, .extra-service:hover{ transform:translateY(-2px); }
+  }
+
+  .zone-toggle button{transition:background .15s ease, opacity .15s ease;}
+  @media (max-width:380px){ .zone-toggle{flex-direction:column;} }
+
+  .composer input[type="file"]{padding:8px 10px; font-size:13px; cursor:pointer;}
+  .composer input[type="file"]::file-selector-button{
+    border:2px solid var(--ink); background:var(--ocean); color:var(--paper); font-weight:700;
+    padding:6px 14px; border-radius:999px; margin-right:10px; cursor:pointer; font-family:inherit; font-size:12.5px;
+  }
+  .composer input[type="file"]::file-selector-button:hover{filter:brightness(1.1);}
+
+  .queue-badge .close-x{padding:4px 6px; margin:-4px -6px 0 auto; border-radius:6px;}
+  .queue-badge .close-x:hover{background:rgba(243,233,210,.15);}
+  .queue-badge.pop{animation:popIn .28s ease;}
+  @keyframes popIn{ from{transform:scale(.94); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+  .utility-btn{padding:8px 15px;}
 </style>
 </head>
 <body>
@@ -216,6 +255,7 @@
       <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
       <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
       <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
+      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
     </ul>
   </div>
 
@@ -564,7 +604,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依序處理`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單序號處理`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
@@ -647,7 +687,7 @@
   }
 
   function isValidPhone(raw){
-    // 只接受兩種固定格式：手機 0988-888-888（10碼）或市話 089-888888（9碼）
+    // 只接受兩種固定格式：手機 0000-000-000（10碼）或市話 000-000000（9碼）
     return /^\d{4}-\d{3}-\d{3}$/.test(raw) || /^\d{3}-\d{6}$/.test(raw);
   }
 
@@ -718,20 +758,30 @@
     setTimeout(()=>{ btn.innerHTML = original; }, 1600);
   }
 
+  function popBadge(){
+    const el = document.getElementById('queueBadge');
+    el.classList.remove('pop');
+    void el.offsetWidth; // 強制重新觸發動畫
+    el.classList.add('pop');
+  }
+
   function showQueueBadge(n){
     document.getElementById('queueNum').textContent = '#' + n;
     document.getElementById('queueLabel').innerHTML = '您的委託單號<br>我們將依單號順序為您服務';
     document.getElementById('queueBadge').style.display = 'flex';
+    popBadge();
   }
   function showQueuePending(){
     document.getElementById('queueNum').textContent = '⏳';
     document.getElementById('queueLabel').innerHTML = '訂單已送出，委託單號查詢中<br>請稍候幾秒不要離開頁面';
     document.getElementById('queueBadge').style.display = 'flex';
+    popBadge();
   }
   function showReservedBadge(){
     document.getElementById('queueNum').textContent = '📅';
     document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
     document.getElementById('queueBadge').style.display = 'flex';
+    popBadge();
   }
   function hideQueueBadge(){
     document.getElementById('queueBadge').style.display = 'none';
@@ -745,7 +795,7 @@
       return false;
     }
     if(!isValidPhone(data.phone)){
-      toast('電話格式需為 0988-888-888 或 089-888888，請確認');
+      toast('電話格式需為 0000-000-000 或 000-000000，請確認');
       document.getElementById('cPhone').focus();
       return false;
     }
