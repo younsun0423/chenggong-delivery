@@ -191,6 +191,17 @@
   }
   .zone-toggle button.active{background:var(--ocean); color:var(--paper); opacity:1;}
 
+  .extra-service-picker{display:grid; gap:8px;}
+  .extra-service-option{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--paper); border:2px solid var(--ink); border-radius:8px; padding:10px 12px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .extra-service-option:hover{background:var(--card);}
+  .extra-service-option .eso-info{display:flex; align-items:center; gap:8px; font-size:13.5px; line-height:1.5;}
+  .extra-service-option input[type="checkbox"]{width:auto; flex-shrink:0; accent-color:var(--ocean);}
+  .extra-service-option .eso-fee{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--coral-dark); font-size:13.5px; white-space:nowrap;}
+
   .preview{margin-top:18px; background:var(--ink); color:var(--paper); border-radius:10px; padding:16px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; white-space:pre-wrap; line-height:1.8; position:relative;}
   .preview .fee-line{color:var(--gold); font-weight:700;}
   .copy-btn{
@@ -383,6 +394,10 @@
         <button type="button" class="zone-btn" data-fee="60">鎮外・小港天后宮～和平國小（$60）</button>
       </div>
     </div>
+    <div class="field" id="extraServiceField" style="display:none;">
+      <label>加購服務（選填）</label>
+      <div class="extra-service-picker" id="extraServicePicker"></div>
+    </div>
     <div class="field">
       <label>客戶聯絡電話（必填，格式：0000-000-000 或 000-000000）</label>
       <input id="cPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678 或 089-123456" maxlength="12" required>
@@ -473,25 +488,65 @@
     });
   }
 
+  let availableExtraServices = [];
+
   function renderServices(services){
     const box = document.getElementById('extraServices');
     if(!services || !services.length){
       box.innerHTML = '<div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>';
+    } else {
+      box.innerHTML = '';
+      services.forEach(svc => {
+        const card = document.createElement('div');
+        card.className = 'extra-service';
+        card.innerHTML = `
+          <div class="info">
+            <h4>${escapeHtml(svc.name)}</h4>
+            ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
+          </div>
+          ${svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : ''}
+        `;
+        box.appendChild(card);
+      });
+    }
+    renderExtraServicePicker(services);
+  }
+
+  function renderExtraServicePicker(services){
+    const priced = (services || []).filter(s => Number(s.fee) > 0);
+    const fieldEl = document.getElementById('extraServiceField');
+    const pickerEl = document.getElementById('extraServicePicker');
+
+    availableExtraServices = priced;
+
+    if(!priced.length){
+      fieldEl.style.display = 'none';
+      pickerEl.innerHTML = '';
       return;
     }
-    box.innerHTML = '';
-    services.forEach(svc => {
-      const card = document.createElement('div');
-      card.className = 'extra-service';
-      card.innerHTML = `
-        <div class="info">
-          <h4>${escapeHtml(svc.name)}</h4>
-          ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
-        </div>
-        ${svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : ''}
+
+    fieldEl.style.display = 'block';
+    pickerEl.innerHTML = '';
+    priced.forEach((svc, i) => {
+      const label = document.createElement('label');
+      label.className = 'extra-service-option';
+      label.innerHTML = `
+        <span class="eso-info">
+          <input type="checkbox" data-idx="${i}">
+          ${escapeHtml(svc.name)}${svc.desc ? `（${escapeHtml(svc.desc)}）` : ''}
+        </span>
+        <span class="eso-fee">+$${svc.fee}</span>
       `;
-      box.appendChild(card);
+      pickerEl.appendChild(label);
     });
+    pickerEl.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', updatePreview);
+    });
+  }
+
+  function getSelectedExtraServices(){
+    const boxes = document.querySelectorAll('#extraServicePicker input[type="checkbox"]:checked');
+    return Array.from(boxes).map(cb => availableExtraServices[Number(cb.dataset.idx)]).filter(Boolean);
   }
 
   let orderingDisabled = false;
@@ -584,18 +639,21 @@
       const data = await res.json();
 
       if(data.found){
-        resultEl.textContent =
+        let msg =
 `✅ 查詢成功
 
 單號：#${data.queueNumber}
 商家：${data.merchant || '—'}
 品項：${data.items || '—'}
-範圍：${data.zone || '—'}
+範圍：${data.zone || '—'}`;
+        if(data.extraServices) msg += `\n加購服務：${data.extraServices}`;
+        msg += `
 外送費：$${data.fee || '—'}
 備註：${data.note || '—'}
 下單時間：${data.time || '—'}
 
 目前狀態：${data.status || '待處理'}`;
+        resultEl.textContent = msg;
       } else {
         resultEl.textContent = '❌ 查無資料，請確認委託單號與電話末三碼是否正確。';
       }
@@ -704,6 +762,9 @@
     const schedule = document.getElementById('cSchedule').value;
     const note = document.getElementById('cNote').value.trim();
     const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）';
+    const selectedExtras = getSelectedExtraServices();
+    const extraTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
+    const totalFee = fee + extraTotal;
     let text =
 `【代購委託】
 商家：${merchant}
@@ -713,8 +774,14 @@
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
     text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序處理`;
+    if(selectedExtras.length){
+      const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
+      text += `\n加購服務：${extraNames}`;
+    }
     if(note) text += `\n備註：${note}`;
-    text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
+    text += extraTotal
+      ? `\n外送費：$${fee} + 加購 $${extraTotal} = $${totalFee}（商品費用另計，現場付款）`
+      : `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
 
     const encoded = encodeURIComponent(text);
@@ -779,6 +846,9 @@
   document.getElementById('photoRemoveBtn').addEventListener('click', clearPhoto);
 
   function getFormData(){
+    const selectedExtras = getSelectedExtraServices();
+    const extraTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
+    const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
     return {
       merchant: document.getElementById('cMerchant').value.trim(),
       items: document.getElementById('cItems').value.trim(),
@@ -788,7 +858,8 @@
       schedule: document.getElementById('cSchedule').value,
       note: document.getElementById('cNote').value.trim(),
       zone: fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）',
-      fee,
+      fee: fee + extraTotal,
+      extraServices: extraNames,
       photoBase64,
       photoMime
     };
@@ -823,6 +894,7 @@
     const data = {};
     ids.forEach(id => { data[id] = document.getElementById(id).value; });
     data.fee = fee;
+    data.extraIdx = Array.from(document.querySelectorAll('#extraServicePicker input:checked')).map(cb => cb.dataset.idx);
     return data;
   }
 
@@ -832,6 +904,9 @@
     fee = snapshot.fee || 30;
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.zone-btn[data-fee="${fee}"]`).classList.add('active');
+    document.querySelectorAll('#extraServicePicker input').forEach(cb => {
+      cb.checked = (snapshot.extraIdx || []).includes(cb.dataset.idx);
+    });
     updatePreview();
   }
 
@@ -841,6 +916,7 @@
     ids.forEach(id => { document.getElementById(id).value = ''; });
     fee = 30;
     clearPhoto();
+    document.querySelectorAll('#extraServicePicker input').forEach(cb => { cb.checked = false; });
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
     updatePreview();
