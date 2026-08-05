@@ -382,6 +382,7 @@
         <option value="其他">其他（自行輸入）</option>
       </select>
       <input id="cMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
+      <div id="merchantHoursHint" style="display:none; font-size:12px; color:var(--ocean-dark); margin-top:6px; font-weight:600;"></div>
     </div>
     <div class="field">
       <label>購買品項</label>
@@ -494,15 +495,19 @@
 
   let availableExtraServices = [];
 
+  let merchantHoursMap = {};
+
   function renderMerchants(merchants){
     const sel = document.getElementById('cMerchant');
     const currentValue = sel.value; // 保留原本選擇（若還在清單裡）
     sel.innerHTML = '<option value="">請選擇商家</option>';
-    (merchants || []).forEach(name => {
+    merchantHoursMap = {};
+    (merchants || []).forEach(m => {
       const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
+      opt.value = m.name;
+      opt.textContent = m.hours ? `${m.name}（${m.hours}）` : m.name;
       sel.appendChild(opt);
+      merchantHoursMap[m.name] = m.hours || '';
     });
     const otherOpt = document.createElement('option');
     otherOpt.value = '其他';
@@ -511,6 +516,19 @@
 
     if(currentValue && Array.from(sel.options).some(o => o.value === currentValue)){
       sel.value = currentValue;
+    }
+    updateMerchantHoursHint();
+  }
+
+  function updateMerchantHoursHint(){
+    const val = document.getElementById('cMerchant').value;
+    const hintEl = document.getElementById('merchantHoursHint');
+    const hours = merchantHoursMap[val];
+    if(val && val !== '其他' && hours){
+      hintEl.textContent = `🕒 營業時間：${hours}`;
+      hintEl.style.display = 'block';
+    } else {
+      hintEl.style.display = 'none';
     }
   }
 
@@ -792,6 +810,7 @@
   }
   document.getElementById('cMerchant').addEventListener('change', ()=>{
     toggleMerchantOther();
+    updateMerchantHoursHint();
     updatePreview();
   });
 
@@ -815,7 +834,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序處理`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序處理`;
     if(selectedExtras.length){
       const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
       text += `\n加購服務：${extraNames}`;
@@ -945,6 +964,7 @@
     ids.forEach(id => { document.getElementById(id).value = snapshot[id] || ''; });
     fee = snapshot.fee || 30;
     toggleMerchantOther();
+    updateMerchantHoursHint();
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.zone-btn[data-fee="${fee}"]`).classList.add('active');
     document.querySelectorAll('#extraServicePicker input').forEach(cb => {
@@ -960,6 +980,7 @@
     fee = 30;
     clearPhoto();
     toggleMerchantOther();
+    updateMerchantHoursHint();
     document.querySelectorAll('#extraServicePicker input').forEach(cb => { cb.checked = false; });
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
