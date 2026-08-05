@@ -58,6 +58,11 @@
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:14px 18px; margin:20px 0; font-weight:700; font-size:14px; line-height:1.5;
   }
+  .progress-banner{
+    display:none; align-items:center; gap:10px; background:var(--ocean); color:var(--paper);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:12px 18px; margin:0 0 20px; font-weight:700; font-size:13.5px; line-height:1.5;
+  }
   .disabled-btn{opacity:.4; pointer-events:none; cursor:not-allowed;}
 
   .honeypot-field{position:absolute; left:-9999px; top:-9999px; width:1px; height:1px; overflow:hidden;}
@@ -199,6 +204,7 @@
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
+  <div class="progress-banner" id="progressBanner"></div>
 
   <div class="rules-box">
     <h2>📌 社群守則</h2>
@@ -327,6 +333,15 @@
       <label>備註（選填）</label>
       <input id="cNote" placeholder="例：不加香菜、放在管理室">
     </div>
+    <div class="field">
+      <label>上傳照片（選填，例如想要的品項或菜單截圖）</label>
+      <input type="file" id="cPhoto" accept="image/*">
+      <div id="photoPreviewBox" style="display:none; margin-top:8px; display:flex; align-items:center; gap:10px;">
+        <img id="photoPreviewImg" src="" alt="照片預覽" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:2px solid var(--ink);">
+        <button type="button" class="utility-btn" id="photoRemoveBtn" style="padding:5px 12px;">移除照片</button>
+      </div>
+      <div style="font-size:11px; color:var(--ocean-dark); opacity:.75; margin-top:4px;">照片只會存進後台管理表供接單者確認，不會出現在傳給群組的訊息裡</div>
+    </div>
     <div class="honeypot-field" aria-hidden="true">
       <label for="cHoneypot">請勿填寫此欄位</label>
       <input id="cHoneypot" name="extra_note_field" tabindex="-1" autocomplete="off">
@@ -429,6 +444,15 @@
       copyBtn.classList.remove('disabled-btn');
       copyBtn.disabled = false;
       orderingDisabled = false;
+    }
+
+    const progress = (settings['目前處理進度'] || '').trim();
+    const progressEl = document.getElementById('progressBanner');
+    if(progress){
+      progressEl.textContent = `📋 目前處理進度：第 ${progress} 張委託單`;
+      progressEl.style.display = 'flex';
+    } else {
+      progressEl.style.display = 'none';
     }
   }
 
@@ -550,6 +574,62 @@
   }
   updatePreview();
 
+  // ---------- 照片上傳（壓縮後轉base64，只送進後台試算表） ----------
+  let photoBase64 = null;
+  let photoMime = null;
+
+  function compressImage(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('圖片解析失敗'));
+        img.onload = () => {
+          const maxSize = 1000;
+          let { width, height } = img;
+          if(width > maxSize || height > maxSize){
+            if(width > height){ height = Math.round(height * maxSize / width); width = maxSize; }
+            else { width = Math.round(width * maxSize / height); height = maxSize; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve({ base64: dataUrl.split(',')[1], mime: 'image/jpeg', preview: dataUrl });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('cPhoto').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      toast('照片處理中...');
+      const { base64, mime, preview } = await compressImage(file);
+      photoBase64 = base64;
+      photoMime = mime;
+      document.getElementById('photoPreviewImg').src = preview;
+      document.getElementById('photoPreviewBox').style.display = 'flex';
+      toast('照片已附上');
+    }catch(err){
+      toast('照片處理失敗，請換一張試試');
+      e.target.value = '';
+    }
+  });
+
+  function clearPhoto(){
+    photoBase64 = null;
+    photoMime = null;
+    document.getElementById('cPhoto').value = '';
+    document.getElementById('photoPreviewBox').style.display = 'none';
+    document.getElementById('photoPreviewImg').src = '';
+  }
+  document.getElementById('photoRemoveBtn').addEventListener('click', clearPhoto);
+
   function getFormData(){
     return {
       merchant: document.getElementById('cMerchant').value.trim(),
@@ -560,7 +640,9 @@
       schedule: document.getElementById('cSchedule').value,
       note: document.getElementById('cNote').value.trim(),
       zone: fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）',
-      fee
+      fee,
+      photoBase64,
+      photoMime
     };
   }
 
@@ -610,6 +692,7 @@
     undoBtn.disabled = false;
     ids.forEach(id => { document.getElementById(id).value = ''; });
     fee = 30;
+    clearPhoto();
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
     updatePreview();
@@ -687,7 +770,11 @@
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(result && result.queueNumber) showQueueBadge(result.queueNumber);
+      if(data.schedule){
+        toast('已為您預約，時間到前會透過群組與電話確認');
+      } else if(result && result.queueNumber){
+        showQueueBadge(result.queueNumber);
+      }
     });
   });
 
@@ -734,7 +821,11 @@
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(result && result.queueNumber) showQueueBadge(result.queueNumber);
+      if(data.schedule){
+        toast('已為您預約，時間到前會透過群組與電話確認');
+      } else if(result && result.queueNumber){
+        showQueueBadge(result.queueNumber);
+      }
     });
   });
 
