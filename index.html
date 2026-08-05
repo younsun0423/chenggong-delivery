@@ -353,7 +353,7 @@
     </div>
     <div class="queue-badge" id="queueBadge">
       <div class="num" id="queueNum">#0</div>
-      <div class="label">您的委託單號<br>我們將依單號順序為您服務</div>
+      <div class="label" id="queueLabel">您的委託單號<br>我們將依單號順序為您服務</div>
       <button class="close-x" id="queueClose" aria-label="關閉">✕</button>
     </div>
     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
@@ -517,13 +517,13 @@
     // 嘗試遮蔽門牌號碼，例如「成功路123號」→「成功路***號」
     const masked = raw.replace(/(\d+)(號)/g, (m, num, suffix) => '*'.repeat(Math.min(num.length, 3)) + suffix);
     if(masked !== raw){
-      return masked + '（門牌將由接單者私訊核對）';
+      return masked + '（門牌將由接單者後台確認）';
     }
     // 找不到「號」的格式，就只保留前段大致區域，避免完整地址曝光
     if(raw.length > 8){
-      return raw.slice(0, 8) + '…（詳細地址將由接單者私訊核對）';
+      return raw.slice(0, 8) + '…（詳細地址將由接單者後台確認）';
     }
-    return raw + '（詳細地址將由接單者私訊核對）';
+    return raw + '（詳細地址將由接單者後台確認）';
   }
 
   let fee = 30;
@@ -647,7 +647,7 @@
   }
 
   function isValidPhone(raw){
-    // 只接受兩種固定格式：手機 0000-000-000（10碼）或市話 000-000000（9碼）
+    // 只接受兩種固定格式：手機 0988-888-888（10碼）或市話 089-888888（9碼）
     return /^\d{4}-\d{3}-\d{3}$/.test(raw) || /^\d{3}-\d{6}$/.test(raw);
   }
 
@@ -720,6 +720,17 @@
 
   function showQueueBadge(n){
     document.getElementById('queueNum').textContent = '#' + n;
+    document.getElementById('queueLabel').innerHTML = '您的委託單號<br>我們將依單號順序為您服務';
+    document.getElementById('queueBadge').style.display = 'flex';
+  }
+  function showQueuePending(){
+    document.getElementById('queueNum').textContent = '⏳';
+    document.getElementById('queueLabel').innerHTML = '訂單已送出，委託單號查詢中<br>請稍候幾秒不要離開頁面';
+    document.getElementById('queueBadge').style.display = 'flex';
+  }
+  function showReservedBadge(){
+    document.getElementById('queueNum').textContent = '📅';
+    document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
     document.getElementById('queueBadge').style.display = 'flex';
   }
   function hideQueueBadge(){
@@ -734,7 +745,7 @@
       return false;
     }
     if(!isValidPhone(data.phone)){
-      toast('電話格式需為 0000-000-000 或 000-000000，請確認');
+      toast('電話格式需為 0988-888-888 或 089-888888，請確認');
       document.getElementById('cPhone').focus();
       return false;
     }
@@ -761,19 +772,26 @@
     const btn = e.currentTarget;
     const href = btn.href;
 
-    // 先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單），
-    // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象
+    // 先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單、號碼牌），
+    // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象，也讓客戶不用等就能看到反應
     window.open(href, '_blank');
     flashSuccess(btn, '✓ 已送出');
     toast('已記錄訂單，正在開啟 LINE...');
+    if(data.schedule){
+      showReservedBadge(); // 預約單不用等單號，直接顯示確認
+    } else {
+      showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
+    }
     resetForm();
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(data.schedule){
-        toast('已為您預約，時間到前會透過群組與電話確認');
-      } else if(result && result.queueNumber){
-        showQueueBadge(result.queueNumber);
+      if(!data.schedule){
+        if(result && result.queueNumber){
+          showQueueBadge(result.queueNumber);
+        } else {
+          document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
+        }
       }
     });
   });
@@ -814,6 +832,11 @@
     if(copied){
       flashSuccess(btn, '✓ 已複製');
       toast('已複製！可貼到任何地方使用');
+      if(data.schedule){
+        showReservedBadge(); // 預約單不用等單號，直接顯示確認
+      } else {
+        showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
+      }
       resetForm();
     }else{
       toast('複製失敗，請長按下方文字方塊手動選取複製');
@@ -821,10 +844,12 @@
 
     // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
     logOrder(data).then(result => {
-      if(data.schedule){
-        toast('已為您預約，時間到前會透過群組與電話確認');
-      } else if(result && result.queueNumber){
-        showQueueBadge(result.queueNumber);
+      if(!data.schedule){
+        if(result && result.queueNumber){
+          showQueueBadge(result.queueNumber);
+        } else {
+          document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
+        }
       }
     });
   });
