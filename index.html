@@ -377,7 +377,11 @@
   <div class="composer">
     <div class="field">
       <label>商家名稱</label>
-      <input id="cMerchant" placeholder="例：新港早餐店">
+      <select id="cMerchant">
+        <option value="">請選擇商家</option>
+        <option value="其他">其他（自行輸入）</option>
+      </select>
+      <input id="cMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
     </div>
     <div class="field">
       <label>購買品項</label>
@@ -489,6 +493,26 @@
   }
 
   let availableExtraServices = [];
+
+  function renderMerchants(merchants){
+    const sel = document.getElementById('cMerchant');
+    const currentValue = sel.value; // 保留原本選擇（若還在清單裡）
+    sel.innerHTML = '<option value="">請選擇商家</option>';
+    (merchants || []).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+    const otherOpt = document.createElement('option');
+    otherOpt.value = '其他';
+    otherOpt.textContent = '其他（自行輸入）';
+    sel.appendChild(otherOpt);
+
+    if(currentValue && Array.from(sel.options).some(o => o.value === currentValue)){
+      sel.value = currentValue;
+    }
+  }
 
   function renderServices(services){
     const box = document.getElementById('extraServices');
@@ -670,6 +694,7 @@
       .then(data => {
         renderRules(data.rules);
         renderServices(data.services);
+        renderMerchants(data.merchants);
         renderSettings(data.settings);
       })
       .catch(()=>{ /* 讀取失敗就維持頁面上原本寫死的預設內容 */ });
@@ -742,7 +767,7 @@
     });
   });
 
-  const ids = ['cMerchant','cItems','cAddress','cPhone','cContact','cSchedule','cNote'];
+  const ids = ['cMerchant','cMerchantOther','cItems','cAddress','cPhone','cContact','cSchedule','cNote'];
   ids.forEach(id=>document.getElementById(id).addEventListener('input', updatePreview));
 
   function formatSchedule(raw){
@@ -753,8 +778,25 @@
     return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function getMerchantValue(){
+    const sel = document.getElementById('cMerchant').value;
+    if(sel === '其他'){
+      return document.getElementById('cMerchantOther').value.trim();
+    }
+    return sel;
+  }
+
+  function toggleMerchantOther(){
+    const isOther = document.getElementById('cMerchant').value === '其他';
+    document.getElementById('cMerchantOther').style.display = isOther ? 'block' : 'none';
+  }
+  document.getElementById('cMerchant').addEventListener('change', ()=>{
+    toggleMerchantOther();
+    updatePreview();
+  });
+
   function updatePreview(){
-    const merchant = document.getElementById('cMerchant').value.trim() || '（尚未填寫）';
+    const merchant = getMerchantValue() || '（尚未填寫）';
     const items = document.getElementById('cItems').value.trim() || '（尚未填寫）';
     const addressRaw = document.getElementById('cAddress').value.trim();
     const phoneRaw = document.getElementById('cPhone').value.trim();
@@ -773,7 +815,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序處理`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序處理`;
     if(selectedExtras.length){
       const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
       text += `\n加購服務：${extraNames}`;
@@ -850,7 +892,7 @@
     const extraTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
     const extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
     return {
-      merchant: document.getElementById('cMerchant').value.trim(),
+      merchant: getMerchantValue(),
       items: document.getElementById('cItems').value.trim(),
       address: document.getElementById('cAddress').value.trim(),
       phone: document.getElementById('cPhone').value.trim(),
@@ -902,6 +944,7 @@
     if(!snapshot) return;
     ids.forEach(id => { document.getElementById(id).value = snapshot[id] || ''; });
     fee = snapshot.fee || 30;
+    toggleMerchantOther();
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.zone-btn[data-fee="${fee}"]`).classList.add('active');
     document.querySelectorAll('#extraServicePicker input').forEach(cb => {
@@ -916,6 +959,7 @@
     ids.forEach(id => { document.getElementById(id).value = ''; });
     fee = 30;
     clearPhoto();
+    toggleMerchantOther();
     document.querySelectorAll('#extraServicePicker input').forEach(cb => { cb.checked = false; });
     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
