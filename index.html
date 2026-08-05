@@ -255,7 +255,6 @@
       <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
       <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
       <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
-      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
     </ul>
   </div>
 
@@ -307,7 +306,7 @@
   <div class="hours-card">
     <div class="clock" aria-hidden="true"></div>
     <div>
-      <div class="time" id="hoursTime">08:00 – 20:00<span class="provisional">目前暫定</span></div>
+      <div class="time" id="hoursTime"><span id="hoursTimeText">08:00 – 20:00</span><span class="provisional">目前暫定</span></div>
       <div class="note">時段將依配送人力狀況調整，異動會在社群公告</div>
     </div>
   </div>
@@ -462,7 +461,7 @@
 
     const openTime = settings['營業開始時間'] || '08:00';
     const closeTime = settings['營業結束時間'] || '20:00';
-    const hoursEl = document.getElementById('hoursTime');
+    const hoursEl = document.getElementById('hoursTimeText');
     if(hoursEl) hoursEl.textContent = `${openTime} – ${closeTime}`;
 
     const isOpen = (settings['是否營業'] || 'TRUE').toString().toUpperCase() !== 'FALSE';
@@ -604,7 +603,7 @@
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單序號處理`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序處理`;
     if(note) text += `\n備註：${note}`;
     text += `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
