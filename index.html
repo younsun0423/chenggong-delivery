@@ -7,7 +7,7 @@
 <meta name="description" content="成功鎮在地代購外送社群，價格透明、範圍清楚，一鍵下單通知群組。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="成功小蜜丰｜成功鎮在地代購外送">
-<meta property="og:description" content="成功鎮還沒有外送平台，所以我們用LINE社群自己來。加入社群，一鍵下單、透明計價。">
+<meta property="og:description" content="成功鎮外送新選擇，在地人專屬的外送方式。加入 LINE 社群，想吃什麼、喝什麼、買什麼，輕鬆幫您送到。">
 <meta property="og:url" content="https://chenggongdelivery.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -305,7 +305,7 @@
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
-    <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
+    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
@@ -321,6 +321,9 @@
       <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
       <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
       <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
+      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
+      <li><span class="mark">08</span>依法禁止代購或限制販售之物品恕不提供代購服務。</li>
+      <li><span class="mark">08</span>本服務僅提供代購,委託內容須具體明確;委託人應對委託內容之合法性負完全責任,如因提供不實資訊或違法物品而生之法律責任,概由委託人自行承擔,與代購者無涉。。</li>
     </ul>
   </div>
 
@@ -526,6 +529,7 @@
   let availableExtraServices = [];
 
   let merchantHoursMap = {};
+  let merchantFreeMap = {};
   let merchantGroups = {};
   let merchantGroupOrder = [];
   let transferFeePerStop = 15;
@@ -533,6 +537,7 @@
 
   function renderMerchants(merchants){
     merchantHoursMap = {};
+    merchantFreeMap = {};
     merchantGroups = {};
     merchantGroupOrder = [];
 
@@ -542,6 +547,7 @@
       if(!merchantGroups[cat]){ merchantGroups[cat] = []; merchantGroupOrder.push(cat); }
       merchantGroups[cat].push(m);
       merchantHoursMap[m.name] = m.hours || '';
+      merchantFreeMap[m.name] = !!m.freeDelivery;
     });
 
     // 重新套用選單內容到目前所有站點的下拉選單（保留原本已選的值）
@@ -657,6 +663,10 @@
       const items = row.querySelector('.stop-items').value.trim();
       return { merchant, items };
     });
+  }
+
+  function hasFreeDeliveryMerchant(stops){
+    return stops.some(s => merchantFreeMap[s.merchant]);
   }
 
   function rebuildStops(stopsData){
@@ -969,7 +979,9 @@
     const selectedExtras = getSelectedExtraServices();
     const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
     const transferTotal = stops.length > 1 ? (stops.length - 1) * transferFeePerStop : 0;
-    const totalFee = fee + extraServiceTotal + transferTotal;
+    const freeDelivery = hasFreeDeliveryMerchant(stops);
+    const baseFee = freeDelivery ? 0 : fee;
+    const totalFee = baseFee + extraServiceTotal + transferTotal;
 
     const stopsText = stops.map((s, i) => `【站點${i+1}】${s.merchant || '（尚未填寫）'}：${s.items || '（尚未填寫）'}`).join('\n');
 
@@ -989,8 +1001,8 @@ ${stopsText}
       text += `\n加購服務：${extraNames}`;
     }
     if(note) text += `\n備註：${note}`;
-    text += (extraServiceTotal || transferTotal)
-      ? `\n外送費：$${totalFee}（基本 $${fee}${transferTotal ? ` + 轉點 $${transferTotal}` : ''}${extraServiceTotal ? ` + 加購 $${extraServiceTotal}` : ''}，商品費用另計，現場付款）`
+    text += (extraServiceTotal || transferTotal || freeDelivery)
+      ? `\n外送費：$${totalFee}（基本 $${baseFee}${freeDelivery ? '，本店家免運費' : ''}${transferTotal ? ` + 轉點 $${transferTotal}` : ''}${extraServiceTotal ? ` + 加購 $${extraServiceTotal}` : ''}，商品費用另計，現場付款）`
       : `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
 
@@ -1063,11 +1075,16 @@ ${stopsText}
     const selectedExtras = getSelectedExtraServices();
     const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
     const transferTotal = stops.length > 1 ? (stops.length - 1) * transferFeePerStop : 0;
+    const freeDelivery = hasFreeDeliveryMerchant(stops);
+    const baseFee = freeDelivery ? 0 : fee;
 
     let extraNames = selectedExtras.map(s => `${s.name}(+$${s.fee})`).join('、');
     if(transferTotal){
       const transferLabel = `中途轉點x${stops.length - 1}(+$${transferTotal})`;
       extraNames = extraNames ? `${extraNames}、${transferLabel}` : transferLabel;
+    }
+    if(freeDelivery){
+      extraNames = extraNames ? `${extraNames}、本店家免運費` : '本店家免運費';
     }
 
     return {
@@ -1079,7 +1096,7 @@ ${stopsText}
       schedule: document.getElementById('cSchedule').value,
       note: document.getElementById('cNote').value.trim(),
       zone: fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）',
-      fee: fee + extraServiceTotal + transferTotal,
+      fee: baseFee + extraServiceTotal + transferTotal,
       extraServices: extraNames,
       photoBase64,
       photoMime
@@ -1087,7 +1104,7 @@ ${stopsText}
   }
 
   function isValidPhone(raw){
-    // 只接受兩種固定格式：手機 0988-168-168（10碼）或市話 089-888888（9碼）
+    // 只接受兩種固定格式：手機 0000-000-000（10碼）或市話 000-000000（9碼）
     return /^\d{4}-\d{3}-\d{3}$/.test(raw) || /^\d{3}-\d{6}$/.test(raw);
   }
 
