@@ -306,7 +306,7 @@
   <div class="hours-card">
     <div class="clock" aria-hidden="true"></div>
     <div>
-      <div class="time" id="hoursTime"><span id="hoursTimeText">08:00 – 20:00</span><span class="provisional">目前暫定</span></div>
+      <div class="time" id="hoursTime"><span id="hoursTimeText">08:00 – 20:00</span><span class="provisional" id="provisionalBadge">目前暫定</span></div>
       <div class="note">時段將依配送人力狀況調整，異動會在社群公告</div>
     </div>
   </div>
@@ -463,6 +463,10 @@
     const closeTime = settings['營業結束時間'] || '20:00';
     const hoursEl = document.getElementById('hoursTimeText');
     if(hoursEl) hoursEl.textContent = `${openTime} – ${closeTime}`;
+
+    const showProvisional = (settings['顯示暫定標籤'] || 'TRUE').toString().toUpperCase() !== 'FALSE';
+    const provisionalEl = document.getElementById('provisionalBadge');
+    if(provisionalEl) provisionalEl.style.display = showProvisional ? 'inline-block' : 'none';
 
     const isOpen = (settings['是否營業'] || 'TRUE').toString().toUpperCase() !== 'FALSE';
     const banner = document.getElementById('statusBanner');
