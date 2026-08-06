@@ -351,7 +351,7 @@
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
-    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。<br> — 這裡只做代購外送，價格透明、範圍清楚，一起把在地店家和需要的人串連起來。</p>
+    <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
@@ -361,15 +361,12 @@
     <h2>📌 社群守則</h2>
     <ul id="rulesList">
       <li class="warn"><span class="mark">禁止</span>切勿在群內打廣告！！本群只提供代購外送服務，其餘一律禁止。</li>
-      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式。</li>
-      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計。</li>
-      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失。</li>
-      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責。</li>
-      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告。</li>
-      <li><span class="mark">06</span>惡意棄單者將列入黑名單。</li>
-      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
-      <li><span class="mark">08</span>依法禁止代購或限制販售之物品恕不提供代購服務。</li>
-      <li><span class="mark">09</span>本服務僅提供代購,委託內容須具體明確;委託人應對委託內容之合法性負完全責任,如因提供不實資訊或違法物品而生之法律責任,概由委託人自行承擔,與代購者無涉。</li>
+      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式</li>
+      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計</li>
+      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失</li>
+      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
+      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
+      <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
     </ul>
   </div>
 
@@ -383,7 +380,7 @@
     <div class="fee-card">
       <span class="zone">鎮外外送</span>
       <div class="price">$60 <span>／單</span></div>
-      <div class="range">範圍：<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>，<strong>全滿加油站</strong>以南到<strong>和平國小</strong>，超出此範圍請至社群洽詢。</div>
+      <div class="range">範圍：<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>，<strong>全滿加油站</strong>以南到<strong>和平國小</strong>，超出此範圍暫不提供服務。</div>
     </div>
   </div>
 
@@ -460,12 +457,13 @@
     <div class="field">
       <label>採購站點</label>
       <div id="stopsContainer"></div>
-      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點$15）</button>
+      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點）</button>
       <div id="transferFeeHint" style="display:none; font-size:12px; color:var(--coral-dark); margin-top:8px; font-weight:600; line-height:1.6;"></div>
     </div>
     <div class="field">
       <label>送達地址</label>
       <input id="cAddress" placeholder="例：成功鎮○○路○號，或明顯地標">
+      <div id="addressZoneHint" style="display:none; font-size:12px; margin-top:6px; font-weight:700; line-height:1.6;"></div>
     </div>
     <div class="field">
       <label>範圍</label>
@@ -523,7 +521,6 @@
     <div class="preview" id="preview"></div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
-      <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
       <button class="copy-btn" id="orderLookupBtn" type="button" style="background:var(--gold); color:var(--ink);">🔍 訂單查詢</button>
     </div>
     <div class="queue-badge" id="queueBadge">
@@ -558,14 +555,10 @@
   <div class="lookup-box">
     <button class="close-btn" id="lookupClose" aria-label="關閉">✕</button>
     <h3>🔍 查詢我的訂單</h3>
-    <div class="hint">輸入你下單時拿到的委託單號，以及聯絡電話末三碼進行核對</div>
+    <div class="hint">輸入你下單時填寫的完整聯絡電話，查詢最近一筆訂單狀態</div>
     <div class="field">
-      <label>委託單號</label>
-      <input id="lookupQueue" type="text" placeholder="例：5（立即單）或 R3（預約單）">
-    </div>
-    <div class="field">
-      <label>聯絡電話末三碼</label>
-      <input id="lookupPhone3" type="text" inputmode="numeric" maxlength="3" placeholder="例：678">
+      <label>聯絡電話</label>
+      <input id="lookupPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678 或 089-123456">
     </div>
     <button class="copy-btn" id="lookupSubmit" style="width:100%; background:var(--ocean); display:block;">查詢</button>
     <div class="lookup-result" id="lookupResult"></div>
@@ -574,7 +567,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymjn02-UalruC7IFHxuRb-eOv7egCX8ibBZ-lIGAKnyzXmdXQAg87kF1uGWZ2m5zZ4/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOHX1Oriv5tTLaJhUcaXu2iXKnXU-7q3NlUNm0J2WkI0HGomMrFu2QAPzXQJE8edq-iw/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -628,17 +621,22 @@
     updatePreview();
   }
 
-  function populateMerchantSelect(selectEl){
+  function populateMerchantSelect(selectEl, query){
     const currentValue = selectEl.value;
+    const q = (query || '').trim().toLowerCase();
     selectEl.innerHTML = '<option value="">請選擇商家</option>';
+    let matchCount = 0;
     merchantGroupOrder.forEach(cat => {
+      const matched = merchantGroups[cat].filter(m => !q || m.name.toLowerCase().includes(q));
+      if(!matched.length) return;
       const optgroup = document.createElement('optgroup');
       optgroup.label = cat;
-      merchantGroups[cat].forEach(m => {
+      matched.forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.name;
         opt.textContent = m.hours ? `${m.name}（${m.hours}）` : m.name;
         optgroup.appendChild(opt);
+        matchCount++;
       });
       selectEl.appendChild(optgroup);
     });
@@ -650,6 +648,7 @@
     if(currentValue && Array.from(selectEl.options).some(o => o.value === currentValue)){
       selectEl.value = currentValue;
     }
+    return matchCount;
   }
 
   function updateStopHoursHint(row){
@@ -694,6 +693,7 @@
         <span class="stop-label">站點</span>
         <button type="button" class="stop-remove" style="display:none;">✕ 移除</button>
       </div>
+      <input class="stop-merchant-search" type="text" placeholder="🔍 搜尋商家名稱...">
       <select class="stop-merchant"><option value="">請選擇商家</option><option value="其他">其他（自行輸入）</option></select>
       <input class="stop-merchant-other" placeholder="請輸入商家名稱" style="display:none;">
       <div class="stop-hours-hint" style="display:none;"></div>
@@ -701,6 +701,20 @@
     `;
     document.getElementById('stopsContainer').appendChild(row);
     populateMerchantSelect(row.querySelector('.stop-merchant'));
+
+    row.querySelector('.stop-merchant-search').addEventListener('input', (e)=>{
+      const sel = row.querySelector('.stop-merchant');
+      const matchCount = populateMerchantSelect(sel, e.target.value);
+      // 只找到一間符合時，自動幫客戶選起來，減少再點一次選單的步驟
+      if(matchCount === 1 && e.target.value.trim()){
+        const onlyOption = Array.from(sel.options).find(o => o.value && o.value !== '其他');
+        if(onlyOption){
+          sel.value = onlyOption.value;
+          updateStopHoursHint(row);
+          updatePreview();
+        }
+      }
+    });
 
     row.querySelector('.stop-merchant').addEventListener('change', (e)=>{
       const isOther = e.target.value === '其他';
@@ -804,6 +818,50 @@
   });
 
   let inquiryLinkUrl = '';
+  let addressZoneRules = [];
+
+  function renderAddressZones(zones){
+    addressZoneRules = zones || [];
+  }
+
+  function checkAddressZone(){
+    const addr = document.getElementById('cAddress').value.trim();
+    const hintEl = document.getElementById('addressZoneHint');
+    if(!addr){
+      hintEl.style.display = 'none';
+      return;
+    }
+
+    const matched = addressZoneRules.find(r => r.keyword && addr.includes(r.keyword));
+    if(!matched){
+      hintEl.style.display = 'none';
+      return;
+    }
+
+    if(matched.zone === '鎮內'){
+      fee = 30;
+      document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.zone-btn[data-fee="30"]').classList.add('active');
+      hintEl.textContent = '✓ 已依地址自動判斷為「鎮內」範圍';
+      hintEl.style.color = 'var(--ocean-dark)';
+      hintEl.style.display = 'block';
+      updatePreview();
+    } else if(matched.zone === '鎮外'){
+      fee = 60;
+      document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.zone-btn[data-fee="60"]').classList.add('active');
+      hintEl.textContent = '✓ 已依地址自動判斷為「鎮外」範圍';
+      hintEl.style.color = 'var(--ocean-dark)';
+      hintEl.style.display = 'block';
+      updatePreview();
+    } else {
+      // 超出範圍：不自動選範圍，改用醒目提示請客戶私訊確認
+      hintEl.textContent = '⚠️ 此地址可能已超出服務範圍，請私訊「成功小蜜丰」LINE 社群確認是否能配送';
+      hintEl.style.color = 'var(--coral-dark)';
+      hintEl.style.display = 'block';
+    }
+  }
+  document.getElementById('cAddress').addEventListener('input', checkAddressZone);
 
   function renderServices(services){
     const box = document.getElementById('extraServices');
@@ -910,7 +968,6 @@
     const forcedClosed = (settings['強制公休'] || 'FALSE').toString().toUpperCase() === 'TRUE';
     const banner = document.getElementById('statusBanner');
     const sendBtn = document.getElementById('sendLineBtn');
-    const copyBtn = document.getElementById('copyBtn');
 
     if(isOpen){
       // 正常營業時間內：完全開放
@@ -918,8 +975,6 @@
       orderingDisabled = false;
       banner.style.display = 'none';
       sendBtn.classList.remove('disabled-btn');
-      copyBtn.classList.remove('disabled-btn');
-      copyBtn.disabled = false;
     } else if(forcedClosed){
       // 手動強制公休：完全不能下單，包含預約單
       orderingMode = 'closed';
@@ -928,8 +983,6 @@
       banner.textContent = `⏸️ ${msg}`;
       banner.style.display = 'flex';
       sendBtn.classList.add('disabled-btn');
-      copyBtn.classList.add('disabled-btn');
-      copyBtn.disabled = true;
     } else {
       // 單純非營業時間：只能下預約單，立即單會被擋下
       orderingMode = 'reservationOnly';
@@ -938,8 +991,6 @@
       banner.textContent = `🌙 ${msg}`;
       banner.style.display = 'flex';
       sendBtn.classList.remove('disabled-btn');
-      copyBtn.classList.remove('disabled-btn');
-      copyBtn.disabled = false;
     }
 
     const progress = (settings['目前處理進度'] || '').trim();
@@ -952,17 +1003,16 @@
     }
   }
 
-  // ---------- 訂單查詢：點進度公告或號碼牌上的查詢按鈕開啟，需輸入單號+電話末三碼驗證 ----------
+  // ---------- 訂單查詢：輸入完整電話號碼即可查詢最近一筆訂單 ----------
   const lookupOverlay = document.getElementById('lookupOverlay');
-  function openLookup(prefillQueue){
-    document.getElementById('lookupQueue').value = prefillQueue || '';
-    document.getElementById('lookupPhone3').value = '';
+  function openLookup(prefillPhone){
+    document.getElementById('lookupPhone').value = prefillPhone || '';
     const resultEl = document.getElementById('lookupResult');
     resultEl.style.display = 'none';
     resultEl.textContent = '';
     lookupOverlay.style.display = 'flex';
-    if(prefillQueue){
-      document.getElementById('lookupPhone3').focus();
+    if(!prefillPhone){
+      document.getElementById('lookupPhone').focus();
     }
   }
   function closeLookup(){
@@ -974,16 +1024,16 @@
   lookupOverlay.addEventListener('click', (e)=>{ if(e.target === lookupOverlay) closeLookup(); });
 
   document.getElementById('lookupSubmit').addEventListener('click', async ()=>{
-    const queue = document.getElementById('lookupQueue').value.trim();
-    const phone3 = document.getElementById('lookupPhone3').value.trim();
+    const phone = document.getElementById('lookupPhone').value.trim();
     const resultEl = document.getElementById('lookupResult');
 
-    if(!queue || !phone3){
-      toast('請填寫委託單號與電話末三碼');
+    if(!phone){
+      toast('請填寫聯絡電話');
       return;
     }
-    if(!/^\d{3}$/.test(phone3)){
-      toast('電話末三碼請輸入 3 碼數字');
+    const digits = phone.replace(/\D/g, '');
+    if(digits.length < 8){
+      toast('請輸入完整電話號碼');
       return;
     }
 
@@ -991,14 +1041,14 @@
     resultEl.textContent = '查詢中...';
 
     try{
-      const url = `${SCRIPT_URL}?action=lookup&queue=${encodeURIComponent(queue)}&phone3=${encodeURIComponent(phone3)}&t=${Date.now()}`;
+      const url = `${SCRIPT_URL}?action=lookup&phone=${encodeURIComponent(digits)}&t=${Date.now()}`;
       const res = await fetch(url, { cache: 'no-store' });
       const data = await res.json();
 
       if(data.found){
         const numLabel = String(data.queueNumber || '').startsWith('R') ? data.queueNumber : `#${data.queueNumber}`;
         let msg =
-`✅ 查詢成功
+`✅ 查詢成功（顯示最近一筆訂單）
 
 單號：${numLabel}
 商家：${data.merchant || '—'}
@@ -1014,7 +1064,7 @@
 目前狀態：${data.status || '待處理'}`;
         resultEl.textContent = msg;
       } else {
-        resultEl.textContent = '❌ 查無資料，請確認委託單號與電話末三碼是否正確。';
+        resultEl.textContent = '❌ 查無資料，請確認電話號碼是否正確，或稍後再試。';
       }
     }catch(err){
       resultEl.textContent = '查詢失敗，請稍後再試一次。';
@@ -1032,6 +1082,7 @@
         renderServices(data.services);
         renderMerchants(data.merchants);
         renderMenus(data.menus);
+        renderAddressZones(data.addressZones);
       })
       .catch(()=>{ /* 讀取失敗就維持頁面上原本寫死的預設內容 */ });
   }
@@ -1198,7 +1249,7 @@ ${stopsText}
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單編號順序送出`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序送出`;
     if(stops.length > 1){
       text += `\n🔀 中途轉點：共 ${stops.length} 個商家（加收 $${transferTotal}）`;
     }
@@ -1402,10 +1453,9 @@ ${stopsText}
     el.classList.add('pop');
   }
 
-  let lastQueueNumber = '';
+  let lastOrderPhone = '';
 
   function showQueueBadge(n){
-    lastQueueNumber = String(n);
     document.getElementById('queueNum').textContent = '#' + n;
     document.getElementById('queueLabel').innerHTML = '您的委託單號<br>我們將依單號順序為您服務';
     document.getElementById('queueBadge').style.display = 'flex';
@@ -1413,15 +1463,13 @@ ${stopsText}
     popBadge();
   }
   function showQueuePending(){
-    lastQueueNumber = '';
     document.getElementById('queueNum').textContent = '⏳';
     document.getElementById('queueLabel').innerHTML = '訂單已送出，委託單號查詢中<br>請稍候幾秒不要離開頁面';
     document.getElementById('queueBadge').style.display = 'flex';
-    document.getElementById('queueQueryBtn').style.display = 'none';
+    document.getElementById('queueQueryBtn').style.display = 'block';
     popBadge();
   }
   function showReservationPending(){
-    lastQueueNumber = '';
     document.getElementById('queueNum').textContent = '⏳';
     document.getElementById('queueLabel').innerHTML = '正在確認時段是否可預約<br>請稍候幾秒不要離開頁面';
     document.getElementById('queueBadge').style.display = 'flex';
@@ -1429,11 +1477,10 @@ ${stopsText}
     popBadge();
   }
   function showReservedBadge(n){
-    lastQueueNumber = n ? String(n) : '';
     document.getElementById('queueNum').textContent = n ? n : '📅';
     document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
     document.getElementById('queueBadge').style.display = 'flex';
-    document.getElementById('queueQueryBtn').style.display = n ? 'block' : 'none';
+    document.getElementById('queueQueryBtn').style.display = 'block';
     popBadge();
   }
   function hideQueueBadge(){
@@ -1441,7 +1488,7 @@ ${stopsText}
   }
   document.getElementById('queueClose').addEventListener('click', hideQueueBadge);
   document.getElementById('queueQueryBtn').addEventListener('click', ()=>{
-    openLookup(lastQueueNumber);
+    openLookup(lastOrderPhone);
   });
 
   function validateRequired(data){
@@ -1498,6 +1545,7 @@ ${stopsText}
     if(!validateRequired(data)) return;
     const btn = e.currentTarget;
     const href = btn.href;
+    lastOrderPhone = data.phone;
 
     if(data.schedule){
       // 預約單：要先確認這個時段沒被別人搶走，才能開LINE、顯示成功，避免衝突後畫面卻顯示已預約
@@ -1521,80 +1569,6 @@ ${stopsText}
       toast('已記錄訂單，正在開啟 LINE...');
       showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
       resetForm();
-
-      // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
-      logOrder(data).then(result => {
-        if(result && result.queueNumber){
-          showQueueBadge(result.queueNumber);
-        } else {
-          document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
-        }
-      });
-    }
-  });
-
-  function legacyCopy(text){
-    // 備援複製方式：適用不支援或封鎖 navigator.clipboard 的瀏覽器（例如部分 App 內建瀏覽器）
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    textarea.style.top = '0';
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    let ok = false;
-    try{ ok = document.execCommand('copy'); }catch(err){ ok = false; }
-    document.body.removeChild(textarea);
-    return ok;
-  }
-
-  document.getElementById('copyBtn').addEventListener('click', async (e)=>{
-    if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
-    if(isBot()) return; // 疑似機器人，靜默略過
-    formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
-    const data = getFormData();
-    if(!validateRequired(data)) return;
-    const btn = e.currentTarget;
-    const text = document.getElementById('preview').textContent;
-
-    async function doCopy(){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch(err){
-        return legacyCopy(text); // 新式複製失敗就改用舊式方法再試一次
-      }
-    }
-
-    if(data.schedule){
-      // 預約單：先確認時段沒被搶走，才複製文字、顯示成功
-      showReservationPending();
-      const result = await logOrder(data);
-      if(result && result.result === 'error'){
-        hideQueueBadge();
-        toast(result.message || '這個時段已被預約，請重新選擇時段');
-        return; // 不複製、不清空表單，讓客戶重新選時段再送一次
-      }
-      const copied = await doCopy();
-      if(copied){
-        flashSuccess(btn, '✓ 已複製');
-        toast('已複製！可貼到任何地方使用');
-        showReservedBadge(result && result.queueNumber);
-        resetForm();
-      }else{
-        toast('複製失敗，請長按下方文字方塊手動選取複製');
-      }
-    } else {
-      const copied = await doCopy();
-      if(copied){
-        flashSuccess(btn, '✓ 已複製');
-        toast('已複製！可貼到任何地方使用');
-        showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
-        resetForm();
-      }else{
-        toast('複製失敗，請長按下方文字方塊手動選取複製');
-      }
 
       // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
       logOrder(data).then(result => {
