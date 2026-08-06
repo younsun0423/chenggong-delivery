@@ -815,7 +815,7 @@
       services.forEach(svc => {
         const card = document.createElement('div');
         card.className = 'extra-service';
-        const needsAsk = !(Number(svc.fee) > 0); // 沒設定固定金額的服務，改顯示「請洽詢」按鈕
+        const needsAsk = !(Number(svc.fee) > 0); // 沒設定固定金額的服務，改顯示「私訊小蜜丰」按鈕
         card.innerHTML = `
           <div class="info">
             <h4>${escapeHtml(svc.name)}</h4>
