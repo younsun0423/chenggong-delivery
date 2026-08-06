@@ -59,6 +59,14 @@
   .hero h1{font-size:clamp(28px,4.5vw,42px); line-height:1.2; margin:0 0 12px;}
   .hero p{font-size:15px; color:var(--ocean-dark); max-width:520px; margin:0 0 22px; line-height:1.7;}
 
+  .loading-banner{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--card); color:var(--ocean-dark); border:2px dashed var(--ocean); border-radius:var(--radius);
+    padding:10px 16px; margin:16px 0; font-size:12.5px; font-weight:700;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .loading-banner.hide{opacity:0; transform:translateY(-6px); pointer-events:none; height:0; margin:0; padding:0; border:none; overflow:hidden;}
+
   .status-banner{
     display:none; align-items:center; gap:10px; background:var(--coral); color:var(--paper);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
@@ -153,19 +161,24 @@
   .range-map{margin-top:18px; padding:18px 20px; background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);}
   .range-map .label{font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--ocean-dark); margin-bottom:10px;}
 
-  .menu-gallery{display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px;}
-  .menu-gallery .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px; grid-column:1/-1;}
-  .menu-card{
+  .menu-gallery{display:grid; gap:16px;}
+  .menu-gallery .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px;}
+  .menu-merchant-group{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    overflow:hidden; cursor:pointer; position:relative;
+    padding:14px 16px;
   }
-  .menu-card img{width:100%; height:120px; object-fit:cover; display:block; background:#ddd;}
-  .menu-card .cap{padding:8px 10px;}
-  .menu-card .cap strong{display:block; font-size:13.5px; margin-bottom:2px;}
-  .menu-card .cap span{font-size:11.5px; color:var(--ink); opacity:.7; line-height:1.5;}
-  .menu-card .pin-hint{
-    position:absolute; top:6px; right:6px; background:rgba(34,48,46,.75); color:var(--paper);
-    font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; pointer-events:none;
+  .menu-merchant-group .mg-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:10px;}
+  .menu-merchant-group .mg-head strong{font-size:14.5px;}
+  .menu-merchant-group .mg-head span{font-size:11px; color:var(--ocean-dark); opacity:.7; white-space:nowrap;}
+  .menu-photo-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; -webkit-overflow-scrolling:touch;}
+  .menu-photo-row .thumb{
+    flex-shrink:0; width:92px; height:92px; border-radius:10px; overflow:hidden; border:2px solid var(--ink);
+    cursor:pointer; background:#ddd; position:relative;
+  }
+  .menu-photo-row .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .menu-photo-row .thumb .thumb-cap{
+    position:absolute; left:0; right:0; bottom:0; background:rgba(34,48,46,.72); color:var(--paper);
+    font-size:9px; padding:2px 4px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
 
   .menu-lightbox{
@@ -175,7 +188,7 @@
   .menu-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
 
   .pinned-menu{
-    display:none; position:fixed; right:14px; bottom:14px; z-index:180; width:150px;
+    display:none; position:fixed; right:14px; bottom:14px; z-index:180; width:200px;
     background:var(--card); border:2px solid var(--ink); border-radius:12px; box-shadow:var(--shadow);
     overflow:hidden; animation:popIn .25s ease;
   }
@@ -186,12 +199,21 @@
   .pinned-menu-header span{font-size:11px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .pinned-menu-header button{background:none; border:none; color:var(--paper); font-size:14px; cursor:pointer; padding:0 2px; opacity:.85; flex-shrink:0;}
   .pinned-menu-header button:hover{opacity:1;}
-  .pinned-menu img{width:100%; height:150px; object-fit:cover; display:block; cursor:zoom-in;}
-  .pinned-menu .pinned-note{font-size:10px; color:var(--ocean-dark); text-align:center; padding:5px 4px; line-height:1.4; background:var(--paper);}
+  .pinned-menu img{width:100%; height:130px; object-fit:cover; display:block; cursor:zoom-in;}
+  .pinned-menu .pinned-body{padding:8px;}
+  .pinned-menu textarea{
+    width:100%; min-height:56px; padding:7px 9px; border:2px solid var(--ink); border-radius:8px;
+    background:var(--paper); font-family:inherit; font-size:12.5px; resize:vertical;
+  }
+  .pinned-menu .pinned-add-btn{
+    width:100%; margin-top:6px; padding:8px; border:2px solid var(--ink); border-radius:999px;
+    background:#06C755; color:#fff; font-weight:700; font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  .pinned-menu .pinned-add-btn:hover{filter:brightness(1.06);}
 
   @media (max-width:420px){
-    .pinned-menu{width:120px; right:10px; bottom:10px;}
-    .pinned-menu img{height:120px;}
+    .pinned-menu{width:160px; right:10px; bottom:10px;}
+    .pinned-menu img{height:100px;}
   }
 
   .extra-services{display:grid; gap:12px;}
@@ -348,6 +370,8 @@
 </header>
 
 <main>
+  <div class="loading-banner" id="loadingBanner">⏳ 載入最新資料中，請稍候...</div>
+
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
@@ -361,12 +385,15 @@
     <h2>📌 社群守則</h2>
     <ul id="rulesList">
       <li class="warn"><span class="mark">禁止</span>切勿在群內打廣告！！本群只提供代購外送服務，其餘一律禁止。</li>
-      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式</li>
-      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計</li>
-      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失</li>
-      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
-      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
-      <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
+      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式。</li>
+      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計。</li>
+      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失。</li>
+      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責。</li>
+      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告。</li>
+      <li><span class="mark">06</span>惡意棄單者將列入黑名單。</li>
+      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
+      <li><span class="mark">08</span>依法禁止代購或限制販售之物品恕不提供代購服務。</li>
+      <li><span class="mark">09</span>本服務僅提供代購,委託內容須具體明確;委託人應對委託內容之合法性負完全責任,如因提供不實資訊或違法物品而生之法律責任,概由委託人自行承擔,與代購者無涉。</li>
     </ul>
   </div>
 
@@ -457,7 +484,7 @@
     <div class="field">
       <label>採購站點</label>
       <div id="stopsContainer"></div>
-      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點）</button>
+      <button type="button" class="utility-btn" id="addStopBtn" style="margin-top:8px;">➕ 新增商家（需中途轉點$15）</button>
       <div id="transferFeeHint" style="display:none; font-size:12px; color:var(--coral-dark); margin-top:8px; font-weight:600; line-height:1.6;"></div>
     </div>
     <div class="field">
@@ -520,7 +547,7 @@
     </div>
     <div class="preview" id="preview"></div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
+      <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">送出訂單 →</a>
       <button class="copy-btn" id="orderLookupBtn" type="button" style="background:var(--gold); color:var(--ink);">🔍 訂單查詢</button>
     </div>
     <div class="queue-badge" id="queueBadge">
@@ -535,7 +562,7 @@
       <button type="button" class="utility-btn" id="clearBtn">🗑️ 清除表單</button>
       <button type="button" class="utility-btn" id="undoBtn" disabled>↩️ 返回上一步</button>
     </div>
-    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「傳送到 LINE」會開啟 LINE App，訊息已自動填好，選擇「成功小蜜丰」後按傳送即可。<br>🔒 為保護客戶隱私，傳到群組的訊息中電話號碼與門牌號碼會自動遮蔽，完整資訊僅記錄於後台管理表，接單者可私訊客戶核對詳細地址。</div>
+    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「送出訂單」會開啟 LINE App，訊息已自動填好，選擇「成功小蜜丰」後按傳送即可。<br>🔒 為保護客戶隱私，傳到群組的訊息中電話號碼與門牌號碼會自動遮蔽，完整資訊僅記錄於後台管理表，接單者可私訊客戶核對詳細地址。</div>
   </div>
 </main>
 
@@ -548,7 +575,10 @@
     <button id="pinnedMenuClose" aria-label="關閉釘選">✕</button>
   </div>
   <img id="pinnedMenuImg" src="" alt="釘選中的菜單">
-  <div class="pinned-note">點圖片可放大</div>
+  <div class="pinned-body">
+    <textarea id="pinnedItemsInput" placeholder="邊看邊打想買的品項..."></textarea>
+    <button type="button" class="pinned-add-btn" id="pinnedAddBtn">✅ 加入訂單</button>
+  </div>
 </div>
 
 <div class="lookup-overlay" id="lookupOverlay">
@@ -567,7 +597,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymjn02-UalruC7IFHxuRb-eOv7egCX8ibBZ-lIGAKnyzXmdXQAg87kF1uGWZ2m5zZ4/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOHX1Oriv5tTLaJhUcaXu2iXKnXU-7q3NlUNm0J2WkI0HGomMrFu2QAPzXQJE8edq-iw/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -784,30 +814,50 @@
       box.innerHTML = '<div class="empty">目前尚無菜單相片，想知道賣什麼可以直接在下方備註詢問。</div>';
       return;
     }
-    box.innerHTML = '';
+    // 依商家分組，同一商家的多張菜單照片放在同一區塊，避免畫面重複又雜亂
+    const groups = {};
+    const order = [];
     menus.forEach(m => {
-      const card = document.createElement('div');
-      card.className = 'menu-card';
-      card.innerHTML = `
-        <img src="${escapeHtml(m.image)}" alt="${escapeHtml(m.merchant)}" loading="lazy">
-        <div class="pin-hint">📌 點我釘選</div>
-        <div class="cap"><strong>${escapeHtml(m.merchant)}</strong>${m.desc ? `<span>${escapeHtml(m.desc)}</span>` : ''}</div>
+      if(!groups[m.merchant]){ groups[m.merchant] = []; order.push(m.merchant); }
+      groups[m.merchant].push(m);
+    });
+
+    box.innerHTML = '';
+    order.forEach(merchant => {
+      const photos = groups[merchant];
+      const group = document.createElement('div');
+      group.className = 'menu-merchant-group';
+      group.innerHTML = `
+        <div class="mg-head">
+          <strong>${escapeHtml(merchant)}</strong>
+          <span>${photos.length > 1 ? `共 ${photos.length} 張・` : ''}點圖片可釘選查看</span>
+        </div>
+        <div class="menu-photo-row"></div>
       `;
-      card.addEventListener('click', ()=>{ pinMenu(m.merchant, m.image); });
-      box.appendChild(card);
+      const row = group.querySelector('.menu-photo-row');
+      photos.forEach(m => {
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        thumb.innerHTML = `
+          <img src="${escapeHtml(m.image)}" alt="${escapeHtml(merchant)}" loading="lazy">
+          ${m.desc ? `<div class="thumb-cap">${escapeHtml(m.desc)}</div>` : ''}
+        `;
+        thumb.addEventListener('click', ()=>{ pinMenu(merchant, m.image); });
+        row.appendChild(thumb);
+      });
+      box.appendChild(group);
     });
   }
 
   const menuLightboxEl = document.getElementById('menuLightbox');
   menuLightboxEl.addEventListener('click', ()=>{ menuLightboxEl.style.display = 'none'; });
 
-  // ---------- 釘選菜單：讓菜單圖固定浮在畫面角落，方便邊看邊填品項 ----------
+  // ---------- 釘選菜單：讓菜單圖固定浮在畫面角落，方便邊看邊填品項，填完直接加入訂單 ----------
   function pinMenu(merchant, image){
     document.getElementById('pinnedMenuLabel').textContent = merchant;
     document.getElementById('pinnedMenuImg').src = image;
+    document.getElementById('pinnedItemsInput').value = '';
     document.getElementById('pinnedMenu').style.display = 'block';
-    const stopsEl = document.getElementById('stopsContainer');
-    if(stopsEl) stopsEl.scrollIntoView({ behavior:'smooth', block:'center' });
   }
   document.getElementById('pinnedMenuClose').addEventListener('click', ()=>{
     document.getElementById('pinnedMenu').style.display = 'none';
@@ -815,6 +865,43 @@
   document.getElementById('pinnedMenuImg').addEventListener('click', ()=>{
     document.getElementById('menuLightboxImg').src = document.getElementById('pinnedMenuImg').src;
     menuLightboxEl.style.display = 'flex';
+  });
+
+  document.getElementById('pinnedAddBtn').addEventListener('click', ()=>{
+    const merchant = document.getElementById('pinnedMenuLabel').textContent;
+    const itemsText = document.getElementById('pinnedItemsInput').value.trim();
+    if(!itemsText){
+      toast('請先輸入想買的品項');
+      return;
+    }
+
+    const rows = Array.from(document.querySelectorAll('.stop-row'));
+    // 優先找已經選這個商家的站點；找不到就找還沒選商家的空白站點；都沒有就新增一個
+    let targetRow = rows.find(row => row.querySelector('.stop-merchant').value === merchant);
+    if(!targetRow) targetRow = rows.find(row => !row.querySelector('.stop-merchant').value);
+    if(!targetRow){
+      targetRow = createStopRow(false);
+      updateTransferHint();
+    }
+
+    const sel = targetRow.querySelector('.stop-merchant');
+    const matched = Array.from(sel.options).some(o => o.value === merchant);
+    if(matched){
+      sel.value = merchant;
+    } else {
+      sel.value = '其他';
+      targetRow.querySelector('.stop-merchant-other').style.display = 'block';
+      targetRow.querySelector('.stop-merchant-other').value = merchant;
+    }
+    updateStopHoursHint(targetRow);
+
+    const itemsField = targetRow.querySelector('.stop-items');
+    itemsField.value = itemsField.value.trim() ? `${itemsField.value.trim()}、${itemsText}` : itemsText;
+
+    updatePreview();
+    toast(`已將「${merchant}」的品項加入訂單`);
+    document.getElementById('pinnedItemsInput').value = '';
+    targetRow.scrollIntoView({ behavior:'smooth', block:'center' });
   });
 
   let inquiryLinkUrl = '';
@@ -1072,6 +1159,7 @@
   });
 
   function loadContent(){
+    const loadingEl = document.getElementById('loadingBanner');
     // 加上時間戳記 + no-store，避免瀏覽器快取舊版本的守則／服務／營業狀態設定
     const freshUrl = SCRIPT_URL + '?t=' + Date.now();
     fetch(freshUrl, { cache: 'no-store' })
@@ -1083,8 +1171,14 @@
         renderMerchants(data.merchants);
         renderMenus(data.menus);
         renderAddressZones(data.addressZones);
+        loadingEl.classList.add('hide');
       })
-      .catch(()=>{ /* 讀取失敗就維持頁面上原本寫死的預設內容 */ });
+      .catch(()=>{
+        // 讀取失敗就維持頁面上原本寫死的預設內容，並提示載入失敗
+        loadingEl.textContent = '⚠️ 部分資料載入失敗，顯示的可能不是最新內容，請稍後重新整理';
+        loadingEl.style.borderColor = 'var(--coral-dark)';
+        loadingEl.style.color = 'var(--coral-dark)';
+      });
   }
   loadContent();
 
@@ -1195,13 +1289,13 @@
     // 嘗試遮蔽門牌號碼，例如「成功路123號」→「成功路***號」
     const masked = raw.replace(/(\d+)(號)/g, (m, num, suffix) => '*'.repeat(Math.min(num.length, 3)) + suffix);
     if(masked !== raw){
-      return masked + '（門牌將由接單者後台確認）';
+      return masked + '（門牌將由接單者私訊核對）';
     }
     // 找不到「號」的格式，就只保留前段大致區域，避免完整地址曝光
     if(raw.length > 8){
-      return raw.slice(0, 8) + '…（詳細地址將由接單者後台確認）';
+      return raw.slice(0, 8) + '…（詳細地址將由接單者私訊核對）';
     }
-    return raw + '（詳細地址將由接單者後台確認）';
+    return raw + '（詳細地址將由接單者私訊核對）';
   }
 
   let fee = 30;
@@ -1249,7 +1343,7 @@ ${stopsText}
 範圍：${zoneLabel}
 社群暱稱：${contact}
 聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
-    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序送出`;
+    text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序處理`;
     if(stops.length > 1){
       text += `\n🔀 中途轉點：共 ${stops.length} 個商家（加收 $${transferTotal}）`;
     }
