@@ -822,7 +822,7 @@
             ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
           </div>
           ${needsAsk
-            ? `<a class="ask-btn" href="${escapeHtml(askUrl)}" target="_blank" rel="noopener">💬 請洽詢</a>`
+            ? `<a class="ask-btn" href="${escapeHtml(askUrl)}" target="_blank" rel="noopener">💬 私訊小蜜丰</a>`
             : (svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : '')}
         `;
         box.appendChild(card);
@@ -875,7 +875,7 @@
 
   function renderSettings(settings){
     if(!settings) return;
-    inquiryLinkUrl = (settings['請洽詢連結'] || '').trim();
+    inquiryLinkUrl = (settings['私訊小蜜丰連結'] || '').trim();
     const note = (settings['收款帳號說明'] || '').trim();
     if(note){
       document.getElementById('paymentBox').textContent = note;
