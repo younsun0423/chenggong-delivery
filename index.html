@@ -7,7 +7,7 @@
 <meta name="description" content="成功鎮在地代購外送社群，價格透明、範圍清楚，一鍵下單通知群組。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="成功小蜜丰｜成功鎮在地代購外送">
-<meta property="og:description" content="成功鎮外送新選擇，在地人專屬的外送方式。加入 LINE 社群，想吃什麼、喝什麼、買什麼，輕鬆幫您送到。">
+<meta property="og:description" content="成功鎮還沒有外送平台，所以我們用LINE社群自己來。加入社群，一鍵下單、透明計價。">
 <meta property="og:url" content="https://chenggongdelivery.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -157,18 +157,42 @@
   .menu-gallery .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px; grid-column:1/-1;}
   .menu-card{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    overflow:hidden; cursor:pointer;
+    overflow:hidden; cursor:pointer; position:relative;
   }
   .menu-card img{width:100%; height:120px; object-fit:cover; display:block; background:#ddd;}
   .menu-card .cap{padding:8px 10px;}
   .menu-card .cap strong{display:block; font-size:13.5px; margin-bottom:2px;}
   .menu-card .cap span{font-size:11.5px; color:var(--ink); opacity:.7; line-height:1.5;}
+  .menu-card .pin-hint{
+    position:absolute; top:6px; right:6px; background:rgba(34,48,46,.75); color:var(--paper);
+    font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; pointer-events:none;
+  }
 
   .menu-lightbox{
     display:none; position:fixed; inset:0; background:rgba(34,48,46,.88); z-index:200;
     align-items:center; justify-content:center; padding:30px; cursor:zoom-out;
   }
   .menu-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
+
+  .pinned-menu{
+    display:none; position:fixed; right:14px; bottom:14px; z-index:180; width:150px;
+    background:var(--card); border:2px solid var(--ink); border-radius:12px; box-shadow:var(--shadow);
+    overflow:hidden; animation:popIn .25s ease;
+  }
+  .pinned-menu-header{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    padding:6px 8px; background:var(--ocean); color:var(--paper);
+  }
+  .pinned-menu-header span{font-size:11px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .pinned-menu-header button{background:none; border:none; color:var(--paper); font-size:14px; cursor:pointer; padding:0 2px; opacity:.85; flex-shrink:0;}
+  .pinned-menu-header button:hover{opacity:1;}
+  .pinned-menu img{width:100%; height:150px; object-fit:cover; display:block; cursor:zoom-in;}
+  .pinned-menu .pinned-note{font-size:10px; color:var(--ocean-dark); text-align:center; padding:5px 4px; line-height:1.4; background:var(--paper);}
+
+  @media (max-width:420px){
+    .pinned-menu{width:120px; right:10px; bottom:10px;}
+    .pinned-menu img{height:120px;}
+  }
 
   .extra-services{display:grid; gap:12px;}
   .extra-service{
@@ -178,6 +202,11 @@
   .extra-service .info h4{margin:0 0 4px; font-size:14.5px;}
   .extra-service .info p{margin:0; font-size:13px; color:var(--ink); opacity:.75; line-height:1.6;}
   .extra-service .note{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--coral-dark); font-size:13.5px; white-space:nowrap; flex-shrink:0;}
+  .extra-service .ask-btn{
+    background:#06C755; color:#fff; border:2px solid var(--ink); border-radius:999px; padding:7px 16px;
+    font-weight:700; font-size:12.5px; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-block;
+  }
+  .extra-service .ask-btn:hover{filter:brightness(1.06);}
   .extra-services .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px;}
 
   .payment-box{
@@ -322,7 +351,7 @@
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
-    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。<br> — 這裡只做代購外送，價格透明、範圍清楚，一起把在地店家和需要的人串連起來。</p>
+    <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
@@ -332,15 +361,12 @@
     <h2>📌 社群守則</h2>
     <ul id="rulesList">
       <li class="warn"><span class="mark">禁止</span>切勿在群內打廣告！！本群只提供代購外送服務，其餘一律禁止。</li>
-      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式。</li>
-      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計。</li>
-      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失。</li>
-      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責。</li>
-      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告。</li>
-      <li><span class="mark">06</span>惡意棄單者將列入黑名單。</li>
-      <li><span class="mark">07</span>本群遵守相關法規，不提供未成年人代購酒類、香菸及其他依法限制販售之商品，敬請見諒與配合。</li>
-      <li><span class="mark">08</span>依法禁止代購或限制販售之物品恕不提供代購服務。</li>
-      <li><span class="mark">09</span>本服務僅提供代購,委託內容須具體明確;委託人應對委託內容之合法性負完全責任,如因提供不實資訊或違法物品而生之法律責任,概由委託人自行承擔,與代購者無涉。。</li>
+      <li><span class="mark">01</span>下單時請清楚告知：商家名稱、品項、地址、聯絡方式</li>
+      <li><span class="mark">02</span>外送費依鎮內／鎮外分級計算，商品費用另計</li>
+      <li><span class="mark">03</span>下單恕不接受取消，請確認購買後再下單以免造成雙方困擾及損失</li>
+      <li><span class="mark">04</span>收到商品時請當場核對品項與金額，事後恕不負責</li>
+      <li><span class="mark">05</span>颱風、豪雨等特殊天候將視情況暫停外送，另於群內公告</li>
+      <li><span class="mark">06</span>惡意棄單者將列入黑名單</li>
     </ul>
   </div>
 
@@ -354,7 +380,7 @@
     <div class="fee-card">
       <span class="zone">鎮外外送</span>
       <div class="price">$60 <span>／單</span></div>
-      <div class="range">範圍：<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>，<strong>全滿加油站</strong>以南到<strong>和平國小</strong>，超出此範圍暫不提供服務。</div>
+      <div class="range">範圍：<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>，<strong>全滿加油站</strong>以南到<strong>和平國小</strong>，超出此範圍請至社群洽詢。</div>
     </div>
   </div>
 
@@ -495,6 +521,7 @@
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">傳送到 LINE →</a>
       <button class="copy-btn" id="copyBtn" style="background:var(--ocean);">改用複製文字</button>
+      <button class="copy-btn" id="orderLookupBtn" type="button" style="background:var(--gold); color:var(--ink);">🔍 訂單查詢</button>
     </div>
     <div class="queue-badge" id="queueBadge">
       <div class="queue-badge-top">
@@ -515,6 +542,14 @@
 <footer>成功小蜜丰 · 本頁僅供社群公告與下單參考使用</footer>
 <div class="toast" id="toast"></div>
 <div class="menu-lightbox" id="menuLightbox"><img id="menuLightboxImg" src="" alt="菜單放大圖"></div>
+<div class="pinned-menu" id="pinnedMenu">
+  <div class="pinned-menu-header">
+    <span id="pinnedMenuLabel">菜單</span>
+    <button id="pinnedMenuClose" aria-label="關閉釘選">✕</button>
+  </div>
+  <img id="pinnedMenuImg" src="" alt="釘選中的菜單">
+  <div class="pinned-note">點圖片可放大</div>
+</div>
 
 <div class="lookup-overlay" id="lookupOverlay">
   <div class="lookup-box">
@@ -523,7 +558,7 @@
     <div class="hint">輸入你下單時拿到的委託單號，以及聯絡電話末三碼進行核對</div>
     <div class="field">
       <label>委託單號</label>
-      <input id="lookupQueue" type="number" inputmode="numeric" placeholder="例：5">
+      <input id="lookupQueue" type="text" placeholder="例：5（立即單）或 R3（預約單）">
     </div>
     <div class="field">
       <label>聯絡電話末三碼</label>
@@ -738,12 +773,10 @@
       card.className = 'menu-card';
       card.innerHTML = `
         <img src="${escapeHtml(m.image)}" alt="${escapeHtml(m.merchant)}" loading="lazy">
+        <div class="pin-hint">📌 點我釘選</div>
         <div class="cap"><strong>${escapeHtml(m.merchant)}</strong>${m.desc ? `<span>${escapeHtml(m.desc)}</span>` : ''}</div>
       `;
-      card.addEventListener('click', ()=>{
-        document.getElementById('menuLightboxImg').src = m.image;
-        document.getElementById('menuLightbox').style.display = 'flex';
-      });
+      card.addEventListener('click', ()=>{ pinMenu(m.merchant, m.image); });
       box.appendChild(card);
     });
   }
@@ -751,8 +784,25 @@
   const menuLightboxEl = document.getElementById('menuLightbox');
   menuLightboxEl.addEventListener('click', ()=>{ menuLightboxEl.style.display = 'none'; });
 
+  // ---------- 釘選菜單：讓菜單圖固定浮在畫面角落，方便邊看邊填品項 ----------
+  function pinMenu(merchant, image){
+    document.getElementById('pinnedMenuLabel').textContent = merchant;
+    document.getElementById('pinnedMenuImg').src = image;
+    document.getElementById('pinnedMenu').style.display = 'block';
+    const stopsEl = document.getElementById('stopsContainer');
+    if(stopsEl) stopsEl.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+  document.getElementById('pinnedMenuClose').addEventListener('click', ()=>{
+    document.getElementById('pinnedMenu').style.display = 'none';
+  });
+  document.getElementById('pinnedMenuImg').addEventListener('click', ()=>{
+    document.getElementById('menuLightboxImg').src = document.getElementById('pinnedMenuImg').src;
+    menuLightboxEl.style.display = 'flex';
+  });
+
   function renderServices(services){
     const box = document.getElementById('extraServices');
+    const groupUrl = document.getElementById('joinLineBtn').href;
     if(!services || !services.length){
       box.innerHTML = '<div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>';
     } else {
@@ -760,12 +810,15 @@
       services.forEach(svc => {
         const card = document.createElement('div');
         card.className = 'extra-service';
+        const needsAsk = !(Number(svc.fee) > 0); // 沒設定固定金額的服務，改顯示「請洽詢」按鈕
         card.innerHTML = `
           <div class="info">
             <h4>${escapeHtml(svc.name)}</h4>
             ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
           </div>
-          ${svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : ''}
+          ${needsAsk
+            ? `<a class="ask-btn" href="${escapeHtml(groupUrl)}" target="_blank" rel="noopener">💬 請洽詢</a>`
+            : (svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : '')}
         `;
         box.appendChild(card);
       });
@@ -909,7 +962,8 @@
   function closeLookup(){
     lookupOverlay.style.display = 'none';
   }
-  document.getElementById('progressBanner').addEventListener('click', openLookup);
+  document.getElementById('progressBanner').addEventListener('click', ()=> openLookup());
+  document.getElementById('orderLookupBtn').addEventListener('click', ()=> openLookup());
   document.getElementById('lookupClose').addEventListener('click', closeLookup);
   lookupOverlay.addEventListener('click', (e)=>{ if(e.target === lookupOverlay) closeLookup(); });
 
@@ -936,13 +990,15 @@
       const data = await res.json();
 
       if(data.found){
+        const numLabel = String(data.queueNumber || '').startsWith('R') ? data.queueNumber : `#${data.queueNumber}`;
         let msg =
 `✅ 查詢成功
 
-單號：#${data.queueNumber}
+單號：${numLabel}
 商家：${data.merchant || '—'}
 品項：${data.items || '—'}
 範圍：${data.zone || '—'}`;
+        if(data.schedule) msg += `\n預約時間：${formatSchedule(data.schedule)}`;
         if(data.extraServices) msg += `\n加購服務：${data.extraServices}`;
         msg += `
 外送費：$${data.fee || '—'}
@@ -1358,12 +1414,20 @@ ${stopsText}
     document.getElementById('queueQueryBtn').style.display = 'none';
     popBadge();
   }
-  function showReservedBadge(){
+  function showReservationPending(){
     lastQueueNumber = '';
-    document.getElementById('queueNum').textContent = '📅';
-    document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
+    document.getElementById('queueNum').textContent = '⏳';
+    document.getElementById('queueLabel').innerHTML = '正在確認時段是否可預約<br>請稍候幾秒不要離開頁面';
     document.getElementById('queueBadge').style.display = 'flex';
     document.getElementById('queueQueryBtn').style.display = 'none';
+    popBadge();
+  }
+  function showReservedBadge(n){
+    lastQueueNumber = n ? String(n) : '';
+    document.getElementById('queueNum').textContent = n ? n : '📅';
+    document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
+    document.getElementById('queueBadge').style.display = 'flex';
+    document.getElementById('queueQueryBtn').style.display = n ? 'block' : 'none';
     popBadge();
   }
   function hideQueueBadge(){
@@ -1419,7 +1483,7 @@ ${stopsText}
     return true;
   }
 
-  document.getElementById('sendLineBtn').addEventListener('click', (e)=>{
+  document.getElementById('sendLineBtn').addEventListener('click', async (e)=>{
     e.preventDefault();
     if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
     if(isBot()) return; // 疑似機器人，靜默略過
@@ -1429,28 +1493,38 @@ ${stopsText}
     const btn = e.currentTarget;
     const href = btn.href;
 
-    // 先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單、號碼牌），
-    // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象，也讓客戶不用等就能看到反應
-    window.open(href, '_blank');
-    flashSuccess(btn, '✓ 已送出');
-    toast('已記錄訂單，正在開啟 LINE...');
     if(data.schedule){
-      showReservedBadge(); // 預約單不用等單號，直接顯示確認
+      // 預約單：要先確認這個時段沒被別人搶走，才能開LINE、顯示成功，避免衝突後畫面卻顯示已預約
+      showReservationPending();
+      const result = await logOrder(data);
+      if(result && result.result === 'error'){
+        hideQueueBadge();
+        toast(result.message || '這個時段已被預約，請重新選擇時段');
+        return; // 不開LINE、不清空表單，讓客戶重新選時段再送一次
+      }
+      window.open(href, '_blank');
+      flashSuccess(btn, '✓ 已送出');
+      toast('已記錄訂單，正在開啟 LINE...');
+      showReservedBadge(result && result.queueNumber);
+      resetForm();
     } else {
+      // 即時單：先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單、號碼牌），
+      // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象，也讓客戶不用等就能看到反應
+      window.open(href, '_blank');
+      flashSuccess(btn, '✓ 已送出');
+      toast('已記錄訂單，正在開啟 LINE...');
       showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
-    }
-    resetForm();
+      resetForm();
 
-    // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
-    logOrder(data).then(result => {
-      if(!data.schedule){
+      // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
+      logOrder(data).then(result => {
         if(result && result.queueNumber){
           showQueueBadge(result.queueNumber);
         } else {
           document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
         }
-      }
-    });
+      });
+    }
   });
 
   function legacyCopy(text){
@@ -1477,38 +1551,54 @@ ${stopsText}
     if(!validateRequired(data)) return;
     const btn = e.currentTarget;
     const text = document.getElementById('preview').textContent;
-    let copied = false;
 
-    try{
-      await navigator.clipboard.writeText(text);
-      copied = true;
-    }catch(err){
-      copied = legacyCopy(text); // 新式複製失敗就改用舊式方法再試一次
-    }
-
-    if(copied){
-      flashSuccess(btn, '✓ 已複製');
-      toast('已複製！可貼到任何地方使用');
-      if(data.schedule){
-        showReservedBadge(); // 預約單不用等單號，直接顯示確認
-      } else {
-        showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
+    async function doCopy(){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch(err){
+        return legacyCopy(text); // 新式複製失敗就改用舊式方法再試一次
       }
-      resetForm();
-    }else{
-      toast('複製失敗，請長按下方文字方塊手動選取複製');
     }
 
-    // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
-    logOrder(data).then(result => {
-      if(!data.schedule){
+    if(data.schedule){
+      // 預約單：先確認時段沒被搶走，才複製文字、顯示成功
+      showReservationPending();
+      const result = await logOrder(data);
+      if(result && result.result === 'error'){
+        hideQueueBadge();
+        toast(result.message || '這個時段已被預約，請重新選擇時段');
+        return; // 不複製、不清空表單，讓客戶重新選時段再送一次
+      }
+      const copied = await doCopy();
+      if(copied){
+        flashSuccess(btn, '✓ 已複製');
+        toast('已複製！可貼到任何地方使用');
+        showReservedBadge(result && result.queueNumber);
+        resetForm();
+      }else{
+        toast('複製失敗，請長按下方文字方塊手動選取複製');
+      }
+    } else {
+      const copied = await doCopy();
+      if(copied){
+        flashSuccess(btn, '✓ 已複製');
+        toast('已複製！可貼到任何地方使用');
+        showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
+        resetForm();
+      }else{
+        toast('複製失敗，請長按下方文字方塊手動選取複製');
+      }
+
+      // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
+      logOrder(data).then(result => {
         if(result && result.queueNumber){
           showQueueBadge(result.queueNumber);
         } else {
           document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
         }
-      }
-    });
+      });
+    }
   });
 
 })();
