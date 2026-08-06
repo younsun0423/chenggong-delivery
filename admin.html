@@ -165,6 +165,7 @@
 <script>
 (function(){
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOHX1Oriv5tTLaJhUcaXu2iXKnXU-7q3NlUNm0J2WkI0HGomMrFu2QAPzXQJE8edq-iw/exec';
+
   const PIN_STORAGE_KEY = 'mifeng_admin_pin';
 
   const toastEl = document.getElementById('toast');
@@ -178,7 +179,8 @@
 
   let currentOrders = [];
   let currentFilter = '全部';
-  let currentPin = localStorage.getItem(PIN_STORAGE_KEY) || '';
+  // 優先順序：網址帶的 ?key= 參數 > 瀏覽器記住的密碼
+  let currentPin = new URLSearchParams(location.search).get('key') || localStorage.getItem(PIN_STORAGE_KEY) || '';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -226,7 +228,7 @@
     if(e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
-  // 如果之前登入過，自動嘗試用儲存的密碼登入
+  // 網址帶了 ?key= 或瀏覽器之前記住過密碼，就自動嘗試登入，不用手動打字
   if(currentPin){
     tryLogin(currentPin);
   }
@@ -279,7 +281,9 @@
     const card = document.createElement('div');
     card.className = `order-card status-${order.status || '待處理'}`;
 
-    const queueDisplay = order.queueNumber ? `#${order.queueNumber}` : (order.isReservation ? '📅' : '—');
+    const queueDisplay = order.queueNumber
+      ? (String(order.queueNumber).startsWith('R') ? order.queueNumber : `#${order.queueNumber}`)
+      : (order.isReservation ? '📅' : '—');
     const timeLabel = order.isReservation
       ? `預約 ${formatScheduleDisplay(order.schedule)}`
       : `${order.time || ''} 下單`;
