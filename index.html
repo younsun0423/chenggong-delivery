@@ -70,7 +70,7 @@
   .announcement-banner{
     display:none; align-items:flex-start; gap:10px; background:var(--gold); color:var(--ink);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:14px 18px; margin:16px 0; font-weight:700; font-size:13.5px; line-height:1.7;
+    padding:28px 18px; margin:16px 0; font-weight:700; font-size:13.5px; line-height:1.7;
     animation:fadeSlideIn .3s ease; white-space:pre-wrap;
   }
 
@@ -496,7 +496,7 @@
   </div>
 
   <div class="section-title"><span class="eyebrow">付款方式</span><h2>收款資訊</h2></div>
-  <div class="payment-box" id="paymentBox">目前提供現場付款、LINE PAY收款及銀行轉帳（商品費 + 外送費），代購金額大於$300者，請先匯款待接單者確認後處理。</div>
+  <div class="payment-box" id="paymentBox">目前僅提供現場付款（商品費 + 外送費），若日後開放線上轉帳／收款帳號，會公告在這裡。</div>
   <div class="payment-accounts" id="paymentAccounts"></div>
 
   <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
@@ -559,6 +559,11 @@
       <div id="scheduleHint" style="font-size:11.5px; color:var(--ocean-dark); opacity:.8; margin-top:5px;">預約時段需落在開放範圍內</div>
     </div>
     <div class="field">
+      <label>預估消費金額（選填，商品費用參考金額）</label>
+      <input id="cEstAmount" type="number" inputmode="numeric" min="0" placeholder="例：500">
+      <div id="highValueHint" style="display:none; font-size:12px; color:var(--coral-dark); font-weight:700; margin-top:6px; line-height:1.6;"></div>
+    </div>
+    <div class="field">
       <label>備註（選填）</label>
       <input id="cNote" placeholder="例：不加香菜、放在管理室">
     </div>
@@ -575,6 +580,12 @@
       <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:12.5px; line-height:1.7; font-weight:600;">
         <input type="checkbox" id="cLegalConfirm" style="width:auto; margin-top:2px; flex-shrink:0; accent-color:var(--ocean);">
         <span>本人確認已年滿 18 歲，委託內容合法、如實填寫，不含毒品、槍砲彈藥或其他依法禁止／限制販售之物品；如有不實，願自行承擔相關法律責任。</span>
+      </label>
+    </div>
+    <div class="field" id="highValueConfirmField" style="display:none; background:var(--paper); border:2px solid var(--coral-dark); border-radius:10px; padding:12px 14px;">
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:12.5px; line-height:1.7; font-weight:600;">
+        <input type="checkbox" id="cHighValueConfirm" style="width:auto; margin-top:2px; flex-shrink:0; accent-color:var(--coral-dark);">
+        <span id="highValueConfirmText">我了解此訂單金額較高，僅接受線上轉帳付款，恕不提供貨到付款，我已完成或將於送達前完成轉帳。</span>
       </label>
     </div>
     <div class="honeypot-field" aria-hidden="true">
@@ -1381,7 +1392,7 @@
     });
   });
 
-  const ids = ['cAddress','cPhone','cContact','cNote'];
+  const ids = ['cAddress','cPhone','cContact','cNote','cEstAmount'];
   ids.forEach(id=>document.getElementById(id).addEventListener('input', updatePreview));
 
   function formatSchedule(raw){
