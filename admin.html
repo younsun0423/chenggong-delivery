@@ -595,6 +595,14 @@
       opt.textContent = d.name;
       delivererSelect.appendChild(opt);
     });
+    // 如果這筆訂單存的外送員姓名，已經不在目前名單裡（例如名單改名字了），
+    // 自動把這個舊名字也加進選單，避免畫面顯示空白、誤以為資料不見了
+    if(order.deliverer && !currentDeliverers.some(d => d.name === order.deliverer)){
+      const oldOpt = document.createElement('option');
+      oldOpt.value = order.deliverer;
+      oldOpt.textContent = `${order.deliverer}（已從名單移除或改名）`;
+      delivererSelect.appendChild(oldOpt);
+    }
     delivererSelect.value = order.deliverer || '';
     delivererSelect.addEventListener('change', ()=>{
       assignDeliverer(order, delivererSelect.value);
