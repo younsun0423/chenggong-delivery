@@ -104,6 +104,7 @@
     padding:16px; margin-bottom:14px;
   }
   .order-card.status-已送達{opacity:.6;}
+  .order-card.merchant-order{border-left:6px solid var(--gold);}
   .order-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;}
   .order-queue{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:900; color:var(--coral-dark); line-height:1;}
   .order-time{font-size:11px; color:var(--ocean-dark); opacity:.7; margin-top:3px;}
@@ -125,6 +126,15 @@
   .remit-check{
     background:var(--gold); border:2px solid var(--ink); border-radius:8px; padding:8px 10px;
     font-size:12.5px; font-weight:700; margin-top:8px; line-height:1.6;
+  }
+  .confirm-payment-btn{
+    width:100%; margin-top:10px; padding:11px; border:2px solid var(--ink); border-radius:10px;
+    background:#06C755; color:#fff; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit;
+  }
+  .confirm-payment-btn:hover{filter:brightness(1.06);}
+  .payment-confirmed-badge{
+    width:100%; margin-top:10px; padding:10px; border:2px solid var(--ink); border-radius:10px;
+    background:var(--seafoam); color:var(--ink); font-weight:700; font-size:13px; text-align:center;
   }
 
   .order-photo{margin-top:8px;}
@@ -248,21 +258,47 @@
     document.getElementById('notifyBtn').classList.toggle('on', notifyEnabled);
   }
   updateNotifyBtn();
+  if(notifyEnabled){
+    // 每次重新整理頁面，AudioContext 都要重新解鎖一次，提醒使用者點一下確保聲音有效
+    setTimeout(()=>{ toast('🔔 通知已開啟，點一下鈴鐺確保這次重新整理後聲音仍有效'); }, 1200);
+  }
+
+  // 常駐的 AudioContext：一定要在使用者「剛點擊」的當下建立/解鎖，之後才能在背景收到新訂單時正常播放聲音
+  let audioCtx = null;
+  function unlockAudio(){
+    try{
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(audioCtx.state === 'suspended'){
+        audioCtx.resume();
+      }
+      // 播放一個幾乎聽不到的短音，確保這個瀏覽器分頁的音效權限被正式解鎖
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+    }catch(err){ /* 部分瀏覽器不支援，忽略即可，畫面內提示仍會正常顯示 */ }
+  }
 
   document.getElementById('notifyBtn').addEventListener('click', ()=>{
+    unlockAudio(); // 每次點擊都先解鎖音效（一定要在點擊事件裡直接呼叫，才符合瀏覽器對「使用者手勢」的要求）
     if(!notifyEnabled){
       if('Notification' in window && Notification.permission !== 'granted'){
         Notification.requestPermission().then(perm => {
           notifyEnabled = true;
           localStorage.setItem('mifeng_notify_on', '1');
           updateNotifyBtn();
-          toast(perm === 'granted' ? '🔔 通知已開啟（含系統通知）' : '🔔 通知已開啟（此頁面內提醒，系統通知需允許權限）');
+          toast(perm === 'granted' ? '🔔 通知已開啟（含系統通知＋聲音）' : '🔔 通知已開啟（此頁面內提醒＋聲音，系統通知需允許權限）');
         });
       } else {
         notifyEnabled = true;
         localStorage.setItem('mifeng_notify_on', '1');
         updateNotifyBtn();
-        toast('🔔 通知已開啟');
+        toast('🔔 通知已開啟（含聲音）');
       }
     } else {
       notifyEnabled = false;
@@ -273,17 +309,18 @@
   });
 
   function playBeep(){
+    if(!audioCtx) return; // 還沒點過🔔按鈕解鎖過音效，就不強行播放（會被瀏覽器擋掉，且可能報錯）
     try{
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') audioCtx.resume();
       [880, 1046].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(audioCtx.destination);
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.18);
-        osc.start(ctx.currentTime + i * 0.18);
-        osc.stop(ctx.currentTime + i * 0.18 + 0.16);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime + i * 0.18);
+        osc.start(audioCtx.currentTime + i * 0.18);
+        osc.stop(audioCtx.currentTime + i * 0.18 + 0.16);
       });
     }catch(err){ /* 部分瀏覽器可能限制自動播放音效，忽略即可 */ }
   }
@@ -482,14 +519,24 @@
     const card = document.createElement('div');
     card.className = `order-card status-${order.status || '待處理'}`;
 
+    const isMerchantOrder = order.orderType === '商家外送委託';
+    if(isMerchantOrder) card.classList.add('merchant-order');
+
+
     const queueDisplay = order.queueNumber
       ? (String(order.queueNumber).startsWith('R') ? order.queueNumber : `#${order.queueNumber}`)
       : (order.isReservation ? '📅' : '—');
     const timeLabel = order.isReservation
       ? `預約 ${formatScheduleDisplay(order.schedule)}`
-      : `${order.time || ''} 下單`;
+      : (order.needsAssignment
+        ? `${(order.rowKey || '').slice(5, 10).replace('-', '/')} ${order.time || ''} 下單`
+        : `${order.time || ''} 下單`);
 
-    let infoHtml = `
+    let infoHtml = '';
+    if(isMerchantOrder){
+      infoHtml += `<div class="row"><span class="label">來源</span><span>🏪 商家外送委託</span></div>`;
+    }
+    infoHtml += `
       <div class="row"><span class="label">商家</span><span>${escapeHtml(order.merchant || '—')}</span></div>
       <div class="row"><span class="label">品項</span><span class="items-block">${escapeHtml(order.items || '—')}</span></div>
       <div class="row"><span class="label">地址</span><span>${escapeHtml(order.address || '—')}</span></div>
@@ -506,6 +553,13 @@
       infoHtml += `<div class="remit-check">🔍 請核對匯款：<strong>${escapeHtml(order.remitName || '—')}</strong>　末五碼 <strong>${escapeHtml(order.remitLast5 || '—')}</strong></div>`;
     }
 
+    let paymentActionHtml = '';
+    if(isRemit){
+      paymentActionHtml = order.paymentConfirmed
+        ? `<div class="payment-confirmed-badge">✅ 已確認收到款項</div>`
+        : `<button type="button" class="confirm-payment-btn">✅ 已收到款項，馬上為您服務</button>`;
+    }
+
     card.innerHTML = `
       <div class="order-top">
         <div>
@@ -516,6 +570,7 @@
       </div>
       <div class="order-info">${infoHtml}</div>
       ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
+      ${paymentActionHtml}
       <div class="deliverer-picker">
         <label>指派外送員</label>
         <select class="deliverer-select"><option value="">－ 尚未指派 －</option></select>
@@ -527,6 +582,11 @@
         <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
       </div>
     `;
+
+    const confirmBtn = card.querySelector('.confirm-payment-btn');
+    if(confirmBtn){
+      confirmBtn.addEventListener('click', ()=> confirmPayment(order, card));
+    }
 
     const delivererSelect = card.querySelector('.deliverer-select');
     currentDeliverers.forEach(d => {
@@ -579,6 +639,31 @@
       .catch(()=>{ toast('指派失敗，請檢查網路連線'); });
   }
 
+  function confirmPayment(order, cardEl){
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'confirmPayment',
+        pin: currentPin,
+        sheetName: order.sheetName,
+        rowKey: order.rowKey
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if(data.result === 'success'){
+          order.paymentConfirmed = true;
+          if(order.status === '待處理') order.status = '處理中'; // 後端也會自動推進，這裡同步畫面
+          toast('✅ 已標記款項確認，客戶可查詢到最新狀態');
+          renderOrders();
+        } else {
+          toast(data.message || '確認失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ toast('確認失敗，請檢查網路連線'); });
+  }
+
   function renderOrders(){
     const list = document.getElementById('orderList');
     const filtered = currentFilter === '全部'
@@ -590,10 +675,20 @@
       return;
     }
 
-    const immediate = filtered.filter(o => !o.isReservation);
+    const needsAssignment = filtered.filter(o => o.needsAssignment);
+    const immediate = filtered.filter(o => !o.isReservation && !o.needsAssignment);
     const reservations = filtered.filter(o => o.isReservation);
 
     list.innerHTML = '';
+
+    if(needsAssignment.length){
+      const h = document.createElement('div');
+      h.className = 'section-heading';
+      h.textContent = `⚠️ 待指派外送員・非今日訂單（${needsAssignment.length}）`;
+      h.style.color = 'var(--coral-dark)';
+      list.appendChild(h);
+      needsAssignment.forEach(order => list.appendChild(createOrderCard(order)));
+    }
 
     if(immediate.length){
       const h = document.createElement('div');
