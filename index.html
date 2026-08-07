@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -256,7 +257,15 @@
   .payment-account .pa-info{flex:1; min-width:120px;}
   .payment-account .pa-info strong{display:block; font-size:14px; margin-bottom:2px;}
   .payment-account .pa-info span{font-size:11px; color:var(--ocean-dark); opacity:.7;}
-  .payment-account .pa-text{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink); word-break:break-all;}
+  .payment-account .pa-text{
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink); word-break:break-all;
+    cursor:pointer; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .payment-account .pa-text:hover{text-decoration:underline;}
+  .payment-account .pa-copy-hint{
+    font-family:'Noto Sans TC',sans-serif; font-size:10.5px; font-weight:700; color:var(--ocean-dark);
+    opacity:.7; white-space:nowrap;
+  }
   .payment-account .pa-qr{
     width:64px; height:64px; border-radius:8px; overflow:hidden; border:2px solid var(--ink); flex-shrink:0; cursor:pointer;
   }
@@ -497,7 +506,7 @@
   </div>
 
   <div class="section-title"><span class="eyebrow">付款方式</span><h2>收款資訊</h2></div>
-  <div class="payment-box" id="paymentBox">本店提供現場付款及銀行匯款（含商品費與外送費）。凡訂單金額達 300 元（含）以上，請先行匯款；待本公司確認款項入帳後，將立即為您處理訂單，並可至「訂單查詢」隨時掌握處理進度。</div>
+  <div class="payment-box" id="paymentBox">目前僅提供現場付款（商品費 + 外送費），若日後開放線上轉帳／收款帳號，會公告在這裡。</div>
   <div class="payment-accounts" id="paymentAccounts"></div>
 
   <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
@@ -567,7 +576,7 @@
       <label>付款方式</label>
       <div class="zone-toggle">
         <button type="button" class="pay-btn active" data-pay="現場付款">現場付款</button>
-        <button type="button" class="pay-btn" data-pay="匯款">線上匯款</button>
+        <button type="button" class="pay-btn" data-pay="匯款">匯款轉帳</button>
       </div>
       <div class="field" id="remitFields" style="display:none; margin-top:12px; padding:0;">
         <label>匯款帳戶大名</label>
@@ -876,7 +885,7 @@
       } else if(acc.type === 'link'){
         contentHtml = `<a class="pa-link" href="${escapeHtml(acc.value)}" target="_blank" rel="noopener">前往付款 →</a>`;
       } else {
-        contentHtml = `<div class="pa-text">${escapeHtml(acc.value)}</div>`;
+        contentHtml = `<div class="pa-text" title="點一下複製帳號">${escapeHtml(acc.value)} <span class="pa-copy-hint">📋 點我複製</span></div>`;
       }
 
       card.innerHTML = `
@@ -893,8 +902,35 @@
           document.getElementById('menuLightboxImg').src = acc.value;
           document.getElementById('menuLightbox').style.display = 'flex';
         });
+      } else if(acc.type === 'text'){
+        const textEl = card.querySelector('.pa-text');
+        textEl.addEventListener('click', async ()=>{
+          let copied = false;
+          try{
+            await navigator.clipboard.writeText(acc.value);
+            copied = true;
+          }catch(err){
+            copied = legacyCopyText(acc.value);
+          }
+          toast(copied ? '✅ 已複製帳號' : '複製失敗，請長按文字手動選取複製');
+        });
       }
     });
+  }
+
+  function legacyCopyText(text){
+    // 備援複製方式：適用不支援或封鎖 navigator.clipboard 的瀏覽器
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(err){ ok = false; }
+    document.body.removeChild(textarea);
+    return ok;
   }
 
   function renderMenus(menus){
@@ -1260,7 +1296,11 @@
         msg += `
 外送費：$${data.fee || '—'}
 備註：${data.note || '—'}
-下單時間：${data.time || '—'}
+下單時間：${data.time || '—'}`;
+        if(data.paymentMethod === '匯款'){
+          msg += `\n付款方式：💳 匯款轉帳（${data.paymentConfirmed ? '✅ 已收到款項，馬上為您服務' : '⏳ 款項確認中'}）`;
+        }
+        msg += `
 
 目前狀態：${data.status || '待處理'}`;
         resultEl.textContent = msg;
