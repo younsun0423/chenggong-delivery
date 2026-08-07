@@ -211,7 +211,7 @@
       .then(r => r.json())
       .then(data => {
         const sel = document.getElementById('mMerchant');
-        const merchants = data.merchants || [];
+        const merchants = data.entrustingMerchants || [];
         const groups = {};
         const order = [];
         merchants.forEach(m => {
