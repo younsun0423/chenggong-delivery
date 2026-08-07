@@ -35,22 +35,11 @@
 
   main{max-width:520px; margin:0 auto; padding:16px;}
 
-  /* ---- 登入畫面 ---- */
-  .login-box{
-    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:28px 24px; margin-top:60px; text-align:center;
+  .urgent-hint{
+    display:flex; align-items:center; gap:8px; background:var(--gold); color:var(--ink);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:12px 16px; margin-bottom:18px; font-size:12.5px; font-weight:700; line-height:1.6;
   }
-  .login-box h2{font-size:20px; margin:0 0 8px;}
-  .login-box p{font-size:13px; color:var(--ocean-dark); margin:0 0 20px; line-height:1.6;}
-  .login-box input{
-    width:100%; padding:14px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
-    font-family:'JetBrains Mono',monospace; font-size:20px; text-align:center; letter-spacing:6px;
-  }
-  .login-box button{
-    width:100%; margin-top:14px; padding:13px; border:2px solid var(--ink); border-radius:999px;
-    background:var(--ocean); color:var(--paper); font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;
-  }
-  .login-box .err{color:var(--coral-dark); font-size:12.5px; margin-top:10px; font-weight:700; display:none;}
 
   /* ---- 表單 ---- */
   .field{margin-bottom:16px;}
@@ -59,7 +48,7 @@
     width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
     font-family:inherit; font-size:14px; color:var(--ink);
   }
-  .field textarea{min-height:76px; resize:vertical;}
+  .field textarea{min-height:60px; resize:vertical;}
   .field input:focus, .field textarea:focus, .field select:focus{
     outline:none; border-color:var(--ocean); box-shadow:0 0 0 3px rgba(30,91,103,.18);
   }
@@ -79,12 +68,33 @@
   }
   .schedule-toggle button.active{background:var(--gold); color:var(--ink); opacity:1;}
 
+  /* ---- 拍照確認訂單 ---- */
+  .photo-upload-box{
+    border:2px dashed var(--ocean); border-radius:12px; padding:16px; text-align:center; background:var(--card);
+  }
+  .photo-upload-box input[type="file"]{
+    border:none; padding:0; background:none;
+  }
+  .photo-upload-box input[type="file"]::file-selector-button{
+    border:2px solid var(--ink); background:var(--ocean); color:var(--paper); font-weight:700;
+    padding:9px 18px; border-radius:999px; margin-right:10px; cursor:pointer; font-family:inherit; font-size:13px;
+  }
+  .photo-preview-box{display:none; align-items:center; gap:12px; margin-top:12px;}
+  .photo-preview-box img{
+    width:84px; height:84px; object-fit:cover; border-radius:10px; border:2px solid var(--ink);
+  }
+  .photo-remove-btn{
+    border:2px solid var(--ink); background:var(--paper); color:var(--ink); border-radius:999px;
+    padding:7px 14px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+
   .submit-btn{
     width:100%; padding:15px; border:2px solid var(--ink); border-radius:999px;
     background:#06C755; color:#fff; font-weight:700; font-size:15px; cursor:pointer; font-family:inherit;
     box-shadow:0 3px 0 var(--ink); margin-top:6px;
   }
   .submit-btn:active{transform:translateY(2px); box-shadow:none;}
+  .submit-btn:disabled{opacity:.6; cursor:not-allowed;}
 
   .result-badge{
     display:none; background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:var(--radius);
@@ -113,10 +123,16 @@
 </header>
 
 <main>
+  <div class="urgent-hint">⚡ 委託通常很急，建議直接拍照確認訂單內容，比打字更快</div>
+
   <div id="formBox">
     <div class="field">
       <label>商家名稱</label>
-      <input id="mMerchant" placeholder="例：新港早餐店">
+      <select id="mMerchant">
+        <option value="">請選擇商家</option>
+        <option value="其他">其他（自行輸入）</option>
+      </select>
+      <input id="mMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
     </div>
     <div class="field">
       <label>客戶（收件人）姓名或暱稱</label>
@@ -131,8 +147,19 @@
       <input id="mAddress" placeholder="例：成功鎮○○路○號，或明顯地標">
     </div>
     <div class="field">
-      <label>內容物 / 品項說明</label>
-      <textarea id="mItems" placeholder="例：便當2個、飲料1杯（客戶已完成付款/待貨到付款）"></textarea>
+      <label>拍照確認訂單內容（收據、出單畫面、品項清單皆可）</label>
+      <div class="photo-upload-box">
+        <input type="file" id="mPhoto" accept="image/*" capture="environment">
+        <div class="photo-preview-box" id="photoPreviewBox">
+          <img id="photoPreviewImg" src="" alt="訂單照片預覽">
+          <button type="button" class="photo-remove-btn" id="photoRemoveBtn">移除照片</button>
+        </div>
+      </div>
+      <div class="hint">照片只會存進後台管理表供外送員確認，若沒有照片，請至少填寫下方簡短說明</div>
+    </div>
+    <div class="field">
+      <label>簡短品項說明（有拍照的話可選填，方便外送員快速辨識）</label>
+      <input id="mItems" placeholder="例：便當2個、飲料1杯">
     </div>
     <div class="field">
       <label>範圍</label>
@@ -178,6 +205,47 @@
 
   document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
 
+  // ---------- 商家名單：沿用主網站同一份「商家名單設定」資料，後台新增/編輯/刪除都會同步 ----------
+  function loadMerchants(){
+    fetch(`${SCRIPT_URL}?t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        const sel = document.getElementById('mMerchant');
+        const merchants = data.merchants || [];
+        const groups = {};
+        const order = [];
+        merchants.forEach(m => {
+          const cat = m.category && m.category.trim() ? m.category.trim() : '其他商家';
+          if(!groups[cat]){ groups[cat] = []; order.push(cat); }
+          groups[cat].push(m);
+        });
+
+        sel.innerHTML = '<option value="">請選擇商家</option>';
+        order.forEach(cat => {
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = cat;
+          groups[cat].forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.name;
+            opt.textContent = m.name;
+            optgroup.appendChild(opt);
+          });
+          sel.appendChild(optgroup);
+        });
+        const otherOpt = document.createElement('option');
+        otherOpt.value = '其他';
+        otherOpt.textContent = '其他（自行輸入）';
+        sel.appendChild(otherOpt);
+      })
+      .catch(()=>{ toast('商家名單載入失敗，可直接選「其他」手動輸入'); });
+  }
+  loadMerchants();
+
+  document.getElementById('mMerchant').addEventListener('change', (e)=>{
+    const isOther = e.target.value === '其他';
+    document.getElementById('mMerchantOther').style.display = isOther ? 'block' : 'none';
+  });
+
   // ---------- 範圍切換 ----------
   let fee = 30;
   document.querySelectorAll('.zone-btn').forEach(btn=>{
@@ -205,24 +273,88 @@
     scheduleInput.min = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   })();
 
+  // ---------- 拍照確認訂單（壓縮後轉base64，做法跟主網站一致） ----------
+  let photoBase64 = null;
+  let photoMime = null;
+
+  function compressImage(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('圖片解析失敗'));
+        img.onload = () => {
+          const maxSize = 1000;
+          let { width, height } = img;
+          if(width > maxSize || height > maxSize){
+            if(width > height){ height = Math.round(height * maxSize / width); width = maxSize; }
+            else { width = Math.round(width * maxSize / height); height = maxSize; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve({ base64: dataUrl.split(',')[1], mime: 'image/jpeg', preview: dataUrl });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('mPhoto').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      toast('照片處理中...');
+      const { base64, mime, preview } = await compressImage(file);
+      photoBase64 = base64;
+      photoMime = mime;
+      document.getElementById('photoPreviewImg').src = preview;
+      document.getElementById('photoPreviewBox').style.display = 'flex';
+      toast('照片已附上');
+    }catch(err){
+      toast('照片處理失敗，請換一張試試');
+      e.target.value = '';
+    }
+  });
+
+  function clearPhoto(){
+    photoBase64 = null;
+    photoMime = null;
+    document.getElementById('mPhoto').value = '';
+    document.getElementById('photoPreviewBox').style.display = 'none';
+    document.getElementById('photoPreviewImg').src = '';
+  }
+  document.getElementById('photoRemoveBtn').addEventListener('click', clearPhoto);
+
   function isValidPhone(raw){
     const digits = raw.replace(/\D/g, '');
     return digits.length === 9 || digits.length === 10;
   }
 
+  function getMerchantValue(){
+    const sel = document.getElementById('mMerchant').value;
+    if(sel === '其他'){
+      return document.getElementById('mMerchantOther').value.trim();
+    }
+    return sel;
+  }
+
   // ---------- 送出委託 ----------
   document.getElementById('submitBtn').addEventListener('click', async ()=>{
-    const merchant = document.getElementById('mMerchant').value.trim();
+    const merchant = getMerchantValue();
     const customerName = document.getElementById('mCustomerName').value.trim();
     const phone = document.getElementById('mPhone').value.trim();
     const address = document.getElementById('mAddress').value.trim();
-    const items = document.getElementById('mItems').value.trim();
+    const itemsNote = document.getElementById('mItems').value.trim();
     const note = document.getElementById('mNote').value.trim();
 
-    if(!merchant){ toast('請填寫商家名稱'); return; }
+    if(!merchant){ toast('請選擇或填寫商家名稱'); return; }
     if(!phone || !isValidPhone(phone)){ toast('請填寫正確的客戶電話'); return; }
     if(!address){ toast('請填寫送達地址'); return; }
-    if(!items){ toast('請填寫內容物/品項說明'); return; }
+    if(!photoBase64 && !itemsNote){ toast('請拍照確認訂單內容，或至少填寫簡短品項說明'); return; }
 
     let schedule = '';
     if(scheduleMode === 'later'){
@@ -235,10 +367,12 @@
     btn.disabled = true;
     btn.textContent = '送出中...';
 
+    const itemsSummary = `【收件人】${customerName || '（未填寫姓名）'}${itemsNote ? `：${itemsNote}` : '（詳見附件照片）'}`;
+
     const payload = {
       orderType: '商家外送委託',
       merchant: merchant,
-      items: `【收件人】${customerName || '（未填寫姓名）'}：${items}`,
+      items: itemsSummary,
       address: address,
       phone: phone,
       contact: customerName || merchant,
@@ -246,7 +380,9 @@
       schedule: schedule,
       zone: fee === 30 ? '鎮內' : '鎮外',
       fee: fee,
-      paymentMethod: '現場付款'
+      paymentMethod: '現場付款',
+      photoBase64: photoBase64,
+      photoMime: photoMime
     };
 
     try{
@@ -268,12 +404,15 @@
         document.getElementById('resultNum').textContent = result && result.queueNumber ? `#${result.queueNumber}` : '✓';
         document.getElementById('resultLabel').textContent = '委託已送出，外送員會盡快處理';
         badge.style.display = 'block';
-        // 清空表單，商家名稱保留方便連續送單
+        document.getElementById('mMerchant').value = '';
+        document.getElementById('mMerchantOther').value = '';
+        document.getElementById('mMerchantOther').style.display = 'none';
         document.getElementById('mCustomerName').value = '';
         document.getElementById('mPhone').value = '';
         document.getElementById('mAddress').value = '';
         document.getElementById('mItems').value = '';
         document.getElementById('mNote').value = '';
+        clearPhoto();
         scheduleInput.value = '';
         document.querySelectorAll('.sch-btn').forEach(b=>b.classList.remove('active'));
         document.querySelector('.sch-btn[data-mode="now"]').classList.add('active');
