@@ -37,6 +37,8 @@
     padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
   }
   header button:active{filter:brightness(1.15);}
+  #notifyBtn{padding:8px 12px; font-size:15px;}
+  #notifyBtn.on{background:var(--gold); color:var(--ink);}
 
   main{max-width:560px; margin:0 auto; padding:16px;}
 
@@ -163,7 +165,10 @@
     <h1>🐝 成功小蜜丰・後台管理</h1>
     <div class="sub" id="dateLabel"></div>
   </div>
-  <button id="refreshBtn">🔄 重新整理</button>
+  <div style="display:flex; gap:8px;">
+    <button id="notifyBtn" title="開啟新訂單通知">🔔</button>
+    <button id="refreshBtn">🔄 重新整理</button>
+  </div>
 </header>
 
 <main>
@@ -230,6 +235,82 @@
     return div.innerHTML;
   }
 
+  // ---------- 新訂單通知：聲音 + 畫面提示 + 瀏覽器系統通知（選用） ----------
+  const originalTitle = document.title;
+  let knownOrderKeys = null; // null代表還沒初始化過，第一次載入不觸發通知
+  let notifyEnabled = localStorage.getItem('mifeng_notify_on') === '1';
+
+  function updateNotifyBtn(){
+    document.getElementById('notifyBtn').classList.toggle('on', notifyEnabled);
+  }
+  updateNotifyBtn();
+
+  document.getElementById('notifyBtn').addEventListener('click', ()=>{
+    if(!notifyEnabled){
+      if('Notification' in window && Notification.permission !== 'granted'){
+        Notification.requestPermission().then(perm => {
+          notifyEnabled = true;
+          localStorage.setItem('mifeng_notify_on', '1');
+          updateNotifyBtn();
+          toast(perm === 'granted' ? '🔔 通知已開啟（含系統通知）' : '🔔 通知已開啟（此頁面內提醒，系統通知需允許權限）');
+        });
+      } else {
+        notifyEnabled = true;
+        localStorage.setItem('mifeng_notify_on', '1');
+        updateNotifyBtn();
+        toast('🔔 通知已開啟');
+      }
+    } else {
+      notifyEnabled = false;
+      localStorage.setItem('mifeng_notify_on', '0');
+      updateNotifyBtn();
+      toast('已關閉通知');
+    }
+  });
+
+  function playBeep(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 1046].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.18);
+        osc.start(ctx.currentTime + i * 0.18);
+        osc.stop(ctx.currentTime + i * 0.18 + 0.16);
+      });
+    }catch(err){ /* 部分瀏覽器可能限制自動播放音效，忽略即可 */ }
+  }
+
+  function notifyNewOrders(count){
+    playBeep();
+    toast(`🔔 您有 ${count} 筆新訂單！`);
+    document.title = `🔴(${count}新) ${originalTitle}`;
+    if('Notification' in window && Notification.permission === 'granted'){
+      try{
+        new Notification('成功小蜜丰・新訂單通知', { body: `您有 ${count} 筆新訂單，點開後台查看` });
+      }catch(err){}
+    }
+  }
+
+  window.addEventListener('focus', ()=>{ document.title = originalTitle; });
+
+  function checkForNewOrders(orders){
+    if(!notifyEnabled) { knownOrderKeys = new Set(orders.map(o => o.rowKey)); return; }
+    if(knownOrderKeys === null){
+      // 第一次載入，只記錄現有訂單，不觸發通知（避免一登入就狂響）
+      knownOrderKeys = new Set(orders.map(o => o.rowKey));
+      return;
+    }
+    const freshOnes = orders.filter(o => !knownOrderKeys.has(o.rowKey));
+    knownOrderKeys = new Set(orders.map(o => o.rowKey));
+    if(freshOnes.length > 0){
+      notifyNewOrders(freshOnes.length);
+    }
+  }
+
   // ---------- 登入 ----------
   const loginBox = document.getElementById('loginBox');
   const dashboard = document.getElementById('dashboard');
@@ -239,6 +320,7 @@
     loginBox.style.display = 'none';
     dashboard.style.display = 'block';
     loadOrders();
+    if(!pollTimer) pollTimer = setInterval(()=>{ if(currentPin) loadOrders(); }, 25000);
   }
 
   function tryLogin(pin){
@@ -255,6 +337,7 @@
           loginErr.style.display = 'none';
           currentOrders = data.orders || [];
           currentDeliverers = data.deliverers || [];
+          checkForNewOrders(currentOrders);
           showDashboard();
           renderOrders();
         }
@@ -277,6 +360,8 @@
   }
 
   // ---------- 讀取訂單 ----------
+  let pollTimer = null;
+
   function loadOrders(){
     fetch(`${SCRIPT_URL}?action=admin&pin=${encodeURIComponent(currentPin)}&t=${Date.now()}`, { cache:'no-store' })
       .then(r => r.json())
@@ -287,10 +372,12 @@
           currentPin = '';
           dashboard.style.display = 'none';
           loginBox.style.display = 'block';
+          if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
           return;
         }
         currentOrders = data.orders || [];
         currentDeliverers = data.deliverers || [];
+        checkForNewOrders(currentOrders);
         renderOrders();
       })
       .catch(()=>{ toast('讀取失敗，請檢查網路連線'); });
