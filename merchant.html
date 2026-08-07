@@ -162,7 +162,7 @@
       <input id="mItems" placeholder="例：便當2個、飲料1杯">
     </div>
     <div class="field">
-      <label>商品金額（必填，貨到付款時方便外送員向客戶收款）</label>
+      <label>商品金額（必填，方便外送員向客戶收款）</label>
       <input id="mGoodsAmount" type="number" inputmode="numeric" min="0" placeholder="例：350">
     </div>
     <div class="field">
@@ -338,6 +338,17 @@
     return digits.length === 9 || digits.length === 10;
   }
 
+  function formatPhoneOnBlur(){
+    const el = document.getElementById('mPhone');
+    const digits = el.value.replace(/\D/g, '');
+    if(digits.length === 10){
+      el.value = digits.slice(0,4) + '-' + digits.slice(4,7) + '-' + digits.slice(7);
+    } else if(digits.length === 9){
+      el.value = digits.slice(0,3) + '-' + digits.slice(3);
+    }
+  }
+  document.getElementById('mPhone').addEventListener('blur', formatPhoneOnBlur);
+
   function getMerchantValue(){
     const sel = document.getElementById('mMerchant').value;
     if(sel === '其他'){
@@ -348,6 +359,7 @@
 
   // ---------- 送出委託 ----------
   document.getElementById('submitBtn').addEventListener('click', async ()=>{
+    formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
     const merchant = getMerchantValue();
     const customerName = document.getElementById('mCustomerName').value.trim();
     const phone = document.getElementById('mPhone').value.trim();
@@ -360,6 +372,7 @@
     if(!phone || !isValidPhone(phone)){ toast('請填寫正確的客戶電話'); return; }
     if(!address){ toast('請填寫送達地址'); return; }
     if(!photoBase64 && !itemsNote){ toast('請拍照確認訂單內容，或至少填寫簡短品項說明'); return; }
+    if(!goodsAmount || Number(goodsAmount) <= 0){ toast('請填寫商品金額'); return; }
 
     let schedule = '';
     if(scheduleMode === 'later'){
