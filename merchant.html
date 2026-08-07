@@ -54,6 +54,37 @@
   }
   .field .hint{font-size:11.5px; color:var(--ocean-dark); opacity:.75; margin-top:5px; line-height:1.5;}
 
+  .merchant-select-row{display:flex; gap:8px;}
+  .merchant-select-row select{flex:1;}
+  #pinMerchantBtn{
+    flex-shrink:0; width:48px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-size:18px; cursor:pointer; opacity:.5;
+  }
+  #pinMerchantBtn.pinned{background:var(--gold); opacity:1;}
+
+  .view-tabs{display:flex; gap:8px; margin-bottom:18px;}
+  .view-tab-btn{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink);
+    padding:11px; border-radius:12px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .view-tab-btn.active{background:var(--ocean); color:var(--paper);}
+
+  .query-order-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:12px; padding:14px 16px; margin-bottom:12px;
+  }
+  .query-order-card .qo-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+  .query-order-card .qo-num{font-family:'JetBrains Mono',monospace; font-weight:900; font-size:16px; color:var(--coral-dark);}
+  .query-order-card .qo-time{font-size:11px; color:var(--ocean-dark); opacity:.7;}
+  .query-order-card .qo-status{
+    font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px; border:1.5px solid var(--ink);
+  }
+  .query-order-card .qo-status.待處理{background:var(--gold);}
+  .query-order-card .qo-status.處理中{background:var(--coral); color:#fff;}
+  .query-order-card .qo-status.運送中{background:var(--ocean); color:#fff;}
+  .query-order-card .qo-status.已送達{background:var(--seafoam);}
+  .query-order-card .qo-row{font-size:12.5px; line-height:1.7;}
+  .query-order-card .qo-row b{color:var(--ocean-dark);}
+
   .zone-toggle{display:flex; gap:8px;}
   .zone-toggle button{
     flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink); opacity:.6;
@@ -123,17 +154,27 @@
 </header>
 
 <main>
-  <div class="urgent-hint">⚡ 委託通常很急，建議直接拍照確認訂單內容，比打字更快</div>
+  <div class="urgent-hint" id="announcementHint" style="display:none;"></div>
 
-  <div id="formBox">
-    <div class="field">
-      <label>商家名稱</label>
+  <div class="field merchant-select-field">
+    <label>商家名稱</label>
+    <div class="merchant-select-row">
       <select id="mMerchant">
         <option value="">請選擇商家</option>
         <option value="其他">其他（自行輸入）</option>
       </select>
-      <input id="mMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
+      <button type="button" id="pinMerchantBtn" title="釘選這個商家，下次自動選好">📌</button>
     </div>
+    <input id="mMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
+    <div class="hint" id="pinnedHint" style="display:none;">📌 已記住這個商家，下次打開網頁會自動選好（點📌可取消）</div>
+  </div>
+
+  <div class="view-tabs">
+    <button type="button" class="view-tab-btn active" id="tabSubmitBtn">📝 送出委託</button>
+    <button type="button" class="view-tab-btn" id="tabQueryBtn">📋 查詢我的委託</button>
+  </div>
+
+  <div id="formBox">
     <div class="field">
       <label>客戶（收件人）姓名或暱稱</label>
       <input id="mCustomerName" placeholder="例：王小姐">
@@ -192,6 +233,11 @@
       <div class="label" id="resultLabel"></div>
     </div>
   </div>
+
+  <div id="queryBox" style="display:none;">
+    <div class="hint" style="margin-bottom:14px;">顯示這個商家歷來所有委託單的狀態，選好商家後自動查詢</div>
+    <div id="queryResult"></div>
+  </div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -210,10 +256,22 @@
   document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
 
   // ---------- 商家名單：沿用主網站同一份「商家名單設定」資料，後台新增/編輯/刪除都會同步 ----------
+  const PIN_MERCHANT_KEY = 'mifeng_pinned_merchant';
+
   function loadMerchants(){
     fetch(`${SCRIPT_URL}?t=${Date.now()}`, { cache:'no-store' })
       .then(r => r.json())
       .then(data => {
+        // 公告：讀取「基本設定」裡的「商家委託公告內容」，留空就不顯示
+        const announcement = ((data.settings && data.settings['商家委託公告內容']) || '').trim();
+        const hintEl = document.getElementById('announcementHint');
+        if(announcement){
+          hintEl.textContent = announcement;
+          hintEl.style.display = 'flex';
+        } else {
+          hintEl.style.display = 'none';
+        }
+
         const sel = document.getElementById('mMerchant');
         const merchants = data.entrustingMerchants || [];
         const groups = {};
@@ -240,15 +298,129 @@
         otherOpt.value = '其他';
         otherOpt.textContent = '其他（自行輸入）';
         sel.appendChild(otherOpt);
+
+        // 商家名單載入完成後，如果之前釘選過商家、且這個商家還在名單裡，自動選好
+        const pinned = localStorage.getItem(PIN_MERCHANT_KEY);
+        if(pinned && Array.from(sel.options).some(o => o.value === pinned)){
+          sel.value = pinned;
+          updatePinBtn(true);
+          if(currentTab === 'query') queryMerchantOrders();
+        }
       })
       .catch(()=>{ toast('商家名單載入失敗，可直接選「其他」手動輸入'); });
   }
   loadMerchants();
 
+  function updatePinBtn(isPinned){
+    const btn = document.getElementById('pinMerchantBtn');
+    const hint = document.getElementById('pinnedHint');
+    btn.classList.toggle('pinned', isPinned);
+    hint.style.display = isPinned ? 'block' : 'none';
+  }
+
   document.getElementById('mMerchant').addEventListener('change', (e)=>{
     const isOther = e.target.value === '其他';
     document.getElementById('mMerchantOther').style.display = isOther ? 'block' : 'none';
+    // 換了商家，之前釘選的就不算數了，要重新按📌才會釘選新的
+    const pinned = localStorage.getItem(PIN_MERCHANT_KEY);
+    updatePinBtn(pinned && pinned === e.target.value);
+    if(currentTab === 'query') queryMerchantOrders();
   });
+
+  document.getElementById('pinMerchantBtn').addEventListener('click', ()=>{
+    const sel = document.getElementById('mMerchant');
+    if(!sel.value || sel.value === '其他'){
+      toast('請先選擇一個商家再釘選');
+      return;
+    }
+    const alreadyPinned = localStorage.getItem(PIN_MERCHANT_KEY) === sel.value;
+    if(alreadyPinned){
+      localStorage.removeItem(PIN_MERCHANT_KEY);
+      updatePinBtn(false);
+      toast('已取消釘選');
+    } else {
+      localStorage.setItem(PIN_MERCHANT_KEY, sel.value);
+      updatePinBtn(true);
+      toast('📌 已記住這個商家，下次打開網頁會自動選好');
+    }
+  });
+
+  // ---------- 頁籤切換：送出委託／查詢我的委託 ----------
+  let currentTab = 'submit';
+  const formBox = document.getElementById('formBox');
+  const queryBox = document.getElementById('queryBox');
+  const tabSubmitBtn = document.getElementById('tabSubmitBtn');
+  const tabQueryBtn = document.getElementById('tabQueryBtn');
+
+  tabSubmitBtn.addEventListener('click', ()=>{
+    currentTab = 'submit';
+    tabSubmitBtn.classList.add('active');
+    tabQueryBtn.classList.remove('active');
+    formBox.style.display = 'block';
+    queryBox.style.display = 'none';
+  });
+  tabQueryBtn.addEventListener('click', ()=>{
+    currentTab = 'query';
+    tabQueryBtn.classList.add('active');
+    tabSubmitBtn.classList.remove('active');
+    formBox.style.display = 'none';
+    queryBox.style.display = 'block';
+    queryMerchantOrders();
+  });
+
+  function formatQueryTime(o){
+    if(o.schedule){
+      const d = new Date(o.schedule);
+      if(!isNaN(d.getTime())){
+        const pad = n => String(n).padStart(2,'0');
+        return `預約 ${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+    }
+    return `${o.date} ${o.time} 送出`;
+  }
+
+  function queryMerchantOrders(){
+    const sel = document.getElementById('mMerchant');
+    const merchant = sel.value === '其他' ? document.getElementById('mMerchantOther').value.trim() : sel.value;
+    const resultEl = document.getElementById('queryResult');
+
+    if(!merchant){
+      resultEl.innerHTML = '<div class="hint">請先在上方選擇商家，才能查詢委託記錄</div>';
+      return;
+    }
+
+    resultEl.innerHTML = '<div class="hint">查詢中...</div>';
+
+    fetch(`${SCRIPT_URL}?action=merchantOrders&merchant=${encodeURIComponent(merchant)}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        const orders = data.orders || [];
+        if(!orders.length){
+          resultEl.innerHTML = '<div class="hint">📭 這個商家還沒有委託紀錄</div>';
+          return;
+        }
+        resultEl.innerHTML = '';
+        orders.forEach(o => {
+          const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
+          const card = document.createElement('div');
+          card.className = 'query-order-card';
+          card.innerHTML = `
+            <div class="qo-top">
+              <span class="qo-num">${numLabel}</span>
+              <span class="qo-status ${o.status || '待處理'}">${o.status || '待處理'}</span>
+            </div>
+            <div class="qo-time">${formatQueryTime(o)}</div>
+            <div class="qo-row"><b>收件人：</b>${o.contact || '—'}</div>
+            <div class="qo-row"><b>地址：</b>${o.address || '—'}</div>
+            <div class="qo-row"><b>內容：</b>${o.items || '—'}</div>
+            <div class="qo-row"><b>外送費：</b>$${o.fee || '—'}${o.goodsAmount ? `　商品 $${o.goodsAmount}` : ''}</div>
+            ${o.deliverer ? `<div class="qo-row"><b>外送員：</b>${o.deliverer}</div>` : ''}
+          `;
+          resultEl.appendChild(card);
+        });
+      })
+      .catch(()=>{ resultEl.innerHTML = '<div class="hint">查詢失敗，請檢查網路連線</div>'; });
+  }
 
   // ---------- 範圍切換 ----------
   let fee = 30;
