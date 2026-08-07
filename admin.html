@@ -57,6 +57,14 @@
   }
   .login-box .err{color:var(--coral-dark); font-size:12.5px; margin-top:10px; font-weight:700; display:none;}
 
+  /* ---- 頁籤：訂單／結算 ---- */
+  .view-tabs{display:flex; gap:10px; margin-bottom:18px;}
+  .view-tabs button{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink);
+    padding:11px; border-radius:12px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .view-tabs button.active{background:var(--ocean); color:var(--paper);}
+
   /* ---- 篩選列 ---- */
   .filter-tabs{display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:2px;}
   .filter-tabs button{
@@ -64,6 +72,20 @@
     padding:8px 16px; border-radius:999px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
   }
   .filter-tabs button.active{background:var(--ink); color:var(--paper);}
+
+  /* ---- 結算畫面 ---- */
+  .settlement-hint{font-size:12px; color:var(--ocean-dark); opacity:.75; margin-bottom:14px; line-height:1.6;}
+  .settlement-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .settlement-card .sc-name{font-family:'Noto Serif TC',serif; font-weight:900; font-size:15px;}
+  .settlement-card .sc-count{font-size:11px; color:var(--ocean-dark); opacity:.75; margin-top:2px;}
+  .settlement-card .sc-total{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:900; color:var(--coral-dark);}
+  .settlement-unassigned{
+    background:var(--gold); border:2px solid var(--ink); border-radius:var(--radius);
+    padding:12px 16px; font-size:12.5px; font-weight:700; margin-bottom:12px; line-height:1.6;
+  }
 
   .empty-state{
     text-align:center; padding:60px 20px; color:var(--ocean-dark); opacity:.7; font-size:13.5px; line-height:1.8;
@@ -101,6 +123,13 @@
 
   .order-photo{margin-top:8px;}
   .order-photo img{width:70px; height:70px; object-fit:cover; border-radius:8px; border:2px solid var(--ink); cursor:pointer;}
+
+  .deliverer-picker{margin-top:14px;}
+  .deliverer-picker label{display:block; font-size:11px; font-weight:700; color:var(--ocean-dark); opacity:.75; margin-bottom:5px;}
+  .deliverer-select{
+    width:100%; padding:9px 11px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:inherit; font-size:13px; font-weight:700; color:var(--ink);
+  }
 
   .status-actions{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;}
   .status-actions button{
@@ -147,15 +176,27 @@
   </div>
 
   <div id="dashboard" style="display:none;">
-    <div class="filter-tabs">
-      <button class="active" data-filter="全部">全部</button>
-      <button data-filter="待處理">待處理</button>
-      <button data-filter="處理中">處理中</button>
-      <button data-filter="運送中">運送中</button>
-      <button data-filter="已送達">已送達</button>
+    <div class="view-tabs">
+      <button class="active" id="viewOrdersBtn">📦 訂單</button>
+      <button id="viewSettlementBtn">💰 結算</button>
     </div>
-    <div id="orderList"></div>
-    <div class="refresh-hint">下拉頁面或點右上角重新整理，即可看到最新訂單</div>
+
+    <div id="ordersView">
+      <div class="filter-tabs">
+        <button class="active" data-filter="全部">全部</button>
+        <button data-filter="待處理">待處理</button>
+        <button data-filter="處理中">處理中</button>
+        <button data-filter="運送中">運送中</button>
+        <button data-filter="已送達">已送達</button>
+      </div>
+      <div id="orderList"></div>
+      <div class="refresh-hint">下拉頁面或點右上角重新整理，即可看到最新訂單</div>
+    </div>
+
+    <div id="settlementView" style="display:none;">
+      <div class="settlement-hint">統計本月「已送達」訂單，依指派的外送員加總外送費</div>
+      <div id="settlementList"></div>
+    </div>
   </div>
 </main>
 
@@ -179,6 +220,7 @@
 
   let currentOrders = [];
   let currentFilter = '全部';
+  let currentDeliverers = [];
   // 優先順序：網址帶的 ?key= 參數 > 瀏覽器記住的密碼
   let currentPin = new URLSearchParams(location.search).get('key') || localStorage.getItem(PIN_STORAGE_KEY) || '';
 
@@ -212,6 +254,7 @@
           localStorage.setItem(PIN_STORAGE_KEY, pin);
           loginErr.style.display = 'none';
           currentOrders = data.orders || [];
+          currentDeliverers = data.deliverers || [];
           showDashboard();
           renderOrders();
         }
@@ -247,6 +290,7 @@
           return;
         }
         currentOrders = data.orders || [];
+        currentDeliverers = data.deliverers || [];
         renderOrders();
       })
       .catch(()=>{ toast('讀取失敗，請檢查網路連線'); });
@@ -267,6 +311,72 @@
       renderOrders();
     });
   });
+
+  // ---------- 頁籤切換：訂單／結算 ----------
+  const ordersView = document.getElementById('ordersView');
+  const settlementView = document.getElementById('settlementView');
+  const viewOrdersBtn = document.getElementById('viewOrdersBtn');
+  const viewSettlementBtn = document.getElementById('viewSettlementBtn');
+
+  viewOrdersBtn.addEventListener('click', ()=>{
+    viewOrdersBtn.classList.add('active');
+    viewSettlementBtn.classList.remove('active');
+    ordersView.style.display = 'block';
+    settlementView.style.display = 'none';
+  });
+  viewSettlementBtn.addEventListener('click', ()=>{
+    viewSettlementBtn.classList.add('active');
+    viewOrdersBtn.classList.remove('active');
+    ordersView.style.display = 'none';
+    settlementView.style.display = 'block';
+    loadSettlement();
+  });
+
+  function loadSettlement(){
+    const listEl = document.getElementById('settlementList');
+    listEl.innerHTML = '<div class="empty-state">讀取中...</div>';
+
+    fetch(`${SCRIPT_URL}?action=settlement&pin=${encodeURIComponent(currentPin)}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if(data.error){
+          toast('讀取結算資料失敗，請重新整理');
+          return;
+        }
+        renderSettlement(data);
+      })
+      .catch(()=>{ toast('讀取失敗，請檢查網路連線'); });
+  }
+
+  function renderSettlement(data){
+    const listEl = document.getElementById('settlementList');
+    listEl.innerHTML = '';
+
+    if(data.unassignedCount > 0){
+      const warn = document.createElement('div');
+      warn.className = 'settlement-unassigned';
+      warn.textContent = `⚠️ 有 ${data.unassignedCount} 筆已送達的訂單還沒指派外送員，不會計入下方結算金額，記得回「訂單」頁面補上指派`;
+      listEl.appendChild(warn);
+    }
+
+    if(!data.summary || !data.summary.length){
+      listEl.innerHTML += '<div class="empty-state">📭 本月還沒有已指派外送員且送達的訂單</div>';
+      return;
+    }
+
+    data.summary.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'settlement-card';
+      card.innerHTML = `
+        <div>
+          <div class="sc-name">${escapeHtml(item.deliverer)}</div>
+          <div class="sc-count">共 ${item.count} 筆已送達</div>
+        </div>
+        <div class="sc-total">$${item.total}</div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
 
   // ---------- 畫面渲染 ----------
   function formatScheduleDisplay(schedule){
@@ -309,6 +419,10 @@
       </div>
       <div class="order-info">${infoHtml}</div>
       ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
+      <div class="deliverer-picker">
+        <label>指派外送員</label>
+        <select class="deliverer-select"><option value="">－ 尚未指派 －</option></select>
+      </div>
       <div class="status-actions">
         <button data-status="待處理" class="${order.status === '待處理' || !order.status ? 'current' : ''}">待處理</button>
         <button data-status="處理中" class="${order.status === '處理中' ? 'current' : ''}">處理中</button>
@@ -316,6 +430,18 @@
         <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
       </div>
     `;
+
+    const delivererSelect = card.querySelector('.deliverer-select');
+    currentDeliverers.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.name;
+      opt.textContent = d.name;
+      delivererSelect.appendChild(opt);
+    });
+    delivererSelect.value = order.deliverer || '';
+    delivererSelect.addEventListener('change', ()=>{
+      assignDeliverer(order, delivererSelect.value);
+    });
 
     const photoImg = card.querySelector('.order-photo img');
     if(photoImg){
@@ -330,6 +456,30 @@
     });
 
     return card;
+  }
+
+  function assignDeliverer(order, deliverer){
+    order.deliverer = deliverer;
+    toast(deliverer ? `已指派給「${deliverer}」` : '已取消指派');
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'assignDeliverer',
+        pin: currentPin,
+        sheetName: order.sheetName,
+        rowKey: order.rowKey,
+        deliverer: deliverer
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if(data.result !== 'success'){
+          toast(data.message || '指派失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ toast('指派失敗，請檢查網路連線'); });
   }
 
   function renderOrders(){
