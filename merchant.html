@@ -162,6 +162,10 @@
       <input id="mItems" placeholder="例：便當2個、飲料1杯">
     </div>
     <div class="field">
+      <label>商品金額（選填，貨到付款時方便外送員向客戶收款）</label>
+      <input id="mGoodsAmount" type="number" inputmode="numeric" min="0" placeholder="例：350">
+    </div>
+    <div class="field">
       <label>範圍</label>
       <div class="zone-toggle">
         <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
@@ -194,7 +198,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymjn02-UalruC7IFHxuRb-eOv7egCX8ibBZ-lIGAKnyzXmdXQAg87kF1uGWZ2m5zZ4/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKAlL46wtB4Kv51mpk82ku_YzjQ2LT2EkVVOoB5Mxm-SeKK3T2EI4ztCinVJRKLVvf/exec';
 
   const toastEl = document.getElementById('toast');
   function toast(msg){
@@ -349,6 +353,7 @@
     const phone = document.getElementById('mPhone').value.trim();
     const address = document.getElementById('mAddress').value.trim();
     const itemsNote = document.getElementById('mItems').value.trim();
+    const goodsAmount = document.getElementById('mGoodsAmount').value.trim();
     const note = document.getElementById('mNote').value.trim();
 
     if(!merchant){ toast('請選擇或填寫商家名稱'); return; }
@@ -380,6 +385,7 @@
       schedule: schedule,
       zone: fee === 30 ? '鎮內' : '鎮外',
       fee: fee,
+      goodsAmount: goodsAmount,
       paymentMethod: '現場付款',
       photoBase64: photoBase64,
       photoMime: photoMime
@@ -411,6 +417,7 @@
         document.getElementById('mPhone').value = '';
         document.getElementById('mAddress').value = '';
         document.getElementById('mItems').value = '';
+        document.getElementById('mGoodsAmount').value = '';
         document.getElementById('mNote').value = '';
         clearPhoto();
         scheduleInput.value = '';
