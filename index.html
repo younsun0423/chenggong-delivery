@@ -67,6 +67,13 @@
   }
   .loading-banner.hide{opacity:0; transform:translateY(-6px); pointer-events:none; height:0; margin:0; padding:0; border:none; overflow:hidden;}
 
+  .announcement-banner{
+    display:none; align-items:flex-start; gap:10px; background:var(--gold); color:var(--ink);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 18px; margin:16px 0; font-weight:700; font-size:13.5px; line-height:1.7;
+    animation:fadeSlideIn .3s ease; white-space:pre-wrap;
+  }
+
   .status-banner{
     display:none; align-items:center; gap:10px; background:var(--coral); color:var(--paper);
     border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
@@ -146,7 +153,7 @@
   .rules-box li.warn{background:rgba(226,83,47,.15); border:1px dashed var(--coral); padding:10px 12px; border-radius:8px;}
   .rules-box li.warn .mark{color:var(--coral);}
 
-  .section-title{display:flex; align-items:baseline; gap:10px; margin:36px 0 16px;}
+  .section-title{display:flex; align-items:baseline; gap:10px; margin:36px 0 16px; flex-wrap:wrap;}
   .section-title .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; border:1.5px solid var(--coral-dark); color:var(--coral-dark); padding:2px 8px; border-radius:999px;}
   .section-title h2{font-size:20px; margin:0;}
 
@@ -161,60 +168,60 @@
   .range-map{margin-top:18px; padding:18px 20px; background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);}
   .range-map .label{font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--ocean-dark); margin-bottom:10px;}
 
-  .menu-gallery{display:grid; gap:16px;}
+  .menu-gallery{display:grid; gap:12px;}
   .menu-gallery .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px;}
-  .menu-merchant-group{
+
+  .menu-category{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:14px 16px;
+    overflow:hidden;
   }
-  .menu-merchant-group .mg-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:10px;}
-  .menu-merchant-group .mg-head strong{font-size:14.5px;}
-  .menu-merchant-group .mg-head span{font-size:11px; color:var(--ocean-dark); opacity:.7; white-space:nowrap;}
-  .menu-photo-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; -webkit-overflow-scrolling:touch;}
-  .menu-photo-row .thumb{
-    flex-shrink:0; width:92px; height:92px; border-radius:10px; overflow:hidden; border:2px solid var(--ink);
+  .menu-category summary{
+    list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; justify-content:space-between;
+    gap:8px; font-family:'Noto Serif TC',serif; font-weight:900; font-size:14.5px; user-select:none;
+  }
+  .menu-category summary::-webkit-details-marker{display:none;}
+  .menu-category summary .mc-count{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--ocean-dark); opacity:.75;}
+  .menu-category summary .mc-arrow{transition:transform .2s ease; font-size:12px; color:var(--ocean-dark);}
+  .menu-category[open] summary .mc-arrow{transform:rotate(90deg);}
+  .menu-category-body{
+    padding:0 16px 16px; display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:12px;
+  }
+  .menu-category-body .thumb{
+    width:100%; aspect-ratio:1/1; border-radius:10px; overflow:hidden; border:2px solid var(--ink);
     cursor:pointer; background:#ddd; position:relative;
   }
-  .menu-photo-row .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
-  .menu-photo-row .thumb .thumb-cap{
-    position:absolute; left:0; right:0; bottom:0; background:rgba(34,48,46,.72); color:var(--paper);
-    font-size:9px; padding:2px 4px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  .menu-category-body .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .menu-category-body .thumb .thumb-cap{
+    position:absolute; left:0; right:0; bottom:0; background:rgba(34,48,46,.78); color:var(--paper);
+    font-size:9px; line-height:1.35; padding:3px 4px; text-align:center;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
 
   .menu-lightbox{
     display:none; position:fixed; inset:0; background:rgba(34,48,46,.88); z-index:200;
-    align-items:center; justify-content:center; padding:30px; cursor:zoom-out;
+    align-items:center; justify-content:center; padding:20px; overflow-y:auto;
   }
-  .menu-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
-
-  .pinned-menu{
-    display:none; position:fixed; right:14px; bottom:14px; z-index:180; width:200px;
-    background:var(--card); border:2px solid var(--ink); border-radius:12px; box-shadow:var(--shadow);
-    overflow:hidden; animation:popIn .25s ease;
+  .menu-lightbox-panel{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    max-width:480px; width:100%; margin:auto; position:relative; overflow:hidden; animation:popIn .25s ease;
   }
-  .pinned-menu-header{
-    display:flex; align-items:center; justify-content:space-between; gap:6px;
-    padding:6px 8px; background:var(--ocean); color:var(--paper);
+  .menu-lightbox-close{
+    position:absolute; top:10px; right:10px; z-index:2; background:rgba(34,48,46,.7); color:var(--paper);
+    border:none; border-radius:999px; width:30px; height:30px; font-size:16px; cursor:pointer;
   }
-  .pinned-menu-header span{font-size:11px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .pinned-menu-header button{background:none; border:none; color:var(--paper); font-size:14px; cursor:pointer; padding:0 2px; opacity:.85; flex-shrink:0;}
-  .pinned-menu-header button:hover{opacity:1;}
-  .pinned-menu img{width:100%; height:130px; object-fit:cover; display:block; cursor:zoom-in;}
-  .pinned-menu .pinned-body{padding:8px;}
-  .pinned-menu textarea{
-    width:100%; min-height:56px; padding:7px 9px; border:2px solid var(--ink); border-radius:8px;
-    background:var(--paper); font-family:inherit; font-size:12.5px; resize:vertical;
+  .menu-lightbox-close:hover{background:rgba(34,48,46,.9);}
+  .menu-lightbox-panel img{width:100%; max-height:52vh; object-fit:contain; display:block; background:var(--ink);}
+  .menu-lightbox-body{padding:16px;}
+  .menu-lightbox-merchant{font-family:'Noto Serif TC',serif; font-weight:900; font-size:16px; margin-bottom:10px;}
+  .menu-lightbox-body textarea{
+    width:100%; min-height:64px; padding:10px 12px; border:2px solid var(--ink); border-radius:8px;
+    background:var(--paper); font-family:inherit; font-size:13.5px; resize:vertical;
   }
-  .pinned-menu .pinned-add-btn{
-    width:100%; margin-top:6px; padding:8px; border:2px solid var(--ink); border-radius:999px;
-    background:#06C755; color:#fff; font-weight:700; font-size:12px; cursor:pointer; font-family:inherit;
+  .menu-lightbox-add-btn{
+    width:100%; margin-top:10px; padding:11px; border:2px solid var(--ink); border-radius:999px;
+    background:#06C755; color:#fff; font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit;
   }
-  .pinned-menu .pinned-add-btn:hover{filter:brightness(1.06);}
-
-  @media (max-width:420px){
-    .pinned-menu{width:160px; right:10px; bottom:10px;}
-    .pinned-menu img{height:100px;}
-  }
+  .menu-lightbox-add-btn:hover{filter:brightness(1.06);}
 
   .extra-services{display:grid; gap:12px;}
   .extra-service{
@@ -224,17 +231,40 @@
   .extra-service .info h4{margin:0 0 4px; font-size:14.5px;}
   .extra-service .info p{margin:0; font-size:13px; color:var(--ink); opacity:.75; line-height:1.6;}
   .extra-service .note{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--coral-dark); font-size:13.5px; white-space:nowrap; flex-shrink:0;}
-  .extra-service .ask-btn{
+  .ask-btn{
     background:#06C755; color:#fff; border:2px solid var(--ink); border-radius:999px; padding:7px 16px;
     font-weight:700; font-size:12.5px; text-decoration:none; white-space:nowrap; flex-shrink:0; display:inline-block;
   }
-  .extra-service .ask-btn:hover{filter:brightness(1.06);}
+  .ask-btn:hover{filter:brightness(1.06);}
   .extra-services .empty{font-size:13.5px; color:var(--ocean-dark); opacity:.7; padding:6px 2px;}
+
+  .menu-update-hint{
+    font-size:12px; color:var(--ocean-dark); opacity:.8; margin:-8px 0 14px; line-height:1.6;
+  }
 
   .payment-box{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:18px 20px; font-size:13.5px; color:var(--ocean-dark); line-height:1.8; white-space:pre-wrap;
   }
+
+  .payment-accounts{display:grid; gap:12px; margin-top:12px;}
+  .payment-account{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 16px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .payment-account .pa-info{flex:1; min-width:120px;}
+  .payment-account .pa-info strong{display:block; font-size:14px; margin-bottom:2px;}
+  .payment-account .pa-info span{font-size:11px; color:var(--ocean-dark); opacity:.7;}
+  .payment-account .pa-text{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink); word-break:break-all;}
+  .payment-account .pa-qr{
+    width:64px; height:64px; border-radius:8px; overflow:hidden; border:2px solid var(--ink); flex-shrink:0; cursor:pointer;
+  }
+  .payment-account .pa-qr img{width:100%; height:100%; object-fit:cover; display:block;}
+  .payment-account .pa-link{
+    background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:999px;
+    padding:8px 16px; font-weight:700; font-size:12.5px; text-decoration:none; white-space:nowrap; flex-shrink:0;
+  }
+  .payment-account .pa-link:hover{filter:brightness(1.1);}
 
   .hours-card{
     display:flex; align-items:center; gap:20px; background:var(--card); border:2px solid var(--ink);
@@ -371,11 +401,12 @@
 
 <main>
   <div class="loading-banner" id="loadingBanner">⏳ 載入最新資料中，請稍候...</div>
+  <div class="announcement-banner" id="announcementBanner"></div>
 
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
-    <p>成功鎮還沒有外送平台，所以我們用 LINE 社群自己來 — 這裡只做代購外送，價格透明、範圍清楚，一起把在地的店家和需要的人連起來。</p>
+    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。<br> — 這裡只做代購外送，價格透明、範圍清楚，一起把在地店家和需要的人串連起來。</p>
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
@@ -451,31 +482,36 @@
   </div>
 
   <div class="section-title"><span class="eyebrow">先看看賣什麼</span><h2>商家菜單</h2></div>
+  <div class="menu-update-hint">📸 菜單陸續更新中</div>
   <div class="menu-gallery" id="menuGallery">
     <div class="empty">目前尚無菜單相片，想知道賣什麼可以直接在下方備註詢問。</div>
   </div>
 
-  <div class="section-title"><span class="eyebrow">加值服務</span><h2>額外服務</h2></div>
+  <div class="section-title">
+    <span class="eyebrow">加值服務</span><h2>額外服務</h2>
+    <a class="ask-btn" id="askInlineBtn" href="#" target="_blank" rel="noopener" style="margin-left:auto;">💬 私訊小蜜丰</a>
+  </div>
   <div class="extra-services" id="extraServices">
     <div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>
   </div>
 
   <div class="section-title"><span class="eyebrow">付款方式</span><h2>收款資訊</h2></div>
   <div class="payment-box" id="paymentBox">目前僅提供現場付款（商品費 + 外送費），若日後開放線上轉帳／收款帳號，會公告在這裡。</div>
+  <div class="payment-accounts" id="paymentAccounts"></div>
 
   <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
   <div class="steps">
     <div class="step">
       <div class="num">1</div>
-      <div><h4>加入 LINE 社群</h4><p>點擊上方「加入 LINE 社群」按鈕，或掃描社群公告的 QR code。</p></div>
+      <div><h4>填寫代購委託小幫手</h4><p>選商家、填品項、地址、聯絡方式，系統會自動整理好格式。</p></div>
     </div>
     <div class="step">
       <div class="num">2</div>
-      <div><h4>在群內留言下單</h4><p>用下方的「代購委託小幫手」整理好格式，點「訂單送出」直接送出，不用自己打字整理。</p></div>
+      <div><h4>點「送出訂單」</h4><p>訂單會直接送進後台管理系統，不用另外傳訊息，接單者馬上看得到。</p></div>
     </div>
     <div class="step">
       <div class="num">3</div>
-      <div><h4>等待接單與送達</h4><p>成員會回覆接單，完成代購後送達，現場付款（商品費 + 外送費）。</p></div>
+      <div><h4>等待接單與送達</h4><p>有空的成員會接單，完成代購後送達，現場付款（商品費 + 外送費）。有問題可隨時加入 LINE 社群詢問。</p></div>
     </div>
   </div>
 
@@ -547,7 +583,7 @@
     </div>
     <div class="preview" id="preview"></div>
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="copy-btn" id="sendLineBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#06C755;">送出訂單 →</a>
+      <button type="button" class="copy-btn" id="sendLineBtn" style="background:#06C755;">送出訂單 →</button>
       <button class="copy-btn" id="orderLookupBtn" type="button" style="background:var(--gold); color:var(--ink);">🔍 訂單查詢</button>
     </div>
     <div class="queue-badge" id="queueBadge">
@@ -562,22 +598,21 @@
       <button type="button" class="utility-btn" id="clearBtn">🗑️ 清除表單</button>
       <button type="button" class="utility-btn" id="undoBtn" disabled>↩️ 返回上一步</button>
     </div>
-    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「送出訂單」會開啟 LINE App，訊息已自動填好，選擇「成功小蜜丰」後按傳送即可。<br>🔒 為保護客戶隱私，傳到群組的訊息中電話號碼與門牌號碼會自動遮蔽，完整資訊僅記錄於後台管理表，接單者可私訊客戶核對詳細地址。</div>
+    <div style="font-size:11.5px; color:var(--ocean-dark); margin-top:10px; line-height:1.6;">點「訂單送出」會直接送進後台管理系統，接單者馬上就看得到，不用另外傳訊息到群組。<br>🔒 你的聯絡電話與地址僅記錄於後台管理表，供接單者核對配送使用，不會公開顯示。</div>
   </div>
 </main>
 
 <footer>成功小蜜丰 · 本頁僅供社群公告與下單參考使用</footer>
 <div class="toast" id="toast"></div>
-<div class="menu-lightbox" id="menuLightbox"><img id="menuLightboxImg" src="" alt="菜單放大圖"></div>
-<div class="pinned-menu" id="pinnedMenu">
-  <div class="pinned-menu-header">
-    <span id="pinnedMenuLabel">菜單</span>
-    <button id="pinnedMenuClose" aria-label="關閉釘選">✕</button>
-  </div>
-  <img id="pinnedMenuImg" src="" alt="釘選中的菜單">
-  <div class="pinned-body">
-    <textarea id="pinnedItemsInput" placeholder="邊看邊打想買的品項..."></textarea>
-    <button type="button" class="pinned-add-btn" id="pinnedAddBtn">✅ 加入訂單</button>
+<div class="menu-lightbox" id="menuLightbox">
+  <div class="menu-lightbox-panel">
+    <button class="menu-lightbox-close" id="menuLightboxClose" aria-label="關閉">✕</button>
+    <img id="menuLightboxImg" src="" alt="菜單放大圖">
+    <div class="menu-lightbox-body">
+      <div class="menu-lightbox-merchant" id="menuLightboxMerchant"></div>
+      <textarea id="menuLightboxItemsInput" placeholder="邊看邊打想買的品項..."></textarea>
+      <button type="button" class="menu-lightbox-add-btn" id="menuLightboxAddBtn">✅ 加入訂單</button>
+    </div>
   </div>
 </div>
 
@@ -621,6 +656,7 @@
 
   let merchantHoursMap = {};
   let merchantFreeMap = {};
+  let merchantCategoryMap = {};
   let merchantGroups = {};
   let merchantGroupOrder = [];
   let transferFeePerStop = 15;
@@ -629,6 +665,7 @@
   function renderMerchants(merchants){
     merchantHoursMap = {};
     merchantFreeMap = {};
+    merchantCategoryMap = {};
     merchantGroups = {};
     merchantGroupOrder = [];
 
@@ -639,6 +676,7 @@
       merchantGroups[cat].push(m);
       merchantHoursMap[m.name] = m.hours || '';
       merchantFreeMap[m.name] = !!m.freeDelivery;
+      merchantCategoryMap[m.name] = cat;
     });
 
     // 重新套用選單內容到目前所有站點的下拉選單（保留原本已選的值）
@@ -808,68 +846,120 @@
     updatePreview();
   });
 
+  function renderPaymentAccounts(accounts){
+    const box = document.getElementById('paymentAccounts');
+    box.innerHTML = '';
+    if(!accounts || !accounts.length) return;
+
+    accounts.forEach(acc => {
+      const card = document.createElement('div');
+      card.className = 'payment-account';
+
+      let contentHtml = '';
+      if(acc.type === 'image'){
+        contentHtml = `<div class="pa-qr"><img src="${escapeHtml(acc.value)}" alt="${escapeHtml(acc.name)}"></div>`;
+      } else if(acc.type === 'link'){
+        contentHtml = `<a class="pa-link" href="${escapeHtml(acc.value)}" target="_blank" rel="noopener">前往付款 →</a>`;
+      } else {
+        contentHtml = `<div class="pa-text">${escapeHtml(acc.value)}</div>`;
+      }
+
+      card.innerHTML = `
+        <div class="pa-info">
+          <strong>${escapeHtml(acc.name)}</strong>
+          ${acc.method ? `<span>${escapeHtml(acc.method)}</span>` : ''}
+        </div>
+        ${contentHtml}
+      `;
+      box.appendChild(card);
+
+      if(acc.type === 'image'){
+        card.querySelector('.pa-qr').addEventListener('click', ()=>{
+          document.getElementById('menuLightboxImg').src = acc.value;
+          document.getElementById('menuLightbox').style.display = 'flex';
+        });
+      }
+    });
+  }
+
   function renderMenus(menus){
     const box = document.getElementById('menuGallery');
     if(!menus || !menus.length){
       box.innerHTML = '<div class="empty">目前尚無菜單相片，想知道賣什麼可以直接在下方備註詢問。</div>';
       return;
     }
-    // 依商家分組，同一商家的多張菜單照片放在同一區塊，避免畫面重複又雜亂
-    const groups = {};
-    const order = [];
+
+    // 商家名稱 → 分類的對照表（沒在商家名單裡的，歸到「其他」）
+    const merchantCategoryMap = {};
+    merchantGroupOrder.forEach(cat => {
+      merchantGroups[cat].forEach(m => { merchantCategoryMap[m.name] = cat; });
+    });
+
+    // 先依分類分組，分類內再依商家分組（同商家多張照片放一起）
+    const catOrder = [];
+    const catGroups = {};
     menus.forEach(m => {
-      if(!groups[m.merchant]){ groups[m.merchant] = []; order.push(m.merchant); }
-      groups[m.merchant].push(m);
+      const cat = merchantCategoryMap[m.merchant] || '其他商家';
+      if(!catGroups[cat]){ catGroups[cat] = { merchants: {}, order: [] }; catOrder.push(cat); }
+      const g = catGroups[cat];
+      if(!g.merchants[m.merchant]){ g.merchants[m.merchant] = []; g.order.push(m.merchant); }
+      g.merchants[m.merchant].push(m);
     });
 
     box.innerHTML = '';
-    order.forEach(merchant => {
-      const photos = groups[merchant];
-      const group = document.createElement('div');
-      group.className = 'menu-merchant-group';
-      group.innerHTML = `
-        <div class="mg-head">
-          <strong>${escapeHtml(merchant)}</strong>
-          <span>${photos.length > 1 ? `共 ${photos.length} 張・` : ''}點圖片可釘選查看</span>
-        </div>
-        <div class="menu-photo-row"></div>
-      `;
-      const row = group.querySelector('.menu-photo-row');
-      photos.forEach(m => {
-        const thumb = document.createElement('div');
-        thumb.className = 'thumb';
-        thumb.innerHTML = `
-          <img src="${escapeHtml(m.image)}" alt="${escapeHtml(merchant)}" loading="lazy">
-          ${m.desc ? `<div class="thumb-cap">${escapeHtml(m.desc)}</div>` : ''}
-        `;
-        thumb.addEventListener('click', ()=>{ pinMenu(merchant, m.image); });
-        row.appendChild(thumb);
+    catOrder.forEach(cat => {
+      const g = catGroups[cat];
+      const totalPhotos = g.order.reduce((sum, name) => sum + g.merchants[name].length, 0);
+
+      const details = document.createElement('details');
+      details.className = 'menu-category';
+      details.open = false;
+      const summary = document.createElement('summary');
+      summary.innerHTML = `<span>${escapeHtml(cat)}</span><span class="mc-count">${g.order.length} 間商家・${totalPhotos} 張<span class="mc-arrow">▸</span></span>`;
+      details.appendChild(summary);
+
+      const body = document.createElement('div');
+      body.className = 'menu-category-body';
+
+      g.order.forEach(merchant => {
+        const photos = g.merchants[merchant];
+        photos.forEach(m => {
+          const thumb = document.createElement('div');
+          thumb.className = 'thumb';
+          thumb.innerHTML = `
+            <img src="${escapeHtml(m.image)}" alt="${escapeHtml(merchant)}" loading="lazy">
+            <div class="thumb-cap">${escapeHtml(merchant)}</div>
+          `;
+          thumb.addEventListener('click', ()=>{ openMenuLightbox(merchant, m.image); });
+          body.appendChild(thumb);
+        });
       });
-      box.appendChild(group);
+
+      details.appendChild(body);
+      box.appendChild(details);
     });
   }
 
+  // ---------- 菜單放大檢視：直接在放大畫面下方輸入品項，按一下就加入訂單 ----------
   const menuLightboxEl = document.getElementById('menuLightbox');
-  menuLightboxEl.addEventListener('click', ()=>{ menuLightboxEl.style.display = 'none'; });
 
-  // ---------- 釘選菜單：讓菜單圖固定浮在畫面角落，方便邊看邊填品項，填完直接加入訂單 ----------
-  function pinMenu(merchant, image){
-    document.getElementById('pinnedMenuLabel').textContent = merchant;
-    document.getElementById('pinnedMenuImg').src = image;
-    document.getElementById('pinnedItemsInput').value = '';
-    document.getElementById('pinnedMenu').style.display = 'block';
-  }
-  document.getElementById('pinnedMenuClose').addEventListener('click', ()=>{
-    document.getElementById('pinnedMenu').style.display = 'none';
-  });
-  document.getElementById('pinnedMenuImg').addEventListener('click', ()=>{
-    document.getElementById('menuLightboxImg').src = document.getElementById('pinnedMenuImg').src;
+  function openMenuLightbox(merchant, image){
+    document.getElementById('menuLightboxMerchant').textContent = merchant;
+    document.getElementById('menuLightboxImg').src = image;
+    document.getElementById('menuLightboxItemsInput').value = '';
     menuLightboxEl.style.display = 'flex';
+  }
+  function closeMenuLightbox(){
+    menuLightboxEl.style.display = 'none';
+  }
+  document.getElementById('menuLightboxClose').addEventListener('click', closeMenuLightbox);
+  menuLightboxEl.addEventListener('click', (e)=>{
+    if(e.target === menuLightboxEl) closeMenuLightbox(); // 點空白背景才關閉，點面板本身不會誤觸關閉
   });
 
-  document.getElementById('pinnedAddBtn').addEventListener('click', ()=>{
-    const merchant = document.getElementById('pinnedMenuLabel').textContent;
-    const itemsText = document.getElementById('pinnedItemsInput').value.trim();
+  document.getElementById('menuLightboxAddBtn').addEventListener('click', ()=>{
+    const merchant = document.getElementById('menuLightboxMerchant').textContent;
+    const itemsText = document.getElementById('menuLightboxItemsInput').value.trim();
     if(!itemsText){
       toast('請先輸入想買的品項');
       return;
@@ -900,7 +990,7 @@
 
     updatePreview();
     toast(`已將「${merchant}」的品項加入訂單`);
-    document.getElementById('pinnedItemsInput').value = '';
+    closeMenuLightbox();
     targetRow.scrollIntoView({ behavior:'smooth', block:'center' });
   });
 
@@ -942,8 +1032,9 @@
       hintEl.style.display = 'block';
       updatePreview();
     } else {
-      // 超出範圍：不自動選範圍，改用醒目提示請客戶私訊確認
-      hintEl.textContent = '⚠️ 此地址可能已超出服務範圍，請私訊「成功小蜜丰」LINE 社群確認是否能配送';
+      // 超出範圍：不自動選範圍，改用醒目提示，並提供可直接點擊的私訊連結
+      const askUrl = inquiryLinkUrl || document.getElementById('joinLineBtn').href;
+      hintEl.innerHTML = `⚠️ 此地址可能已超出服務範圍，請<a href="${escapeHtml(askUrl)}" target="_blank" rel="noopener" style="color:var(--coral-dark); text-decoration:underline; font-weight:700;">點此私訊確認是否能配送</a>`;
       hintEl.style.color = 'var(--coral-dark)';
       hintEl.style.display = 'block';
     }
@@ -952,7 +1043,8 @@
 
   function renderServices(services){
     const box = document.getElementById('extraServices');
-    const askUrl = inquiryLinkUrl || 'https://line.me/ti/p/0upvmXtiKU';
+    const askUrl = inquiryLinkUrl || document.getElementById('joinLineBtn').href;
+    document.getElementById('askInlineBtn').href = askUrl;
     if(!services || !services.length){
       box.innerHTML = '<div class="empty">目前尚無額外服務項目，如有特殊需求請於下單備註說明。</div>';
     } else {
@@ -960,15 +1052,12 @@
       services.forEach(svc => {
         const card = document.createElement('div');
         card.className = 'extra-service';
-        const needsAsk = !(Number(svc.fee) > 0); // 沒設定固定金額的服務，改顯示「私訊小蜜丰」按鈕
         card.innerHTML = `
           <div class="info">
             <h4>${escapeHtml(svc.name)}</h4>
             ${svc.desc ? `<p>${escapeHtml(svc.desc)}</p>` : ''}
           </div>
-          ${needsAsk
-            ? `<a class="ask-btn" href="${escapeHtml(askUrl)}" target="_blank" rel="noopener">💬 私訊小蜜丰</a>`
-            : (svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : '')}
+          ${svc.note ? `<div class="note">${escapeHtml(svc.note)}</div>` : ''}
         `;
         box.appendChild(card);
       });
@@ -1020,7 +1109,17 @@
 
   function renderSettings(settings){
     if(!settings) return;
-    inquiryLinkUrl = (settings['私訊小蜜丰連結'] || '').trim();
+    inquiryLinkUrl = (settings['請私訊小蜜丰連結'] || '').trim();
+
+    const announcement = (settings['公告內容'] || '').trim();
+    const announcementEl = document.getElementById('announcementBanner');
+    if(announcement){
+      announcementEl.textContent = `📢 ${announcement}`;
+      announcementEl.style.display = 'flex';
+    } else {
+      announcementEl.style.display = 'none';
+    }
+
     const note = (settings['收款帳號說明'] || '').trim();
     if(note){
       document.getElementById('paymentBox').textContent = note;
@@ -1171,6 +1270,7 @@
         renderMerchants(data.merchants);
         renderMenus(data.menus);
         renderAddressZones(data.addressZones);
+        renderPaymentAccounts(data.paymentAccounts);
         loadingEl.classList.add('hide');
       })
       .catch(()=>{
@@ -1271,33 +1371,6 @@
     }
   }
 
-  function maskPhone(raw){
-    const digits = raw.replace(/\D/g, '');
-    if(digits.length === 10){
-      // 手機：0912-***-678
-      return digits.slice(0, 4) + '-***-' + digits.slice(-3);
-    }
-    if(digits.length === 9){
-      // 市話：089-***456
-      return digits.slice(0, 3) + '-***' + digits.slice(-3);
-    }
-    return raw ? '（電話格式不足，未顯示）' : '（尚未填寫）';
-  }
-
-  function maskAddress(raw){
-    if(!raw) return '（尚未填寫）';
-    // 嘗試遮蔽門牌號碼，例如「成功路123號」→「成功路***號」
-    const masked = raw.replace(/(\d+)(號)/g, (m, num, suffix) => '*'.repeat(Math.min(num.length, 3)) + suffix);
-    if(masked !== raw){
-      return masked + '（門牌將由接單者私訊核對）';
-    }
-    // 找不到「號」的格式，就只保留前段大致區域，避免完整地址曝光
-    if(raw.length > 8){
-      return raw.slice(0, 8) + '…（詳細地址將由接單者私訊核對）';
-    }
-    return raw + '（詳細地址將由接單者私訊核對）';
-  }
-
   let fee = 30;
   document.querySelectorAll('.zone-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -1339,10 +1412,10 @@
     let text =
 `【代購委託】
 ${stopsText}
-地址：${maskAddress(addressRaw)}
+地址：${addressRaw || '（尚未填寫）'}
 範圍：${zoneLabel}
 社群暱稱：${contact}
-聯絡電話：${maskPhone(phoneRaw)}（末三碼保留供核對）`;
+聯絡電話：${phoneRaw || '（尚未填寫）'}`;
     text += schedule ? `\n⏰ 預約時間：${formatSchedule(schedule)}` : `\n⏰ 送達時間：依訂單順序處理`;
     if(stops.length > 1){
       text += `\n🔀 中途轉點：共 ${stops.length} 個商家（加收 $${transferTotal}）`;
@@ -1356,9 +1429,6 @@ ${stopsText}
       ? `\n外送費：$${totalFee}（基本 $${baseFee}${freeDelivery ? '，本店家免運費' : ''}${transferTotal ? ` + 轉點 $${transferTotal}` : ''}${extraServiceTotal ? ` + 加購 $${extraServiceTotal}` : ''}，商品費用另計，現場付款）`
       : `\n外送費：$${fee}（商品費用另計，現場付款）`;
     document.getElementById('preview').textContent = text;
-
-    const encoded = encodeURIComponent(text);
-    document.getElementById('sendLineBtn').href = `https://line.me/R/msg/text/?${encoded}`;
   }
   updatePreview();
 
@@ -1572,7 +1642,7 @@ ${stopsText}
   }
   function showReservedBadge(n){
     document.getElementById('queueNum').textContent = n ? n : '📅';
-    document.getElementById('queueLabel').innerHTML = '已為您預約<br>時間到前會透過群組與電話確認';
+    document.getElementById('queueLabel').innerHTML = '已為您預約';
     document.getElementById('queueBadge').style.display = 'flex';
     document.getElementById('queueQueryBtn').style.display = 'block';
     popBadge();
@@ -1631,48 +1701,43 @@ ${stopsText}
   }
 
   document.getElementById('sendLineBtn').addEventListener('click', async (e)=>{
-    e.preventDefault();
     if(orderingDisabled){ toast('目前暫停接單中，請稍後再試'); return; }
     if(isBot()) return; // 疑似機器人，靜默略過
     formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
     const data = getFormData();
     if(!validateRequired(data)) return;
     const btn = e.currentTarget;
-    const href = btn.href;
     lastOrderPhone = data.phone;
 
+    // 先立刻顯示「處理中」狀態，讓客戶知道已經有反應，接著等後台確認寫入成功
     if(data.schedule){
-      // 預約單：要先確認這個時段沒被別人搶走，才能開LINE、顯示成功，避免衝突後畫面卻顯示已預約
       showReservationPending();
-      const result = await logOrder(data);
-      if(result && result.result === 'error'){
-        hideQueueBadge();
-        toast(result.message || '這個時段已被預約，請重新選擇時段');
-        return; // 不開LINE、不清空表單，讓客戶重新選時段再送一次
-      }
-      window.open(href, '_blank');
-      flashSuccess(btn, '✓ 已送出');
-      toast('已記錄訂單，正在開啟 LINE...');
-      showReservedBadge(result && result.queueNumber);
-      resetForm();
     } else {
-      // 即時單：先立刻做完使用者看得到的動作（開LINE、動畫、提示、清表單、號碼牌），
-      // 不等後台回應，避免瀏覽器把「稍後才開新分頁」誤判為封鎖對象，也讓客戶不用等就能看到反應
-      window.open(href, '_blank');
-      flashSuccess(btn, '✓ 已送出');
-      toast('已記錄訂單，正在開啟 LINE...');
-      showQueuePending(); // 立即單先顯示「查詢中」，後台算好再補上實際單號
-      resetForm();
-
-      // 記錄與單號查詢在背景進行，不影響上面已經完成的畫面回饋
-      logOrder(data).then(result => {
-        if(result && result.queueNumber){
-          showQueueBadge(result.queueNumber);
-        } else {
-          document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
-        }
-      });
+      showQueuePending();
     }
+
+    const result = await logOrder(data);
+
+    if(result && result.result === 'error'){
+      hideQueueBadge();
+      toast(result.message || '送出失敗，請稍後再試');
+      return; // 不清空表單，讓客戶可以修改後重新送出（例如預約時段衝突時換個時間）
+    }
+
+    flashSuccess(btn, '✓ 已送出');
+
+    if(data.schedule){
+      toast('預約已送出，感謝您的委託');
+      showReservedBadge(result && result.queueNumber);
+    } else {
+      toast('訂單已送出，感謝您的委託');
+      if(result && result.queueNumber){
+        showQueueBadge(result.queueNumber);
+      } else {
+        document.getElementById('queueLabel').innerHTML = '訂單已記錄，單號查詢逾時<br>請截圖此畫面作為下單憑證';
+      }
+    }
+    resetForm();
   });
 
 })();
