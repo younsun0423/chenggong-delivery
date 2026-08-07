@@ -88,13 +88,26 @@
     font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink);
   }
   .settlement-hint{font-size:12px; color:var(--ocean-dark); opacity:.75; margin-bottom:14px; line-height:1.6;}
-  .settlement-card{
+  .settlement-card-wrap{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:16px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:12px; overflow:hidden;
+  }
+  .settlement-card{
+    padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;
   }
   .settlement-card .sc-name{font-family:'Noto Serif TC',serif; font-weight:900; font-size:15px;}
+  .settlement-card .sc-arrow{font-size:12px; color:var(--ocean-dark); opacity:.6; margin-left:4px;}
   .settlement-card .sc-count{font-size:11px; color:var(--ocean-dark); opacity:.75; margin-top:2px;}
   .settlement-card .sc-total{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:900; color:var(--coral-dark);}
+  .settlement-detail{border-top:2px solid var(--ink); padding:10px 18px;}
+  .settlement-detail-row{padding:9px 0; border-bottom:1px dashed var(--seafoam);}
+  .settlement-detail-row:last-child{border-bottom:none;}
+  .settlement-detail-row .sd-top{display:flex; align-items:center; gap:8px; font-size:12px;}
+  .settlement-detail-row .sd-num{font-family:'JetBrains Mono',monospace; font-weight:900; color:var(--coral-dark);}
+  .settlement-detail-row .sd-date{color:var(--ocean-dark); opacity:.75; flex:1;}
+  .settlement-detail-row .sd-fee{font-family:'JetBrains Mono',monospace; font-weight:700;}
+  .settlement-detail-row .sd-merchant{font-size:13px; font-weight:700; margin-top:4px;}
+  .settlement-detail-row .sd-items{font-size:12px; color:var(--ocean-dark); opacity:.8; margin-top:2px; white-space:pre-wrap;}
   .settlement-unassigned{
     background:var(--gold); border:2px solid var(--ink); border-radius:var(--radius);
     padding:12px 16px; font-size:12.5px; font-weight:700; margin-bottom:12px; line-height:1.6;
@@ -192,6 +205,45 @@
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
+  .order-search-btn{
+    width:100%; padding:11px; border:2px solid var(--ink); border-radius:10px; margin-bottom:14px;
+    background:var(--card); color:var(--ink); font-weight:700; font-size:13px; cursor:pointer; font-family:inherit;
+  }
+  .order-search-btn:hover{background:var(--gold);}
+
+  .detail-overlay{
+    display:none; position:fixed; inset:0; background:rgba(34,48,46,.85); z-index:250;
+    align-items:flex-start; justify-content:center; padding:16px; overflow-y:auto;
+  }
+  .detail-panel{
+    background:var(--paper); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:24px 20px; margin:30px auto; max-width:440px; width:100%; position:relative;
+  }
+  .detail-panel h3{margin:0 0 4px; font-size:18px;}
+  .detail-close{
+    position:absolute; top:14px; right:14px; background:var(--ink); color:var(--paper); border:none;
+    border-radius:999px; width:30px; height:30px; font-size:15px; cursor:pointer;
+  }
+  .order-search-fields{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .order-search-fields input[type="date"]{
+    flex:1 1 150px; padding:10px 11px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink);
+  }
+  .order-search-fields input[type="text"]{
+    flex:1 1 110px; padding:10px 11px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink);
+  }
+  .order-search-fields button{
+    flex:0 0 auto; padding:10px 18px; border:2px solid var(--ink); border-radius:10px;
+    background:var(--ocean); color:var(--paper); font-weight:700; font-size:13px; cursor:pointer; font-family:inherit;
+  }
+  .search-result-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:10px; padding:12px 14px; margin-bottom:10px;
+    font-size:12.5px; line-height:1.8;
+  }
+  .search-result-card .row{display:flex; gap:6px;}
+  .search-result-card .label{flex-shrink:0; color:var(--ocean-dark); opacity:.75; width:56px;}
+
   .refresh-hint{text-align:center; font-size:11px; color:var(--ocean-dark); opacity:.6; margin:10px 0 4px;}
 </style>
 </head>
@@ -243,6 +295,7 @@
       <div class="settlement-date-picker" id="settlementDatePicker">
         <input type="date" id="settlementDate">
       </div>
+      <button type="button" class="order-search-btn" id="openOrderSearchBtn">🔍 用日期或單號查詢訂單明細</button>
       <div class="settlement-hint" id="settlementHint">統計本月「已送達」訂單，依指派的外送員加總外送費</div>
       <div id="settlementList"></div>
     </div>
@@ -250,6 +303,21 @@
 </main>
 
 <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt="訂單照片"></div>
+
+<div class="detail-overlay" id="orderSearchOverlay">
+  <div class="detail-panel">
+    <button class="detail-close" id="orderSearchClose" aria-label="關閉">✕</button>
+    <h3>🔍 查詢訂單明細</h3>
+    <div class="hint" style="font-size:12px; color:var(--ocean-dark); opacity:.75; margin-bottom:14px; line-height:1.6;">輸入日期查該天所有訂單，或輸入單號查特定一筆（兩者可單獨或一起用）</div>
+    <div class="order-search-fields">
+      <input type="date" id="searchDate">
+      <input type="text" id="searchQueueNumber" placeholder="單號，例如 5 或 R3">
+      <button type="button" id="orderSearchBtn">查詢</button>
+    </div>
+    <div id="orderSearchResult"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -560,15 +628,115 @@
 
     data.summary.forEach(item => {
       const card = document.createElement('div');
-      card.className = 'settlement-card';
-      card.innerHTML = `
+      card.className = 'settlement-card-wrap';
+
+      const head = document.createElement('div');
+      head.className = 'settlement-card';
+      head.innerHTML = `
         <div>
-          <div class="sc-name">${escapeHtml(item.deliverer)}</div>
-          <div class="sc-count">共 ${item.count} 筆已送達</div>
+          <div class="sc-name">${escapeHtml(item.deliverer)} <span class="sc-arrow">▸</span></div>
+          <div class="sc-count">共 ${item.count} 筆已送達（點擊展開明細）</div>
         </div>
         <div class="sc-total">$${item.total}</div>
       `;
+      card.appendChild(head);
+
+      const detail = document.createElement('div');
+      detail.className = 'settlement-detail';
+      detail.style.display = 'none';
+      (item.orders || []).forEach(o => {
+        const row = document.createElement('div');
+        row.className = 'settlement-detail-row';
+        const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
+        row.innerHTML = `
+          <div class="sd-top">
+            <span class="sd-num">${escapeHtml(numLabel)}</span>
+            <span class="sd-date">${escapeHtml(o.date)} ${escapeHtml(o.time)}</span>
+            <span class="sd-fee">$${escapeHtml(String(o.fee))}</span>
+          </div>
+          <div class="sd-merchant">${escapeHtml(o.merchant || '—')}${o.orderType === '商家外送委託' ? ' 🏪' : ''}</div>
+          <div class="sd-items">${escapeHtml(o.items || '—')}</div>
+        `;
+        detail.appendChild(row);
+      });
+      card.appendChild(detail);
+
+      head.addEventListener('click', ()=>{
+        const isOpen = detail.style.display === 'block';
+        detail.style.display = isOpen ? 'none' : 'block';
+        head.querySelector('.sc-arrow').textContent = isOpen ? '▸' : '▾';
+      });
+
       listEl.appendChild(card);
+    });
+  }
+
+  // ---------- 訂單搜尋視窗：用日期或單號查詢明細 ----------
+  const orderSearchOverlay = document.getElementById('orderSearchOverlay');
+  document.getElementById('openOrderSearchBtn').addEventListener('click', ()=>{
+    orderSearchOverlay.style.display = 'flex';
+  });
+  document.getElementById('orderSearchClose').addEventListener('click', ()=>{
+    orderSearchOverlay.style.display = 'none';
+  });
+  orderSearchOverlay.addEventListener('click', (e)=>{
+    if(e.target === orderSearchOverlay) orderSearchOverlay.style.display = 'none';
+  });
+
+  document.getElementById('orderSearchBtn').addEventListener('click', ()=>{
+    const date = document.getElementById('searchDate').value;
+    const queueNumber = document.getElementById('searchQueueNumber').value.trim();
+    const resultEl = document.getElementById('orderSearchResult');
+
+    if(!date && !queueNumber){
+      toast('請至少輸入日期或單號其中一項');
+      return;
+    }
+
+    resultEl.innerHTML = '<div class="empty-state">查詢中...</div>';
+
+    const params = [];
+    if(date) params.push(`date=${encodeURIComponent(date)}`);
+    if(queueNumber) params.push(`queueNumber=${encodeURIComponent(queueNumber)}`);
+
+    fetch(`${SCRIPT_URL}?action=orderSearch&pin=${encodeURIComponent(currentPin)}&${params.join('&')}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if(data.error){
+          toast('查詢失敗，請重新整理後再試');
+          return;
+        }
+        renderOrderSearchResult(data.orders || [], data.message);
+      })
+      .catch(()=>{ toast('查詢失敗，請檢查網路連線'); });
+  });
+
+  function renderOrderSearchResult(orders, message){
+    const resultEl = document.getElementById('orderSearchResult');
+    if(message){
+      resultEl.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+      return;
+    }
+    if(!orders.length){
+      resultEl.innerHTML = '<div class="empty-state">📭 查無符合條件的訂單</div>';
+      return;
+    }
+    resultEl.innerHTML = '';
+    orders.forEach(o => {
+      const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
+      const card = document.createElement('div');
+      card.className = 'search-result-card';
+      card.innerHTML = `
+        <div class="row"><span class="label">單號</span><span>${escapeHtml(numLabel)}　${escapeHtml(o.date)} ${escapeHtml(o.time)}${o.orderType === '商家外送委託' ? '　🏪 商家委託' : ''}</span></div>
+        <div class="row"><span class="label">商家</span><span>${escapeHtml(o.merchant || '—')}</span></div>
+        <div class="row"><span class="label">品項</span><span>${escapeHtml(o.items || '—')}</span></div>
+        <div class="row"><span class="label">地址</span><span>${escapeHtml(o.address || '—')}</span></div>
+        <div class="row"><span class="label">電話</span><span>${escapeHtml(o.phone || '—')}</span></div>
+        <div class="row"><span class="label">費用</span><span>外送費 $${escapeHtml(String(o.fee || '—'))}${o.goodsAmount ? `　商品 $${escapeHtml(String(o.goodsAmount))}` : ''}</span></div>
+        <div class="row"><span class="label">狀態</span><span>${escapeHtml(o.status || '待處理')}${o.deliverer ? `　外送員：${escapeHtml(o.deliverer)}` : ''}</span></div>
+        ${o.note ? `<div class="row"><span class="label">備註</span><span>${escapeHtml(o.note)}</span></div>` : ''}
+      `;
+      resultEl.appendChild(card);
     });
   }
 
