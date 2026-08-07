@@ -127,6 +127,10 @@
     background:var(--gold); border:2px solid var(--ink); border-radius:8px; padding:8px 10px;
     font-size:12.5px; font-weight:700; margin-top:8px; line-height:1.6;
   }
+  .collect-total{
+    background:var(--seafoam); border:2px solid var(--ink); border-radius:8px; padding:8px 10px;
+    font-size:13px; font-weight:700; margin-top:6px; line-height:1.6; color:var(--ink);
+  }
   .confirm-payment-btn{
     width:100%; margin-top:10px; padding:11px; border:2px solid var(--ink); border-radius:10px;
     background:#06C755; color:#fff; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit;
@@ -224,7 +228,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymjn02-UalruC7IFHxuRb-eOv7egCX8ibBZ-lIGAKnyzXmdXQAg87kF1uGWZ2m5zZ4/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKAlL46wtB4Kv51mpk82ku_YzjQ2LT2EkVVOoB5Mxm-SeKK3T2EI4ztCinVJRKLVvf/exec';
 
   const PIN_STORAGE_KEY = 'mifeng_admin_pin';
 
@@ -544,6 +548,12 @@
       <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
       <div class="row"><span class="label">暱稱</span><span>${escapeHtml(order.contact || '—')}</span></div>
     `;
+    if(order.goodsAmount){
+      const goodsNum = Number(order.goodsAmount) || 0;
+      const feeNum = Number(order.fee) || 0;
+      infoHtml += `<div class="row"><span class="label">商品</span><span>$${escapeHtml(String(order.goodsAmount))}</span></div>`;
+      infoHtml += `<div class="collect-total">💰 應向客戶收取：$${goodsNum + feeNum}（商品 $${goodsNum} + 外送費 $${feeNum}）</div>`;
+    }
     if(order.extraServices) infoHtml += `<div class="row"><span class="label">加購</span><span>${escapeHtml(order.extraServices)}</span></div>`;
     if(order.note) infoHtml += `<div class="row"><span class="label">備註</span><span>${escapeHtml(order.note)}</span></div>`;
 
