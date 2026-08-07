@@ -640,7 +640,7 @@
       <div class="goods-amount-picker">
         <label>商品金額（後台填寫，方便核對應收總金額）</label>
         <input type="number" inputmode="numeric" min="0" class="goods-amount-input" placeholder="例：350" value="${escapeHtml(String(order.goodsAmount || ''))}">
-        <div class="collect-total" id="collectTotal-${order.rowKey}"></div>
+        <div class="collect-total"></div>
       </div>
       <div class="deliverer-picker">
         <label>指派外送員</label>
@@ -660,7 +660,7 @@
     }
 
     const goodsInput = card.querySelector('.goods-amount-input');
-    const totalEl = card.querySelector(`#collectTotal-${order.rowKey}`);
+    const totalEl = card.querySelector('.collect-total');
     function refreshCollectTotal(){
       const goodsNum = Number(goodsInput.value) || 0;
       const feeNum = Number(order.fee) || 0;
