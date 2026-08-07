@@ -76,6 +76,17 @@
   .filter-tabs button.active{background:var(--ink); color:var(--paper);}
 
   /* ---- 結算畫面 ---- */
+  .settlement-range-tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .settlement-range-tabs .range-btn{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink);
+    padding:9px 8px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .settlement-range-tabs .range-btn.active{background:var(--ocean); color:var(--paper);}
+  .settlement-date-picker{margin-bottom:14px;}
+  .settlement-date-picker input{
+    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink);
+  }
   .settlement-hint{font-size:12px; color:var(--ocean-dark); opacity:.75; margin-bottom:14px; line-height:1.6;}
   .settlement-card{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
@@ -143,6 +154,14 @@
 
   .order-photo{margin-top:8px;}
   .order-photo img{width:70px; height:70px; object-fit:cover; border-radius:8px; border:2px solid var(--ink); cursor:pointer;}
+
+  .goods-amount-picker{margin-top:14px;}
+  .goods-amount-picker label{display:block; font-size:11px; font-weight:700; color:var(--ocean-dark); opacity:.75; margin-bottom:5px;}
+  .goods-amount-input{
+    width:100%; padding:9px 11px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--ink);
+  }
+  .goods-amount-picker .collect-total{display:none;}
 
   .deliverer-picker{margin-top:14px;}
   .deliverer-picker label{display:block; font-size:11px; font-weight:700; color:var(--ocean-dark); opacity:.75; margin-bottom:5px;}
@@ -217,7 +236,14 @@
     </div>
 
     <div id="settlementView" style="display:none;">
-      <div class="settlement-hint">統計本月「已送達」訂單，依指派的外送員加總外送費</div>
+      <div class="settlement-range-tabs">
+        <button type="button" class="range-btn active" data-range="day">單日結算</button>
+        <button type="button" class="range-btn" data-range="month">本月總覽</button>
+      </div>
+      <div class="settlement-date-picker" id="settlementDatePicker">
+        <input type="date" id="settlementDate">
+      </div>
+      <div class="settlement-hint" id="settlementHint">統計本月「已送達」訂單，依指派的外送員加總外送費</div>
       <div id="settlementList"></div>
     </div>
   </div>
@@ -464,11 +490,40 @@
     loadSettlement();
   });
 
+  // ---------- 結算範圍切換：單日 / 本月 ----------
+  let settlementRange = 'day'; // 'day' | 'month'
+  const settlementDateInput = document.getElementById('settlementDate');
+  const settlementDatePicker = document.getElementById('settlementDatePicker');
+
+  // 預設帶入今天日期
+  (function setDefaultSettlementDate(){
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    settlementDateInput.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  })();
+
+  document.querySelectorAll('.range-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      settlementRange = btn.dataset.range;
+      settlementDatePicker.style.display = (settlementRange === 'day') ? 'block' : 'none';
+      loadSettlement();
+    });
+  });
+  settlementDateInput.addEventListener('change', ()=>{
+    if(settlementRange === 'day') loadSettlement();
+  });
+
   function loadSettlement(){
     const listEl = document.getElementById('settlementList');
     listEl.innerHTML = '<div class="empty-state">讀取中...</div>';
 
-    fetch(`${SCRIPT_URL}?action=settlement&pin=${encodeURIComponent(currentPin)}&t=${Date.now()}`, { cache:'no-store' })
+    const dateParam = (settlementRange === 'day' && settlementDateInput.value)
+      ? `&date=${encodeURIComponent(settlementDateInput.value)}`
+      : '';
+
+    fetch(`${SCRIPT_URL}?action=settlement&pin=${encodeURIComponent(currentPin)}${dateParam}&t=${Date.now()}`, { cache:'no-store' })
       .then(r => r.json())
       .then(data => {
         if(data.error){
@@ -482,7 +537,14 @@
 
   function renderSettlement(data){
     const listEl = document.getElementById('settlementList');
+    const hintEl = document.getElementById('settlementHint');
     listEl.innerHTML = '';
+
+    if(data.filteredDate){
+      hintEl.textContent = `統計 ${data.filteredDate} 當天「已送達」訂單，依指派的外送員加總外送費`;
+    } else {
+      hintEl.textContent = '統計本月「已送達」訂單，依指派的外送員加總外送費';
+    }
 
     if(data.unassignedCount > 0){
       const warn = document.createElement('div');
@@ -492,7 +554,7 @@
     }
 
     if(!data.summary || !data.summary.length){
-      listEl.innerHTML += '<div class="empty-state">📭 本月還沒有已指派外送員且送達的訂單</div>';
+      listEl.innerHTML += `<div class="empty-state">📭 ${data.filteredDate ? '這一天' : '本月'}還沒有已指派外送員且送達的訂單</div>`;
       return;
     }
 
@@ -548,12 +610,6 @@
       <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
       <div class="row"><span class="label">暱稱</span><span>${escapeHtml(order.contact || '—')}</span></div>
     `;
-    if(order.goodsAmount){
-      const goodsNum = Number(order.goodsAmount) || 0;
-      const feeNum = Number(order.fee) || 0;
-      infoHtml += `<div class="row"><span class="label">商品</span><span>$${escapeHtml(String(order.goodsAmount))}</span></div>`;
-      infoHtml += `<div class="collect-total">💰 應向客戶收取：$${goodsNum + feeNum}（商品 $${goodsNum} + 外送費 $${feeNum}）</div>`;
-    }
     if(order.extraServices) infoHtml += `<div class="row"><span class="label">加購</span><span>${escapeHtml(order.extraServices)}</span></div>`;
     if(order.note) infoHtml += `<div class="row"><span class="label">備註</span><span>${escapeHtml(order.note)}</span></div>`;
 
@@ -581,6 +637,11 @@
       <div class="order-info">${infoHtml}</div>
       ${order.photo ? `<div class="order-photo"><img src="${escapeHtml(order.photo)}" alt="訂單照片"></div>` : ''}
       ${paymentActionHtml}
+      <div class="goods-amount-picker">
+        <label>商品金額（後台填寫，方便核對應收總金額）</label>
+        <input type="number" inputmode="numeric" min="0" class="goods-amount-input" placeholder="例：350" value="${escapeHtml(String(order.goodsAmount || ''))}">
+        <div class="collect-total" id="collectTotal-${order.rowKey}"></div>
+      </div>
       <div class="deliverer-picker">
         <label>指派外送員</label>
         <select class="deliverer-select"><option value="">－ 尚未指派 －</option></select>
@@ -597,6 +658,25 @@
     if(confirmBtn){
       confirmBtn.addEventListener('click', ()=> confirmPayment(order, card));
     }
+
+    const goodsInput = card.querySelector('.goods-amount-input');
+    const totalEl = card.querySelector(`#collectTotal-${order.rowKey}`);
+    function refreshCollectTotal(){
+      const goodsNum = Number(goodsInput.value) || 0;
+      const feeNum = Number(order.fee) || 0;
+      if(goodsNum > 0){
+        totalEl.textContent = `💰 應向客戶收取：$${goodsNum + feeNum}（商品 $${goodsNum} + 外送費 $${feeNum}）`;
+        totalEl.style.display = 'block';
+      } else {
+        totalEl.style.display = 'none';
+      }
+    }
+    refreshCollectTotal();
+    goodsInput.addEventListener('input', refreshCollectTotal);
+    goodsInput.addEventListener('blur', ()=>{
+      if(goodsInput.value.trim() === String(order.goodsAmount || '').trim()) return; // 沒有變更就不用打API
+      updateGoodsAmount(order, goodsInput.value.trim());
+    });
 
     const delivererSelect = card.querySelector('.deliverer-select');
     currentDeliverers.forEach(d => {
@@ -680,6 +760,30 @@
         }
       })
       .catch(()=>{ toast('確認失敗，請檢查網路連線'); });
+  }
+
+  function updateGoodsAmount(order, amount){
+    order.goodsAmount = amount;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'updateGoodsAmount',
+        pin: currentPin,
+        sheetName: order.sheetName,
+        rowKey: order.rowKey,
+        goodsAmount: amount
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if(data.result === 'success'){
+          toast('💰 商品金額已儲存');
+        } else {
+          toast(data.message || '儲存失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ toast('儲存失敗，請檢查網路連線'); });
   }
 
   function renderOrders(){
