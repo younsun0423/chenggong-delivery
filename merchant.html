@@ -85,6 +85,21 @@
   .query-order-card .qo-row{font-size:12.5px; line-height:1.7;}
   .query-order-card .qo-row b{color:var(--ocean-dark);}
 
+  .query-date-group{
+    background:var(--card); border:2px solid var(--ink); border-radius:12px; margin-bottom:12px; overflow:hidden;
+  }
+  .query-date-group summary{
+    list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; justify-content:space-between;
+    gap:8px; font-weight:700; font-size:14px; user-select:none;
+  }
+  .query-date-group summary::-webkit-details-marker{display:none;}
+  .query-date-group .qdg-count{font-size:11px; font-weight:600; color:var(--ocean-dark); opacity:.75; display:flex; align-items:center; gap:6px;}
+  .query-date-group .qdg-arrow{font-size:12px; transition:transform .2s ease;}
+  .query-date-group[open] .qdg-arrow{transform:rotate(90deg);}
+  .query-date-group-body{padding:0 12px 12px;}
+  .query-date-group .query-order-card{margin-bottom:8px;}
+  .query-date-group .query-order-card:last-child{margin-bottom:0;}
+
   .zone-toggle{display:flex; gap:8px;}
   .zone-toggle button{
     flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink); opacity:.6;
@@ -399,24 +414,56 @@
           resultEl.innerHTML = '<div class="hint">📭 這個商家還沒有委託紀錄</div>';
           return;
         }
-        resultEl.innerHTML = '';
+
+        // 依日期分組（訂單已經是新到舊排序，分組後組內順序不變）
+        const groups = {};
+        const groupOrder = [];
         orders.forEach(o => {
-          const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
-          const card = document.createElement('div');
-          card.className = 'query-order-card';
-          card.innerHTML = `
-            <div class="qo-top">
-              <span class="qo-num">${numLabel}</span>
-              <span class="qo-status ${o.status || '待處理'}">${o.status || '待處理'}</span>
-            </div>
-            <div class="qo-time">${formatQueryTime(o)}</div>
-            <div class="qo-row"><b>收件人：</b>${o.contact || '—'}</div>
-            <div class="qo-row"><b>地址：</b>${o.address || '—'}</div>
-            <div class="qo-row"><b>內容：</b>${o.items || '—'}</div>
-            <div class="qo-row"><b>外送費：</b>$${o.fee || '—'}${o.goodsAmount ? `　商品 $${o.goodsAmount}` : ''}</div>
-            ${o.deliverer ? `<div class="qo-row"><b>外送員：</b>${o.deliverer}</div>` : ''}
-          `;
-          resultEl.appendChild(card);
+          const dateKey = o.date || '未知日期';
+          if(!groups[dateKey]){ groups[dateKey] = []; groupOrder.push(dateKey); }
+          groups[dateKey].push(o);
+        });
+
+        // 今天的日期用跟後端一樣的 yyyy/MM/dd 格式，才能正確比對
+        const now = new Date();
+        const pad = n => String(n).padStart(2,'0');
+        const todayKey = `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())}`;
+
+        resultEl.innerHTML = '';
+        groupOrder.forEach(dateKey => {
+          const dayOrders = groups[dateKey];
+          const details = document.createElement('details');
+          details.className = 'query-date-group';
+          details.open = (dateKey === todayKey); // 今天的訂單預設展開，其他日期預設收合
+
+          const summary = document.createElement('summary');
+          summary.innerHTML = `<span>${dateKey}${dateKey === todayKey ? '（今天）' : ''}</span><span class="qdg-count">共 ${dayOrders.length} 筆<span class="qdg-arrow">▸</span></span>`;
+          details.appendChild(summary);
+
+          const body = document.createElement('div');
+          body.className = 'query-date-group-body';
+
+          dayOrders.forEach(o => {
+            const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
+            const card = document.createElement('div');
+            card.className = 'query-order-card';
+            card.innerHTML = `
+              <div class="qo-top">
+                <span class="qo-num">${numLabel}</span>
+                <span class="qo-status ${o.status || '待處理'}">${o.status || '待處理'}</span>
+              </div>
+              <div class="qo-time">${formatQueryTime(o)}</div>
+              <div class="qo-row"><b>收件人：</b>${o.contact || '—'}</div>
+              <div class="qo-row"><b>地址：</b>${o.address || '—'}</div>
+              <div class="qo-row"><b>內容：</b>${o.items || '—'}</div>
+              <div class="qo-row"><b>外送費：</b>$${o.fee || '—'}${o.goodsAmount ? `　商品 $${o.goodsAmount}` : ''}</div>
+              ${o.deliverer ? `<div class="qo-row"><b>外送員：</b>${o.deliverer}</div>` : ''}
+            `;
+            body.appendChild(card);
+          });
+
+          details.appendChild(body);
+          resultEl.appendChild(details);
         });
       })
       .catch(()=>{ resultEl.innerHTML = '<div class="hint">查詢失敗，請檢查網路連線</div>'; });
