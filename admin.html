@@ -108,6 +108,14 @@
   .settlement-detail-row .sd-fee{font-family:'JetBrains Mono',monospace; font-weight:700;}
   .settlement-detail-row .sd-merchant{font-size:13px; font-weight:700; margin-top:4px;}
   .settlement-detail-row .sd-items{font-size:12px; color:var(--ocean-dark); opacity:.8; margin-top:2px; white-space:pre-wrap;}
+  .settlement-detail-row{cursor:pointer;}
+  .settlement-detail-row .sd-expand-arrow{font-size:11px; color:var(--ocean-dark); opacity:.5; flex-shrink:0;}
+  .settlement-detail-row .sd-full-detail{
+    margin-top:8px; padding-top:8px; border-top:1px dashed var(--seafoam); font-size:12px; line-height:1.8;
+  }
+  .settlement-detail-row .sfd-row{display:flex; gap:6px;}
+  .settlement-detail-row .sfd-row b{flex-shrink:0; width:40px; color:var(--ocean-dark); opacity:.7; font-weight:700;}
+  .settlement-detail-row .sfd-row a{color:var(--ocean-dark);}
   .settlement-unassigned{
     background:var(--gold); border:2px solid var(--ink); border-radius:var(--radius);
     padding:12px 16px; font-size:12.5px; font-weight:700; margin-bottom:12px; line-height:1.6;
@@ -653,10 +661,33 @@
             <span class="sd-num">${escapeHtml(numLabel)}</span>
             <span class="sd-date">${escapeHtml(o.date)} ${escapeHtml(o.time)}</span>
             <span class="sd-fee">$${escapeHtml(String(o.fee))}</span>
+            <span class="sd-expand-arrow">▸</span>
           </div>
           <div class="sd-merchant">${escapeHtml(o.merchant || '—')}${o.orderType === '商家外送委託' ? ' 🏪' : ''}</div>
           <div class="sd-items">${escapeHtml(o.items || '—')}</div>
+          <div class="sd-full-detail" style="display:none;"></div>
         `;
+
+        const fullDetailEl = row.querySelector('.sd-full-detail');
+        const isRemitOrder = o.paymentMethod === '匯款';
+        fullDetailEl.innerHTML = `
+          <div class="sfd-row"><b>地址</b>${escapeHtml(o.address || '—')}（${escapeHtml(o.zone || '—')}）</div>
+          <div class="sfd-row"><b>電話</b><a href="tel:${escapeHtml((o.phone||'').replace(/\D/g,''))}">${escapeHtml(o.phone || '—')}</a></div>
+          <div class="sfd-row"><b>暱稱</b>${escapeHtml(o.contact || '—')}</div>
+          ${o.extraServices ? `<div class="sfd-row"><b>加購</b>${escapeHtml(o.extraServices)}</div>` : ''}
+          ${o.goodsAmount ? `<div class="sfd-row"><b>商品</b>$${escapeHtml(String(o.goodsAmount))}</div>` : ''}
+          <div class="sfd-row"><b>付款</b>${isRemitOrder ? '💳 匯款轉帳' : '💵 現場付款'}</div>
+          ${o.note ? `<div class="sfd-row"><b>備註</b>${escapeHtml(o.note)}</div>` : ''}
+          ${o.schedule ? `<div class="sfd-row"><b>預約</b>${escapeHtml(formatScheduleDisplay(o.schedule))}</div>` : ''}
+        `;
+
+        row.addEventListener('click', (e)=>{
+          e.stopPropagation(); // 避免同時觸發外層外送員卡片的收合
+          const isOpen = fullDetailEl.style.display === 'block';
+          fullDetailEl.style.display = isOpen ? 'none' : 'block';
+          row.querySelector('.sd-expand-arrow').textContent = isOpen ? '▸' : '▾';
+        });
+
         detail.appendChild(row);
       });
       card.appendChild(detail);
