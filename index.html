@@ -644,9 +644,9 @@
         </div>
         <div id="savedAddressList" class="saved-address-list"></div>
         <div class="saved-address-empty" id="savedAddressHint">
-          選好地址後，可釘選成常用地址；下次直接點一下即可帶入。
+          可釘選多個常用地址，例如：家裡、公司、爸媽家；下次點一下即可帶入。
         </div>
-        <button type="button" class="pin-address-btn" id="pinAddressBtn">📌 釘選目前地址</button>
+        <button type="button" class="pin-address-btn" id="pinAddressBtn">📌 將目前地址加入常用地址</button>
       </div>
     </div>
     <div class="field">
@@ -1419,7 +1419,7 @@
 
   // ---------- 常用地址：使用瀏覽器 localStorage 儲存，無需登入 ----------
   const SAVED_ADDRESS_KEY = 'chenggongDeliverySavedAddressesV1';
-  const MAX_SAVED_ADDRESSES = 5;
+  const MAX_SAVED_ADDRESSES = 50;
 
   function loadSavedAddresses(){
     try{
@@ -1491,7 +1491,7 @@
 
     const list = loadSavedAddresses();
     listEl.innerHTML = '';
-    countEl.textContent = list.length ? `${list.length}/${MAX_SAVED_ADDRESSES}` : '';
+    countEl.textContent = list.length ? `已釘選 ${list.length} 個地址` : '';
 
     if(!list.length){
       hintEl.style.display = 'block';
@@ -1533,7 +1533,7 @@
     const current = getCurrentAddressParts();
     const hasAddress = !!(current.township && (current.road === '其他' ? current.roadOther : current.road) && current.detail);
     pinBtn.disabled = !hasAddress;
-    pinBtn.textContent = hasAddress ? '📌 釘選目前地址' : '📌 請先完成地址再釘選';
+    pinBtn.textContent = hasAddress ? '📌 將目前地址加入常用地址' : '📌 請先完成地址';
   }
 
   function pinCurrentAddress(){
