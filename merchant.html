@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>成功小蜜丰｜商家外送委託</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22302E; --paper:#DCEEF7; --card:#F2F9FC;
+    --ocean:#1E5B67; --ocean-dark:#153F48; --seafoam:#7FADA9;
+    --coral:#E2532F; --coral-dark:#B93F22; --gold:#E3A94B;
+    --radius:14px;
+    --shadow:0 2px 0 var(--ink), 0 8px 20px -10px rgba(34,48,46,.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif; -webkit-font-smoothing:antialiased;
+    padding-bottom:40px;
+  }
+  h1,h2,h3{font-family:'Noto Serif TC', serif; font-weight:900;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  header{
+    position:sticky; top:0; z-index:50; background:var(--ink); color:var(--paper);
+    padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    box-shadow:0 3px 0 rgba(0,0,0,.15);
+  }
+  header h1{font-size:16px; margin:0; color:var(--paper);}
+  header .sub{font-family:'JetBrains Mono',monospace; font-size:10.5px; opacity:.65; margin-top:2px;}
+
+  main{max-width:520px; margin:0 auto; padding:16px;}
+
+  .loading-banner{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    background:var(--card); color:var(--ocean-dark); border:2px dashed var(--ocean); border-radius:var(--radius);
+    padding:10px 16px; margin-bottom:14px; font-size:12.5px; font-weight:700;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .loading-banner.hide{opacity:0; transform:translateY(-6px); pointer-events:none; height:0; margin:0; padding:0; border:none; overflow:hidden;}
+
+  .hours-status-banner{
+    display:flex; align-items:center; gap:8px; color:var(--ink);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:12px 16px; margin-bottom:14px; font-size:12.5px; font-weight:700; line-height:1.6;
+  }
+
+  .hours-announcement-banner{
+    display:flex; align-items:center; gap:8px; background:var(--coral-dark); color:#fff;
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; margin-bottom:16px; font-size:13.5px; font-weight:700; line-height:1.7;
+  }
+
+  .urgent-hint{
+    display:flex; align-items:center; gap:8px; background:var(--gold); color:var(--ink);
+    border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:12px 16px; margin-bottom:10px; font-size:12.5px; font-weight:700; line-height:1.6;
+  }
+
+  .inquiry-helper-btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:999px;
+    padding:11px 16px; margin-bottom:18px; font-size:13px; font-weight:700; text-decoration:none;
+  }
+  .inquiry-helper-btn:hover{filter:brightness(1.1);}
+
+  /* ---- 表單 ---- */
+  .form-section{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px 16px; margin-bottom:16px;
+  }
+  .form-section-title{
+    font-family:'Noto Serif TC', serif; font-weight:900; font-size:15px; color:var(--ocean-dark);
+    margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid var(--seafoam);
+  }
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:13px; font-weight:700; color:var(--ocean-dark); margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:inherit; font-size:14px; color:var(--ink);
+  }
+  .field textarea{min-height:60px; resize:vertical;}
+  .field input:focus, .field textarea:focus, .field select:focus{
+    outline:none; border-color:var(--ocean); box-shadow:0 0 0 3px rgba(30,91,103,.18);
+  }
+  .field .hint{font-size:11.5px; color:var(--ocean-dark); opacity:.75; margin-top:5px; line-height:1.5;}
+
+  .merchant-select-row{display:flex; gap:8px;}
+  .merchant-select-row select{flex:1;}
+  #pinMerchantBtn{
+    flex-shrink:0; width:48px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-size:18px; cursor:pointer; opacity:.5;
+  }
+  #pinMerchantBtn.pinned{background:var(--gold); opacity:1;}
+
+  .view-tabs{display:flex; gap:8px; margin-bottom:18px;}
+  .view-tab-btn{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink);
+    padding:11px; border-radius:12px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .view-tab-btn.active{background:var(--ocean); color:var(--paper);}
+
+  .query-order-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:12px; padding:14px 16px; margin-bottom:12px;
+  }
+  .query-order-card .qo-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;}
+  .query-order-card .qo-num{font-family:'JetBrains Mono',monospace; font-weight:900; font-size:16px; color:var(--coral-dark);}
+  .query-order-card .qo-time{font-size:11px; color:var(--ocean-dark); opacity:.7;}
+  .query-order-card .qo-status{
+    font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px; border:1.5px solid var(--ink);
+  }
+  .query-order-card .qo-status.待處理{background:var(--gold);}
+  .query-order-card .qo-status.處理中{background:var(--coral); color:#fff;}
+  .query-order-card .qo-status.運送中{background:var(--ocean); color:#fff;}
+  .query-order-card .qo-status.已送達{background:var(--seafoam);}
+  .query-order-card .qo-row{font-size:12.5px; line-height:1.7;}
+  .query-order-card .qo-row b{color:var(--ocean-dark);}
+
+  .query-date-group{
+    background:var(--card); border:2px solid var(--ink); border-radius:12px; margin-bottom:12px; overflow:hidden;
+  }
+  .query-date-group summary{
+    list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; justify-content:space-between;
+    gap:8px; font-weight:700; font-size:14px; user-select:none;
+  }
+  .query-date-group summary::-webkit-details-marker{display:none;}
+  .query-date-group .qdg-count{font-size:11px; font-weight:600; color:var(--ocean-dark); opacity:.75; display:flex; align-items:center; gap:6px;}
+  .query-date-group .qdg-arrow{font-size:12px; transition:transform .2s ease;}
+  .query-date-group[open] .qdg-arrow{transform:rotate(90deg);}
+  .query-date-group-body{padding:0 12px 12px;}
+  .query-date-group .query-order-card{margin-bottom:8px;}
+  .query-date-group .query-order-card:last-child{margin-bottom:0;}
+
+  .range-hint{
+    font-size:11.5px; color:var(--ocean-dark); opacity:.8; line-height:1.6; margin-bottom:8px;
+  }
+  .range-hint strong{opacity:1; font-weight:700;}
+
+  .zone-toggle{display:flex; gap:8px;}
+  .zone-toggle button{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink); opacity:.6;
+    padding:12px 8px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .zone-toggle button.active{background:var(--ocean); color:var(--paper); opacity:1;}
+
+  .out-of-range-btn{
+    display:block; text-align:center; margin-top:10px; padding:10px; border:2px solid var(--ink); border-radius:10px;
+    background:var(--gold); color:var(--ink); font-weight:700; font-size:12.5px; text-decoration:none;
+  }
+  .out-of-range-btn:hover{filter:brightness(1.05);}
+
+  .schedule-toggle{display:flex; gap:8px; margin-bottom:10px;}
+  .schedule-toggle button{
+    flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink); opacity:.6;
+    padding:10px 8px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .schedule-toggle button.active{background:var(--gold); color:var(--ink); opacity:1;}
+  .schedule-toggle button:disabled{cursor:not-allowed;}
+  .schedule-fields{display:flex; gap:8px;}
+  .schedule-fields input, .schedule-fields select{flex:1;}
+
+  /* ---- 拍照確認訂單 ---- */
+  .photo-upload-box{
+    border:2px dashed var(--ocean); border-radius:12px; padding:16px; text-align:center; background:var(--card);
+  }
+  .photo-upload-box input[type="file"]{
+    border:none; padding:0; background:none;
+  }
+  .photo-upload-box input[type="file"]::file-selector-button{
+    border:2px solid var(--ink); background:var(--ocean); color:var(--paper); font-weight:700;
+    padding:9px 18px; border-radius:999px; margin-right:10px; cursor:pointer; font-family:inherit; font-size:13px;
+  }
+  .photo-preview-box{display:none; align-items:center; gap:12px; margin-top:12px;}
+  .photo-preview-box img{
+    width:84px; height:84px; object-fit:cover; border-radius:10px; border:2px solid var(--ink);
+  }
+  .photo-remove-btn{
+    border:2px solid var(--ink); background:var(--paper); color:var(--ink); border-radius:999px;
+    padding:7px 14px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+
+  .submit-btn{
+    width:100%; padding:15px; border:2px solid var(--ink); border-radius:999px;
+    background:#06C755; color:#fff; font-weight:700; font-size:15px; cursor:pointer; font-family:inherit;
+    box-shadow:0 3px 0 var(--ink); margin-top:6px;
+  }
+  .submit-btn:active{transform:translateY(2px); box-shadow:none;}
+  .submit-btn:disabled{opacity:.6; cursor:not-allowed;}
+
+  .result-badge{
+    display:none; background:var(--ocean); color:var(--paper); border:2px solid var(--ink); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px; margin-top:18px; text-align:center;
+  }
+  .result-badge .num{font-family:'JetBrains Mono',monospace; font-size:32px; font-weight:900;}
+  .result-badge .label{font-size:13px; margin-top:6px; line-height:1.6;}
+  .result-badge.error{background:var(--coral-dark);}
+
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--paper); padding:11px 20px; border-radius:999px;
+    font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:300;
+    max-width:min(90vw,360px); text-align:center;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .cart-float-bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:190; display:flex; justify-content:center;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, var(--paper) 60%, transparent);
+  }
+  .cart-float-bar button{
+    width:100%; max-width:460px; padding:14px; border:2px solid var(--ink); border-radius:999px;
+    background:#06C755; color:#fff; font-weight:700; font-size:14.5px; cursor:pointer; font-family:inherit;
+    box-shadow:0 4px 0 var(--ink), 0 8px 20px -6px rgba(34,48,46,.5);
+  }
+
+  .cart-review-overlay{
+    display:none; position:fixed; inset:0; background:rgba(34,48,46,.85); z-index:250;
+    align-items:flex-start; justify-content:center; padding:16px; overflow-y:auto;
+  }
+  .cart-review-panel{
+    background:var(--paper); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:24px 20px; margin:30px auto; max-width:480px; width:100%; position:relative;
+  }
+  .cart-review-panel h3{margin:0 0 4px; font-size:18px;}
+  .cart-review-item{
+    background:var(--card); border:2px solid var(--ink); border-radius:10px; padding:12px 14px; margin-bottom:12px;
+  }
+  .cart-review-item .cri-top{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+  .cart-review-item .cri-top strong{flex:1; font-size:14px;}
+  .cart-review-item .cri-remove{
+    flex-shrink:0; background:none; border:none; color:var(--coral-dark); font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .cart-review-item .cri-row{font-size:12.5px; line-height:1.7; color:var(--ink);}
+  .cart-review-item .cri-row b{color:var(--ocean-dark); margin-right:4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🐝 成功小蜜丰・商家外送委託</h1>
+    <div class="sub" id="dateLabel"></div>
+    <div class="sub" id="hoursLabel"></div>
+  </div>
+</header>
+
+<main>
+  <div class="hours-announcement-banner" id="hoursAnnouncementBanner" style="display:none;"></div>
+  <div class="loading-banner" id="loadingBanner">⏳ 載入中，請稍後...</div>
+  <div class="hours-status-banner" id="hoursStatusBanner" style="display:none;"></div>
+  <div class="urgent-hint" id="announcementHint" style="display:none;"></div>
+  <a class="inquiry-helper-btn" id="inquiryHelperBtn" href="#" target="_blank" rel="noopener" style="display:none;">💬 有問題？私訊洽詢 →</a>
+
+  <div class="field merchant-select-field">
+    <label>商家名稱</label>
+    <div class="merchant-select-row">
+      <select id="mMerchant">
+        <option value="">請選擇商家</option>
+        <option value="其他">其他（自行輸入）</option>
+      </select>
+      <button type="button" id="pinMerchantBtn" title="釘選這個商家，下次自動選好">📌</button>
+    </div>
+    <input id="mMerchantOther" placeholder="請輸入商家名稱" style="display:none; margin-top:8px;">
+    <div class="hint" id="pinnedHint" style="display:none;">📌 已記住這個商家，下次打開網頁會自動選好（點📌可取消）</div>
+  </div>
+
+  <div class="view-tabs">
+    <button type="button" class="view-tab-btn active" id="tabSubmitBtn">📝 送出委託</button>
+    <button type="button" class="view-tab-btn" id="tabQueryBtn">📋 查詢我的委託</button>
+  </div>
+
+  <div id="formBox">
+    <div class="form-section">
+      <div class="form-section-title">👤 客戶資訊</div>
+      <div class="field">
+        <label>客戶（收件人）姓名或暱稱</label>
+        <input id="mCustomerName" placeholder="例：王小姐">
+      </div>
+      <div class="field">
+        <label>客戶聯絡電話（必填，格式：0000-000-000 或 000-000000）</label>
+        <input id="mPhone" type="tel" inputmode="numeric" placeholder="例：0912-345-678" maxlength="12">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>送達地址</label>
+        <input id="mAddress" placeholder="例：成功鎮○○路○號，或明顯地標">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🧾 訂單內容</div>
+      <div class="field">
+        <label>拍照確認訂單內容（收據、出單畫面、品項清單皆可）</label>
+        <div class="photo-upload-box">
+          <input type="file" id="mPhoto" accept="image/*" capture="environment">
+          <div class="photo-preview-box" id="photoPreviewBox">
+            <img id="photoPreviewImg" src="" alt="訂單照片預覽">
+            <button type="button" class="photo-remove-btn" id="photoRemoveBtn">移除照片</button>
+          </div>
+        </div>
+        <div class="hint">照片只會存進後台管理表供外送員確認，若沒有照片，請至少填寫下方簡短說明</div>
+      </div>
+      <div class="field">
+        <label>簡短品項說明（有拍照的話可選填，方便外送員快速辨識）</label>
+        <input id="mItems" placeholder="例：便當2個、飲料1杯">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>商品金額（必填，方便外送員向客戶收款）</label>
+        <input id="mGoodsAmount" type="number" inputmode="numeric" min="0" placeholder="例：350">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🚴 配送設定</div>
+      <div class="field">
+        <label>範圍</label>
+        <div class="range-hint" id="rangeHintText">北到<strong>三仙台加油站</strong>、南到<strong>全滿加油站</strong>為鎮內；<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>、<strong>全滿加油站</strong>以南到<strong>和平國小</strong>為鎮外，超出此範圍請私訊確認</div>
+        <div class="zone-toggle">
+          <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
+          <button type="button" class="zone-btn" data-fee="60">鎮外・小港天后宮～和平國小（$60）</button>
+        </div>
+        <a class="out-of-range-btn" id="outOfRangeBtn" href="#" target="_blank" rel="noopener">⚠️ 超出範圍請私訊確認</a>
+      </div>
+      <div class="field">
+        <label>送達時間</label>
+        <div class="schedule-toggle">
+          <button type="button" class="sch-btn active" data-mode="now">立即送</button>
+          <button type="button" class="sch-btn" data-mode="later">指定時間</button>
+        </div>
+        <div id="scheduleFields" class="schedule-fields" style="display:none;">
+          <input id="mScheduleDate" type="date">
+          <select id="mScheduleTime">
+            <option value="">請選擇時段</option>
+          </select>
+        </div>
+        <div class="hint" id="scheduleHint" style="display:none;">預約時段開放範圍依後台設定</div>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>備註（選填）</label>
+        <input id="mNote" placeholder="例：需先電話聯繫、放在管理室">
+      </div>
+    </div>
+
+    <button type="button" class="submit-btn" id="submitBtn">➕ 加入清單</button>
+
+    <div class="result-badge" id="resultBadge">
+      <div class="num" id="resultNum">#0</div>
+      <div class="label" id="resultLabel"></div>
+    </div>
+  </div>
+
+  <div id="queryBox" style="display:none;">
+    <div class="hint" style="margin-bottom:14px;">顯示這個商家歷來所有委託單的狀態，選好商家後自動查詢</div>
+    <div id="queryResult"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="cart-float-bar" id="cartFloatBar" style="display:none;">
+  <button type="button" id="cartFloatBtn">🛒 已有 <span id="cartCount">0</span> 筆委託・查看並送出</button>
+</div>
+
+<div class="cart-review-overlay" id="cartReviewOverlay">
+  <div class="cart-review-panel">
+    <button class="detail-close" id="cartReviewClose" aria-label="關閉">✕</button>
+    <h3>🛒 確認委託清單</h3>
+    <div class="hint" style="margin-bottom:14px;">確認每一筆委託內容無誤後，點下方按鈕一次全部送出</div>
+    <div id="cartReviewList"></div>
+    <button type="button" class="submit-btn" id="cartSubmitAllBtn">🚀 全部送出（<span id="cartSubmitCount">0</span> 筆）</button>
+    <div id="cartSubmitProgress" class="hint" style="display:none; margin-top:10px;"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsoU2dTmol9_RyAauZOu_268u_QUCWfWkiPn1BpFVtgbW1bAOdTdG_SM6fMMey099Z3w/exec';
+
+  const toastEl = document.getElementById('toast');
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=>toastEl.classList.remove('show'), 2400);
+  }
+
+  document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+
+  // ---------- 商家名單：沿用主網站同一份「商家名單設定」資料，後台新增/編輯/刪除都會同步 ----------
+  const PIN_MERCHANT_KEY = 'mifeng_pinned_merchant';
+  let orderingMode = 'open'; // 'open' | 'reservationOnly' | 'closed'
+
+  function loadMerchants(){
+    const loadingEl = document.getElementById('loadingBanner');
+    fetch(`${SCRIPT_URL}?t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        // 公告：讀取「基本設定」裡的「商家委託公告內容」，留空就不顯示
+        const announcement = ((data.settings && data.settings['商家委託公告內容']) || '').trim();
+        const hintEl = document.getElementById('announcementHint');
+        if(announcement){
+          hintEl.textContent = announcement;
+          hintEl.style.display = 'flex';
+        } else {
+          hintEl.style.display = 'none';
+        }
+
+        // 範圍說明文字：後台有填就用後台的內容，沒填就維持頁面上原本寫死的預設說明
+        const rangeText = ((data.settings && data.settings['商家委託範圍說明']) || '').trim();
+        if(rangeText){
+          document.getElementById('rangeHintText').textContent = rangeText;
+        }
+
+        // 超出範圍私訊按鈕：連結沿用「請私訊小蜜丰連結」設定，跟全站其他私訊按鈕共用同一組設定
+        const inquiryUrl = ((data.settings && data.settings['請私訊小蜜丰連結']) || '').trim();
+        const outOfRangeBtn = document.getElementById('outOfRangeBtn');
+        if(inquiryUrl){
+          outOfRangeBtn.href = inquiryUrl;
+        } else {
+          outOfRangeBtn.style.display = 'none'; // 後台還沒設定連結，就先不顯示這顆按鈕，避免點了沒反應
+        }
+
+        // 公告下方的私訊洽詢按鈕：不管有沒有公告內容，都固定顯示，方便商家隨時詢問
+        const inquiryHelperBtn = document.getElementById('inquiryHelperBtn');
+        if(inquiryUrl){
+          inquiryHelperBtn.href = inquiryUrl;
+          inquiryHelperBtn.style.display = 'flex';
+        } else {
+          inquiryHelperBtn.style.display = 'none';
+        }
+
+        // 服務時間顯示：跟主網站共用同一組營業時間設定
+        const openTime = (data.settings && data.settings['營業開始時間']) || '08:00';
+        const closeTime = (data.settings && data.settings['營業結束時間']) || '20:00';
+        document.getElementById('hoursLabel').textContent = `🕒 服務時間 ${openTime}–${closeTime}`;
+
+        const isOpen = ((data.settings && data.settings['是否營業']) || 'true').toString().toUpperCase() !== 'FALSE';
+        const forcedClosed = ((data.settings && data.settings['強制公休']) || 'FALSE').toString().toUpperCase() === 'TRUE';
+        const statusEl = document.getElementById('hoursStatusBanner');
+        if(forcedClosed){
+          orderingMode = 'closed';
+          statusEl.textContent = '⏸️ 目前暫停服務中，暫不接受任何委託單，請見諒';
+          statusEl.style.display = 'flex';
+          statusEl.style.background = 'var(--coral)';
+        } else if(!isOpen){
+          orderingMode = 'reservationOnly';
+          statusEl.textContent = `🌙 目前非服務時間（${openTime}–${closeTime}），僅能送出「指定時間」的預約委託單`;
+          statusEl.style.display = 'flex';
+          statusEl.style.background = 'var(--gold)';
+        } else {
+          orderingMode = 'open';
+          statusEl.style.display = 'none';
+        }
+        applyOrderingModeToUI();
+
+        // 營業時間調整公告：跟主網站共用同一組設定
+        const hoursAnnouncement = ((data.settings && data.settings['營業時間調整公告']) || '').trim();
+        const hoursAnnouncementEl = document.getElementById('hoursAnnouncementBanner');
+        if(hoursAnnouncement){
+          hoursAnnouncementEl.textContent = `🕒 ${hoursAnnouncement}`;
+          hoursAnnouncementEl.style.display = 'flex';
+        } else {
+          hoursAnnouncementEl.style.display = 'none';
+        }
+
+        // 預約時段設定：跟主網站共用同一組預約開放時間設定
+        reservationOpenTime = (data.settings && data.settings['預約開始時間']) || openTime;
+        reservationCloseTime = (data.settings && data.settings['預約結束時間']) || closeTime;
+        const intervalVal = Number(data.settings && data.settings['預約時段間隔']);
+        reservationIntervalMin = isNaN(intervalVal) || intervalVal <= 0 ? 30 : intervalVal;
+        populateScheduleTimeOptions();
+        document.getElementById('scheduleHint').textContent = `預約時段開放 ${reservationOpenTime}–${reservationCloseTime}，每 ${reservationIntervalMin} 分鐘一個時段`;
+
+        const sel = document.getElementById('mMerchant');
+        const merchants = data.entrustingMerchants || [];
+        const groups = {};
+        const order = [];
+        merchants.forEach(m => {
+          const cat = m.category && m.category.trim() ? m.category.trim() : '其他商家';
+          if(!groups[cat]){ groups[cat] = []; order.push(cat); }
+          groups[cat].push(m);
+        });
+
+        sel.innerHTML = '<option value="">請選擇商家</option>';
+        order.forEach(cat => {
+          const optgroup = document.createElement('optgroup');
+          optgroup.label = cat;
+          groups[cat].forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.name;
+            opt.textContent = m.name;
+            optgroup.appendChild(opt);
+          });
+          sel.appendChild(optgroup);
+        });
+        const otherOpt = document.createElement('option');
+        otherOpt.value = '其他';
+        otherOpt.textContent = '其他（自行輸入）';
+        sel.appendChild(otherOpt);
+
+        // 商家名單載入完成後，如果之前釘選過商家、且這個商家還在名單裡，自動選好
+        const pinned = localStorage.getItem(PIN_MERCHANT_KEY);
+        if(pinned && Array.from(sel.options).some(o => o.value === pinned)){
+          sel.value = pinned;
+          updatePinBtn(true);
+          if(currentTab === 'query') queryMerchantOrders();
+        }
+
+        loadingEl.classList.add('hide');
+      })
+      .catch(()=>{
+        toast('商家名單載入失敗，可直接選「其他」手動輸入');
+        loadingEl.textContent = '⚠️ 載入失敗，部分資料可能不是最新，請稍後重新整理';
+        loadingEl.style.borderColor = 'var(--coral-dark)';
+        loadingEl.style.color = 'var(--coral-dark)';
+      });
+  }
+  loadMerchants();
+
+  function updatePinBtn(isPinned){
+    const btn = document.getElementById('pinMerchantBtn');
+    const hint = document.getElementById('pinnedHint');
+    btn.classList.toggle('pinned', isPinned);
+    hint.style.display = isPinned ? 'block' : 'none';
+  }
+
+  document.getElementById('mMerchant').addEventListener('change', (e)=>{
+    const isOther = e.target.value === '其他';
+    document.getElementById('mMerchantOther').style.display = isOther ? 'block' : 'none';
+    // 換了商家，之前釘選的就不算數了，要重新按📌才會釘選新的
+    const pinned = localStorage.getItem(PIN_MERCHANT_KEY);
+    updatePinBtn(pinned && pinned === e.target.value);
+    if(currentTab === 'query') queryMerchantOrders();
+  });
+
+  document.getElementById('pinMerchantBtn').addEventListener('click', ()=>{
+    const sel = document.getElementById('mMerchant');
+    if(!sel.value || sel.value === '其他'){
+      toast('請先選擇一個商家再釘選');
+      return;
+    }
+    const alreadyPinned = localStorage.getItem(PIN_MERCHANT_KEY) === sel.value;
+    if(alreadyPinned){
+      localStorage.removeItem(PIN_MERCHANT_KEY);
+      updatePinBtn(false);
+      toast('已取消釘選');
+    } else {
+      localStorage.setItem(PIN_MERCHANT_KEY, sel.value);
+      updatePinBtn(true);
+      toast('📌 已記住這個商家，下次打開網頁會自動選好');
+    }
+  });
+
+  // ---------- 頁籤切換：送出委託／查詢我的委託 ----------
+  let currentTab = 'submit';
+  const formBox = document.getElementById('formBox');
+  const queryBox = document.getElementById('queryBox');
+  const tabSubmitBtn = document.getElementById('tabSubmitBtn');
+  const tabQueryBtn = document.getElementById('tabQueryBtn');
+
+  tabSubmitBtn.addEventListener('click', ()=>{
+    currentTab = 'submit';
+    tabSubmitBtn.classList.add('active');
+    tabQueryBtn.classList.remove('active');
+    formBox.style.display = 'block';
+    queryBox.style.display = 'none';
+  });
+  tabQueryBtn.addEventListener('click', ()=>{
+    currentTab = 'query';
+    tabQueryBtn.classList.add('active');
+    tabSubmitBtn.classList.remove('active');
+    formBox.style.display = 'none';
+    queryBox.style.display = 'block';
+    queryMerchantOrders();
+  });
+
+  function formatQueryTime(o){
+    if(o.schedule){
+      const d = new Date(o.schedule);
+      if(!isNaN(d.getTime())){
+        const pad = n => String(n).padStart(2,'0');
+        return `預約 ${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+    }
+    return `${o.date} ${o.time} 送出`;
+  }
+
+  function queryMerchantOrders(){
+    const sel = document.getElementById('mMerchant');
+    const merchant = sel.value === '其他' ? document.getElementById('mMerchantOther').value.trim() : sel.value;
+    const resultEl = document.getElementById('queryResult');
+
+    if(!merchant){
+      resultEl.innerHTML = '<div class="hint">請先在上方選擇商家，才能查詢委託記錄</div>';
+      return;
+    }
+
+    resultEl.innerHTML = '<div class="hint">查詢中...</div>';
+
+    fetch(`${SCRIPT_URL}?action=merchantOrders&merchant=${encodeURIComponent(merchant)}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        const orders = data.orders || [];
+        if(!orders.length){
+          resultEl.innerHTML = '<div class="hint">📭 這個商家還沒有委託紀錄</div>';
+          return;
+        }
+
+        // 依日期分組（訂單已經是新到舊排序，分組後組內順序不變）
+        const groups = {};
+        const groupOrder = [];
+        orders.forEach(o => {
+          const dateKey = o.date || '未知日期';
+          if(!groups[dateKey]){ groups[dateKey] = []; groupOrder.push(dateKey); }
+          groups[dateKey].push(o);
+        });
+
+        // 今天的日期用跟後端一樣的 yyyy/MM/dd 格式，才能正確比對
+        const now = new Date();
+        const pad = n => String(n).padStart(2,'0');
+        const todayKey = `${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())}`;
+
+        resultEl.innerHTML = '';
+        groupOrder.forEach(dateKey => {
+          const dayOrders = groups[dateKey];
+          const details = document.createElement('details');
+          details.className = 'query-date-group';
+          details.open = (dateKey === todayKey); // 今天的訂單預設展開，其他日期預設收合
+
+          const summary = document.createElement('summary');
+          summary.innerHTML = `<span>${dateKey}${dateKey === todayKey ? '（今天）' : ''}</span><span class="qdg-count">共 ${dayOrders.length} 筆<span class="qdg-arrow">▸</span></span>`;
+          details.appendChild(summary);
+
+          const body = document.createElement('div');
+          body.className = 'query-date-group-body';
+
+          dayOrders.forEach(o => {
+            const numLabel = String(o.queueNumber || '').startsWith('R') ? o.queueNumber : `#${o.queueNumber}`;
+            const card = document.createElement('div');
+            card.className = 'query-order-card';
+            card.innerHTML = `
+              <div class="qo-top">
+                <span class="qo-num">${numLabel}</span>
+                <span class="qo-status ${o.status || '待處理'}">${o.status || '待處理'}</span>
+              </div>
+              <div class="qo-time">${formatQueryTime(o)}</div>
+              <div class="qo-row"><b>收件人：</b>${o.contact || '—'}</div>
+              <div class="qo-row"><b>地址：</b>${o.address || '—'}</div>
+              <div class="qo-row"><b>內容：</b>${o.items || '—'}</div>
+              <div class="qo-row"><b>外送費：</b>$${o.fee || '—'}${o.goodsAmount ? `　商品 $${o.goodsAmount}` : ''}</div>
+              ${o.deliverer ? `<div class="qo-row"><b>外送員：</b>${o.deliverer}</div>` : ''}
+            `;
+            body.appendChild(card);
+          });
+
+          details.appendChild(body);
+          resultEl.appendChild(details);
+        });
+      })
+      .catch(()=>{ resultEl.innerHTML = '<div class="hint">查詢失敗，請檢查網路連線</div>'; });
+  }
+
+  // ---------- 範圍切換 ----------
+  let fee = 30;
+  document.querySelectorAll('.zone-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.zone-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      fee = parseInt(btn.dataset.fee, 10);
+    });
+  });
+
+  // ---------- 送達時間切換：跟主網站一樣用固定時段下拉選單，套用後台的預約開放時間設定 ----------
+  let scheduleMode = 'now';
+  const scheduleFields = document.getElementById('scheduleFields');
+  const scheduleHint = document.getElementById('scheduleHint');
+  document.querySelectorAll('.sch-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.sch-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      scheduleMode = btn.dataset.mode;
+      scheduleFields.style.display = (scheduleMode === 'later') ? 'flex' : 'none';
+      scheduleHint.style.display = (scheduleMode === 'later') ? 'block' : 'none';
+    });
+  });
+
+  // 根據目前營業狀態，調整「立即送」按鈕跟送出按鈕的可點擊狀態，讓限制在畫面上就看得出來，不用等點了才被擋
+  function applyOrderingModeToUI(){
+    const nowBtn = document.querySelector('.sch-btn[data-mode="now"]');
+    const laterBtn = document.querySelector('.sch-btn[data-mode="later"]');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if(orderingMode === 'closed'){
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏸️ 目前暫停服務中';
+      nowBtn.disabled = true;
+      nowBtn.style.opacity = '.3';
+    } else if(orderingMode === 'reservationOnly'){
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出委託 →';
+      nowBtn.disabled = true;
+      nowBtn.style.opacity = '.3';
+      if(scheduleMode === 'now'){
+        laterBtn.click(); // 強制切換到「指定時間」，避免畫面卡在不能用的「立即送」
+      }
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '送出委託 →';
+      nowBtn.disabled = false;
+      nowBtn.style.opacity = '';
+    }
+  }
+
+  // 預約日期欄位不能選過去的日期
+  (function setScheduleDateMin(){
+    const el = document.getElementById('mScheduleDate');
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    el.min = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  })();
+
+  let reservationOpenTime = '08:00';
+  let reservationCloseTime = '20:00';
+  let reservationIntervalMin = 30;
+
+  function generateReservationSlots(){
+    const slots = [];
+    const [openH, openM] = reservationOpenTime.split(':').map(Number);
+    const [closeH, closeM] = reservationCloseTime.split(':').map(Number);
+    let mins = openH * 60 + openM;
+    const endMins = closeH * 60 + closeM;
+    while(mins < endMins){
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+      mins += reservationIntervalMin;
+    }
+    return slots;
+  }
+
+  function populateScheduleTimeOptions(){
+    const sel = document.getElementById('mScheduleTime');
+    const currentValue = sel.value;
+    sel.innerHTML = '<option value="">請選擇時段</option>';
+    generateReservationSlots().forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      sel.appendChild(opt);
+    });
+    if(currentValue && Array.from(sel.options).some(o => o.value === currentValue)){
+      sel.value = currentValue;
+    }
+  }
+  populateScheduleTimeOptions();
+
+  function getScheduleValue(){
+    const dateVal = document.getElementById('mScheduleDate').value;
+    const timeVal = document.getElementById('mScheduleTime').value;
+    return (dateVal && timeVal) ? `${dateVal}T${timeVal}` : '';
+  }
+
+  // ---------- 拍照確認訂單（壓縮後轉base64，做法跟主網站一致） ----------
+  let photoBase64 = null;
+  let photoMime = null;
+
+  function compressImage(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('圖片解析失敗'));
+        img.onload = () => {
+          const maxSize = 1000;
+          let { width, height } = img;
+          if(width > maxSize || height > maxSize){
+            if(width > height){ height = Math.round(height * maxSize / width); width = maxSize; }
+            else { width = Math.round(width * maxSize / height); height = maxSize; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve({ base64: dataUrl.split(',')[1], mime: 'image/jpeg', preview: dataUrl });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('mPhoto').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      toast('照片處理中...');
+      const { base64, mime, preview } = await compressImage(file);
+      photoBase64 = base64;
+      photoMime = mime;
+      document.getElementById('photoPreviewImg').src = preview;
+      document.getElementById('photoPreviewBox').style.display = 'flex';
+      toast('照片已附上');
+    }catch(err){
+      toast('照片處理失敗，請換一張試試');
+      e.target.value = '';
+    }
+  });
+
+  function clearPhoto(){
+    photoBase64 = null;
+    photoMime = null;
+    document.getElementById('mPhoto').value = '';
+    document.getElementById('photoPreviewBox').style.display = 'none';
+    document.getElementById('photoPreviewImg').src = '';
+  }
+  document.getElementById('photoRemoveBtn').addEventListener('click', clearPhoto);
+
+  function isValidPhone(raw){
+    const digits = raw.replace(/\D/g, '');
+    return digits.length === 9 || digits.length === 10;
+  }
+
+  function formatPhoneOnBlur(){
+    const el = document.getElementById('mPhone');
+    const digits = el.value.replace(/\D/g, '');
+    if(digits.length === 10){
+      el.value = digits.slice(0,4) + '-' + digits.slice(4,7) + '-' + digits.slice(7);
+    } else if(digits.length === 9){
+      el.value = digits.slice(0,3) + '-' + digits.slice(3);
+    }
+  }
+  document.getElementById('mPhone').addEventListener('blur', formatPhoneOnBlur);
+
+  function getMerchantValue(){
+    const sel = document.getElementById('mMerchant').value;
+    if(sel === '其他'){
+      return document.getElementById('mMerchantOther').value.trim();
+    }
+    return sel;
+  }
+
+  // ---------- 送出委託 ----------
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : str;
+    return div.innerHTML;
+  }
+
+  // ---------- 委託清單購物車：填一筆加入清單，全部填好一次送出 ----------
+  let deliveryCart = [];
+
+  function buildPayloadFromForm(){
+    if(orderingMode === 'closed'){
+      toast('⏸️ 目前暫停服務中，暫不接受任何委託單');
+      return null;
+    }
+    if(orderingMode === 'reservationOnly' && scheduleMode === 'now'){
+      toast('🌙 目前非服務時間，請改選「指定時間」送出預約委託');
+      return null;
+    }
+
+    formatPhoneOnBlur(); // 確保送出前電話已經是排版好的格式
+    const merchant = getMerchantValue();
+    const customerName = document.getElementById('mCustomerName').value.trim();
+    const phone = document.getElementById('mPhone').value.trim();
+    const address = document.getElementById('mAddress').value.trim();
+    const itemsNote = document.getElementById('mItems').value.trim();
+    const goodsAmount = document.getElementById('mGoodsAmount').value.trim();
+    const note = document.getElementById('mNote').value.trim();
+
+    if(!merchant){ toast('請選擇或填寫商家名稱'); return null; }
+    if(!phone || !isValidPhone(phone)){ toast('請填寫正確的客戶電話'); return null; }
+    if(!address){ toast('請填寫送達地址'); return null; }
+    if(!photoBase64 && !itemsNote){ toast('請拍照確認訂單內容，或至少填寫簡短品項說明'); return null; }
+    if(!goodsAmount || Number(goodsAmount) <= 0){ toast('請填寫商品金額'); return null; }
+
+    let schedule = '';
+    if(scheduleMode === 'later'){
+      schedule = getScheduleValue();
+      if(!schedule){ toast('請選擇預約日期與時段'); return null; }
+      if(new Date(schedule).getTime() < Date.now()){ toast('送達時間不能是過去的時間'); return null; }
+    }
+
+    const itemsSummary = `【收件人】${customerName || '（未填寫姓名）'}${itemsNote ? `：${itemsNote}` : '（詳見附件照片）'}`;
+
+    return {
+      payload: {
+        orderType: '商家外送委託',
+        merchant: merchant,
+        items: itemsSummary,
+        address: address,
+        phone: phone,
+        contact: customerName || merchant,
+        note: note,
+        schedule: schedule,
+        zone: fee === 30 ? '鎮內' : '鎮外',
+        fee: fee,
+        goodsAmount: goodsAmount,
+        paymentMethod: '現場付款',
+        photoBase64: photoBase64,
+        photoMime: photoMime
+      },
+      summary: { merchant, customerName, phone, address, itemsNote, goodsAmount, hasPhoto: !!photoBase64, schedule }
+    };
+  }
+
+  function resetFormFieldsOnly(){
+    // 保留商家選擇（方便連續填同一家的多筆委託），只清空客戶相關欄位
+    document.getElementById('mCustomerName').value = '';
+    document.getElementById('mPhone').value = '';
+    document.getElementById('mAddress').value = '';
+    document.getElementById('mItems').value = '';
+    document.getElementById('mGoodsAmount').value = '';
+    document.getElementById('mNote').value = '';
+    clearPhoto();
+    document.getElementById('mScheduleDate').value = '';
+    populateScheduleTimeOptions();
+    document.querySelectorAll('.sch-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.sch-btn[data-mode="now"]').classList.add('active');
+    scheduleMode = 'now';
+    scheduleFields.style.display = 'none';
+    scheduleHint.style.display = 'none';
+  }
+
+  function updateCartFloatBar(){
+    document.getElementById('cartCount').textContent = deliveryCart.length;
+    document.getElementById('cartFloatBar').style.display = deliveryCart.length > 0 ? 'flex' : 'none';
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', ()=>{
+    const built = buildPayloadFromForm();
+    if(!built) return;
+    deliveryCart.push(built);
+    resetFormFieldsOnly();
+    updateCartFloatBar();
+    toast(`✅ 已加入清單，目前共 ${deliveryCart.length} 筆`);
+  });
+
+  function renderCartReviewList(){
+    const listEl = document.getElementById('cartReviewList');
+    listEl.innerHTML = '';
+    deliveryCart.forEach((item, idx) => {
+      const s = item.summary;
+      const div = document.createElement('div');
+      div.className = 'cart-review-item';
+      div.innerHTML = `
+        <div class="cri-top">
+          <strong>${escapeHtml(s.merchant)}</strong>
+          <button type="button" class="cri-remove" data-idx="${idx}">移除</button>
+        </div>
+        <div class="cri-row"><b>收件人</b>${escapeHtml(s.customerName || '未填寫')}</div>
+        <div class="cri-row"><b>電話</b>${escapeHtml(s.phone)}</div>
+        <div class="cri-row"><b>地址</b>${escapeHtml(s.address)}</div>
+        <div class="cri-row"><b>內容</b>${s.itemsNote ? escapeHtml(s.itemsNote) : (s.hasPhoto ? '（詳見照片）' : '—')}</div>
+        <div class="cri-row"><b>金額</b>$${escapeHtml(String(s.goodsAmount))}</div>
+        ${s.schedule ? `<div class="cri-row"><b>時間</b>預約 ${escapeHtml(s.schedule.replace('T',' '))}</div>` : ''}
+      `;
+      listEl.appendChild(div);
+    });
+    document.getElementById('cartSubmitCount').textContent = deliveryCart.length;
+  }
+
+  function openCartReview(){
+    renderCartReviewList();
+    document.getElementById('cartReviewOverlay').style.display = 'flex';
+  }
+  function closeCartReview(){
+    document.getElementById('cartReviewOverlay').style.display = 'none';
+  }
+  document.getElementById('cartFloatBtn').addEventListener('click', openCartReview);
+  document.getElementById('cartReviewClose').addEventListener('click', closeCartReview);
+  document.getElementById('cartReviewOverlay').addEventListener('click', (e)=>{
+    if(e.target === document.getElementById('cartReviewOverlay')) closeCartReview();
+  });
+  document.getElementById('cartReviewList').addEventListener('click', (e)=>{
+    if(e.target.classList.contains('cri-remove')){
+      const idx = Number(e.target.dataset.idx);
+      deliveryCart.splice(idx, 1);
+      updateCartFloatBar();
+      if(deliveryCart.length === 0){ closeCartReview(); } else { renderCartReviewList(); }
+    }
+  });
+
+  document.getElementById('cartSubmitAllBtn').addEventListener('click', async ()=>{
+    if(!deliveryCart.length) return;
+    const btn = document.getElementById('cartSubmitAllBtn');
+    btn.disabled = true;
+    const progressEl = document.getElementById('cartSubmitProgress');
+    progressEl.style.display = 'block';
+
+    let successCount = 0;
+    const failedItems = [];
+
+    for(let i = 0; i < deliveryCart.length; i++){
+      progressEl.textContent = `送出中... (${i + 1}/${deliveryCart.length})`;
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(deliveryCart[i].payload)
+        });
+        const result = await res.json();
+        if(result && result.result === 'error'){
+          failedItems.push(deliveryCart[i]);
+        } else {
+          successCount++;
+        }
+      }catch(err){
+        failedItems.push(deliveryCart[i]);
+      }
+    }
+
+    deliveryCart = failedItems;
+    updateCartFloatBar();
+    btn.disabled = false;
+
+    if(failedItems.length === 0){
+      progressEl.style.display = 'none';
+      closeCartReview();
+      const badge = document.getElementById('resultBadge');
+      badge.className = 'result-badge';
+      document.getElementById('resultNum').textContent = '✓';
+      document.getElementById('resultLabel').textContent = `已成功送出 ${successCount} 筆委託，外送員會盡快處理`;
+      badge.style.display = 'block';
+    } else {
+      progressEl.textContent = `完成：成功 ${successCount} 筆，失敗 ${failedItems.length} 筆（失敗的仍保留在清單裡，可以再試一次送出）`;
+      renderCartReviewList();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
