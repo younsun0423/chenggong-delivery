@@ -97,6 +97,39 @@
   }
   #pinMerchantBtn.pinned{background:var(--gold); opacity:1;}
 
+  .favorite-customer-row{display:flex; gap:8px;}
+  .favorite-customer-row select{flex:1;}
+  #manageFavoritesBtn{
+    flex-shrink:0; width:48px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
+    font-size:18px; cursor:pointer;
+  }
+  .save-favorite-link{
+    display:block; width:100%; margin-top:8px; padding:9px; border:2px dashed var(--ocean); border-radius:10px;
+    background:none; color:var(--ocean-dark); font-weight:700; font-size:12.5px; cursor:pointer; font-family:inherit;
+  }
+  .save-favorite-link:hover{background:var(--card);}
+  .favorite-manage-item{
+    display:flex; align-items:center; gap:10px; background:var(--card); border:2px solid var(--ink); border-radius:10px;
+    padding:10px 12px; margin-bottom:10px;
+  }
+  .favorite-manage-item .fmi-info{flex:1; font-size:12.5px; line-height:1.7;}
+  .favorite-manage-item .fmi-info strong{font-size:14px; display:block;}
+  .favorite-manage-item .fmi-remove{
+    flex-shrink:0; background:none; border:2px solid var(--coral-dark); color:var(--coral-dark); border-radius:8px;
+    padding:7px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .favorite-add-form{
+    background:var(--card); border:2px solid var(--ink); border-radius:10px; padding:14px; margin-bottom:16px;
+  }
+  .favorite-add-form input{
+    width:100%; padding:10px 12px; border:2px solid var(--ink); border-radius:8px; background:var(--paper);
+    font-family:inherit; font-size:13.5px; color:var(--ink); margin-bottom:8px;
+  }
+  .favorite-add-form button{
+    width:100%; padding:11px; border:2px solid var(--ink); border-radius:8px; background:var(--ocean);
+    color:var(--paper); font-weight:700; font-size:13px; cursor:pointer; font-family:inherit;
+  }
+
   .view-tabs{display:flex; gap:8px; margin-bottom:18px;}
   .view-tab-btn{
     flex:1; border:2px solid var(--ink); background:var(--card); color:var(--ink);
@@ -278,6 +311,15 @@
     <div class="form-section">
       <div class="form-section-title">👤 客戶資訊</div>
       <div class="field">
+        <label>⭐ 常用客戶（選填，選了自動帶入姓名/電話/地址）</label>
+        <div class="favorite-customer-row">
+          <select id="mFavoriteCustomer">
+            <option value="">— 選擇常用客戶 —</option>
+          </select>
+          <button type="button" id="manageFavoritesBtn" title="管理常用客戶">⚙️</button>
+        </div>
+      </div>
+      <div class="field">
         <label>客戶（收件人）姓名或暱稱</label>
         <input id="mCustomerName" placeholder="例：王小姐">
       </div>
@@ -287,7 +329,9 @@
       </div>
       <div class="field" style="margin-bottom:0;">
         <label>送達地址</label>
-        <input id="mAddress" placeholder="例：成功鎮○○路○號，或明顯地標">
+        <input id="mAddress" list="addressHistoryList" placeholder="例：成功鎮○○路○號，或明顯地標" autocomplete="off">
+        <datalist id="addressHistoryList"></datalist>
+        <button type="button" id="saveFavoriteBtn" class="save-favorite-link">⭐ 存為常用客戶，下次快速帶入</button>
       </div>
     </div>
 
@@ -321,7 +365,7 @@
         <div class="range-hint" id="rangeHintText">北到<strong>三仙台加油站</strong>、南到<strong>全滿加油站</strong>為鎮內；<strong>三仙台加油站</strong>以北到<strong>小港天后宮</strong>、<strong>全滿加油站</strong>以南到<strong>和平國小</strong>為鎮外，超出此範圍請私訊確認</div>
         <div class="zone-toggle">
           <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
-          <button type="button" class="zone-btn" data-fee="60">鎮外・小港天后宮～和平國小（$60）</button>
+          <button type="button" class="zone-btn" data-fee="60">鎮外<br>(北界)小港天后宮<br>(南界)和平國小（$60）</button>
         </div>
         <a class="out-of-range-btn" id="outOfRangeBtn" href="#" target="_blank" rel="noopener">⚠️ 超出範圍請私訊確認</a>
       </div>
@@ -376,6 +420,23 @@
   </div>
 </div>
 
+<div class="cart-review-overlay" id="favoritesManageOverlay">
+  <div class="cart-review-panel">
+    <button class="detail-close" id="favoritesManageClose" aria-label="關閉">✕</button>
+    <h3>⭐ 管理常用客戶</h3>
+    <div class="hint" style="margin-bottom:14px;">可以直接在這裡連續新增多筆常用客戶，或點右邊「移除」刪除不需要的</div>
+
+    <div class="favorite-add-form">
+      <input id="favNewName" placeholder="客戶姓名或暱稱">
+      <input id="favNewPhone" type="tel" inputmode="numeric" placeholder="電話（例：0912-345-678）" maxlength="12">
+      <input id="favNewAddress" placeholder="送達地址">
+      <button type="button" id="favNewAddBtn">➕ 新增這筆常用客戶</button>
+    </div>
+
+    <div id="favoritesManageList"></div>
+  </div>
+</div>
+
 <script>
 (function(){
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
@@ -388,6 +449,178 @@
   }
 
   document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('zh-TW', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+
+  // ---------- 地址輸入歷史：跟「常用客戶」完全分開、獨立運作，只要打過的地址就自動記住，不用手動存 ----------
+  const ADDRESS_HISTORY_KEY = 'mifeng_address_history';
+  const ADDRESS_HISTORY_MAX = 30; // 最多記住最近30筆，避免清單無限長
+
+  function getAddressHistory(){
+    try{ return JSON.parse(localStorage.getItem(ADDRESS_HISTORY_KEY) || '[]'); }
+    catch(err){ return []; }
+  }
+  function renderAddressHistory(){
+    const listEl = document.getElementById('addressHistoryList');
+    listEl.innerHTML = '';
+    getAddressHistory().forEach(addr => {
+      const opt = document.createElement('option');
+      opt.value = addr;
+      listEl.appendChild(opt);
+    });
+  }
+  renderAddressHistory();
+
+  function recordAddressToHistory(addr){
+    addr = addr.trim();
+    if(!addr) return;
+    let history = getAddressHistory();
+    history = history.filter(a => a !== addr); // 已存在就先移除，等下重新放到最前面（最近用過的排前面）
+    history.unshift(addr);
+    if(history.length > ADDRESS_HISTORY_MAX) history = history.slice(0, ADDRESS_HISTORY_MAX);
+    localStorage.setItem(ADDRESS_HISTORY_KEY, JSON.stringify(history));
+    renderAddressHistory();
+  }
+  document.getElementById('mAddress').addEventListener('blur', (e)=>{
+    recordAddressToHistory(e.target.value);
+  });
+
+  // ---------- 常用客戶：記住常送的收件人姓名/電話/地址，快速帶入不用每次重打，加快商家下單速度 ----------
+  const FAVORITES_KEY = 'mifeng_favorite_customers';
+
+  function getFavorites(){
+    try{ return JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); }
+    catch(err){ return []; }
+  }
+  function saveFavorites(list){
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
+  }
+
+  function renderFavoriteDropdown(){
+    const sel = document.getElementById('mFavoriteCustomer');
+    const favorites = getFavorites();
+    sel.innerHTML = '<option value="">— 選擇常用客戶 —</option>';
+    favorites.forEach((f, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = `${f.name || '未命名'}（${f.phone}）`;
+      sel.appendChild(opt);
+    });
+  }
+  renderFavoriteDropdown();
+
+  document.getElementById('mFavoriteCustomer').addEventListener('change', (e)=>{
+    const idx = e.target.value;
+    if(idx === '') return;
+    const f = getFavorites()[Number(idx)];
+    if(!f) return;
+    document.getElementById('mCustomerName').value = f.name || '';
+    document.getElementById('mPhone').value = f.phone || '';
+    document.getElementById('mAddress').value = f.address || '';
+    if(f.fee){
+      fee = f.fee;
+      document.querySelectorAll('.zone-btn').forEach(b=>b.classList.remove('active'));
+      const zoneBtn = document.querySelector(`.zone-btn[data-fee="${f.fee}"]`);
+      if(zoneBtn) zoneBtn.classList.add('active');
+    }
+    toast(`已帶入「${f.name || f.phone}」的資料`);
+    document.getElementById('mGoodsAmount').focus(); // 姓名/電話/地址都自動帶好了，直接跳到下一個要填的欄位，減少點擊
+  });
+
+  // 共用邏輯：新增或更新一筆常用客戶（同電話號碼視為同一人，會覆蓋更新，不會重複累積）
+  function addOrUpdateFavorite(name, phone, address, feeValue){
+    if(!phone){ toast('請填寫客戶電話'); return false; }
+    if(!address){ toast('請填寫送達地址'); return false; }
+
+    const favorites = getFavorites();
+    const existingIdx = favorites.findIndex(f => f.phone === phone);
+    const record = { name, phone, address, fee: feeValue };
+    if(existingIdx > -1){
+      favorites[existingIdx] = record;
+      toast(`已更新「${name || phone}」的常用資料`);
+    } else {
+      favorites.push(record);
+      toast('⭐ 已新增常用客戶');
+    }
+    saveFavorites(favorites);
+    renderFavoriteDropdown();
+    return true;
+  }
+
+  document.getElementById('saveFavoriteBtn').addEventListener('click', ()=>{
+    formatPhoneOnBlur();
+    const name = document.getElementById('mCustomerName').value.trim();
+    const phone = document.getElementById('mPhone').value.trim();
+    const address = document.getElementById('mAddress').value.trim();
+    addOrUpdateFavorite(name, phone, address, fee);
+  });
+
+  // 管理視窗內的新增表單：可以連續新增多筆常用客戶，不用透過委託單流程
+  function formatFavPhoneOnBlur(){
+    const el = document.getElementById('favNewPhone');
+    const digits = el.value.replace(/\D/g, '');
+    if(digits.length === 10){
+      el.value = digits.slice(0,4) + '-' + digits.slice(4,7) + '-' + digits.slice(7);
+    } else if(digits.length === 9){
+      el.value = digits.slice(0,3) + '-' + digits.slice(3);
+    }
+  }
+  document.getElementById('favNewPhone').addEventListener('blur', formatFavPhoneOnBlur);
+
+  document.getElementById('favNewAddBtn').addEventListener('click', ()=>{
+    formatFavPhoneOnBlur();
+    const name = document.getElementById('favNewName').value.trim();
+    const phone = document.getElementById('favNewPhone').value.trim();
+    const address = document.getElementById('favNewAddress').value.trim();
+    const ok = addOrUpdateFavorite(name, phone, address, null); // 這裡新增的常用客戶沒有預設範圍，選取時不會覆蓋目前的範圍設定
+    if(ok){
+      document.getElementById('favNewName').value = '';
+      document.getElementById('favNewPhone').value = '';
+      document.getElementById('favNewAddress').value = '';
+      document.getElementById('favNewName').focus(); // 方便連續新增下一筆
+      renderFavoritesManageList();
+    }
+  });
+
+  function renderFavoritesManageList(){
+    const listEl = document.getElementById('favoritesManageList');
+    const favorites = getFavorites();
+    if(!favorites.length){
+      listEl.innerHTML = '<div class="hint">目前還沒有常用客戶，填好資料後點「⭐ 存為常用客戶」就會出現在這裡</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    favorites.forEach((f, idx) => {
+      const div = document.createElement('div');
+      div.className = 'favorite-manage-item';
+      div.innerHTML = `
+        <div class="fmi-info">
+          <strong>${escapeHtml(f.name || '未命名')}</strong>
+          ${escapeHtml(f.phone)}<br>${escapeHtml(f.address)}
+        </div>
+        <button type="button" class="fmi-remove" data-idx="${idx}">移除</button>
+      `;
+      listEl.appendChild(div);
+    });
+  }
+  document.getElementById('manageFavoritesBtn').addEventListener('click', ()=>{
+    renderFavoritesManageList();
+    document.getElementById('favoritesManageOverlay').style.display = 'flex';
+  });
+  document.getElementById('favoritesManageClose').addEventListener('click', ()=>{
+    document.getElementById('favoritesManageOverlay').style.display = 'none';
+  });
+  document.getElementById('favoritesManageOverlay').addEventListener('click', (e)=>{
+    if(e.target === document.getElementById('favoritesManageOverlay')) document.getElementById('favoritesManageOverlay').style.display = 'none';
+  });
+  document.getElementById('favoritesManageList').addEventListener('click', (e)=>{
+    if(e.target.classList.contains('fmi-remove')){
+      const idx = Number(e.target.dataset.idx);
+      const favorites = getFavorites();
+      favorites.splice(idx, 1);
+      saveFavorites(favorites);
+      renderFavoritesManageList();
+      renderFavoriteDropdown();
+    }
+  });
 
   // ---------- 商家名單：沿用主網站同一份「商家名單設定」資料，後台新增/編輯/刪除都會同步 ----------
   const PIN_MERCHANT_KEY = 'mifeng_pinned_merchant';
@@ -910,6 +1143,7 @@
 
   function resetFormFieldsOnly(){
     // 保留商家選擇（方便連續填同一家的多筆委託），只清空客戶相關欄位
+    document.getElementById('mFavoriteCustomer').value = '';
     document.getElementById('mCustomerName').value = '';
     document.getElementById('mPhone').value = '';
     document.getElementById('mAddress').value = '';
