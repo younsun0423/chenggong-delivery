@@ -375,6 +375,12 @@
     font-family:inherit; font-size:13.5px;
   }
   .stop-hours-hint{font-size:11.5px; color:var(--ocean-dark); font-weight:600;}
+  .stop-preorder-check{
+    display:flex; align-items:center; gap:8px; margin-top:8px; padding:8px 10px;
+    background:var(--paper); border:1.5px dashed var(--ocean); border-radius:8px;
+    font-size:12px; font-weight:600; color:var(--ocean-dark); line-height:1.5; cursor:pointer;
+  }
+  .stop-preorder-check input{width:auto !important; flex-shrink:0; accent-color:var(--ocean);}
   .extra-service-option{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     background:var(--paper); border:2px solid var(--ink); border-radius:8px; padding:10px 12px; cursor:pointer;
@@ -439,39 +445,6 @@
   @keyframes popIn{ from{transform:scale(.94); opacity:0;} to{transform:scale(1); opacity:1;} }
 
   .utility-btn{padding:8px 15px;}
-
-  /* ---------- 常用地址／釘選地址 ---------- */
-  .saved-address-box{
-    margin-top:10px; padding:12px; background:rgba(127,173,169,.14);
-    border:1.5px dashed var(--ocean); border-radius:10px;
-  }
-  .saved-address-head{
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    margin-bottom:8px; font-size:12px; font-weight:700; color:var(--ocean-dark);
-  }
-  .saved-address-list{display:grid; gap:7px;}
-  .saved-address-item{
-    display:flex; align-items:center; gap:8px; padding:9px 10px;
-    background:var(--card); border:1.5px solid var(--ink); border-radius:8px;
-  }
-  .saved-address-use{
-    flex:1; min-width:0; border:0; background:transparent; padding:0;
-    text-align:left; cursor:pointer; font-family:inherit; color:var(--ink);
-    font-size:12.5px; line-height:1.45;
-  }
-  .saved-address-use strong{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .saved-address-use span{display:block; color:var(--ocean-dark); opacity:.72; margin-top:2px;}
-  .saved-address-delete{
-    border:0; background:transparent; color:var(--coral-dark); cursor:pointer;
-    font-size:11px; font-weight:700; padding:5px;
-  }
-  .pin-address-btn{
-    width:100%; margin-top:8px; padding:9px 12px; border:2px solid var(--ink);
-    border-radius:999px; background:var(--paper); color:var(--ink);
-    font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer;
-  }
-  .pin-address-btn:hover{background:var(--card);}
-  .saved-address-empty{font-size:11.5px; color:var(--ocean-dark); opacity:.7; line-height:1.5;}
 </style>
 </head>
 <body>
@@ -587,7 +560,7 @@
   </div>
 
   <div class="section-title"><span class="eyebrow">付款方式</span><h2>收款資訊</h2></div>
-  <div class="payment-box" id="paymentBox">目前僅提供現場付款（商品費 + 外送費），若日後開放線上轉帳／收款帳號，會公告在這裡。</div>
+  <div class="payment-box" id="paymentBox">為提升您的購物便利性，我們提供「貨到付款」及「線上轉帳」服務（總金額包含商品費用與外送費用）。期待為您服務，歡迎下單訂購。</div>
   <div class="payment-accounts" id="paymentAccounts"></div>
 
   <div class="section-title"><span class="eyebrow">如何下單</span><h2>三步驟開始</h2></div>
@@ -636,24 +609,12 @@
     <div class="field">
       <label>地址備註（選填，例如明顯地標）</label>
       <input id="cAddrNote" placeholder="例：全家便利商店旁、白色鐵皮屋">
-
-      <div class="saved-address-box" id="savedAddressBox">
-        <div class="saved-address-head">
-          <span>📍 常用地址</span>
-          <span id="savedAddressCount"></span>
-        </div>
-        <div id="savedAddressList" class="saved-address-list"></div>
-        <div class="saved-address-empty" id="savedAddressHint">
-          可釘選多個常用地址，例如：家裡、公司、爸媽家；下次點一下即可帶入。
-        </div>
-        <button type="button" class="pin-address-btn" id="pinAddressBtn">📌 將目前地址加入常用地址</button>
-      </div>
     </div>
     <div class="field">
       <label>範圍</label>
       <div class="zone-toggle">
         <button type="button" class="zone-btn active" data-fee="30">鎮內（$30）</button>
-        <button type="button" class="zone-btn" data-fee="60">鎮外・小港天后宮～和平國小（$60）</button>
+        <button type="button" class="zone-btn" data-fee="60">鎮外<br>(北界)小港天后宮<br>(南界)和平國小（$60）</button>
       </div>
     </div>
     <div class="field" id="extraServiceField" style="display:none;">
@@ -784,7 +745,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsoU2dTmol9_RyAauZOu_268u_QUCWfWkiPn1BpFVtgbW1bAOdTdG_SM6fMMey099Z3w/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -918,6 +879,10 @@
       <input class="stop-merchant-other" placeholder="請輸入商家名稱" style="display:none;">
       <div class="stop-hours-hint" style="display:none;"></div>
       <textarea class="stop-items" placeholder="購買品項，例如：便當一個、飲料一杯"></textarea>
+      <label class="stop-preorder-check">
+        <input type="checkbox" class="stop-preordered">
+        ☎️ 已自行電話向店家預購（外送員可直接取餐，不用等現場點餐）
+      </label>
     `;
     document.getElementById('stopsContainer').appendChild(row);
     populateMerchantSelect(row.querySelector('.stop-merchant'));
@@ -944,6 +909,7 @@
     });
     row.querySelector('.stop-merchant-other').addEventListener('input', updatePreview);
     row.querySelector('.stop-items').addEventListener('input', updatePreview);
+    row.querySelector('.stop-preordered').addEventListener('change', updatePreview);
 
     const removeBtn = row.querySelector('.stop-remove');
     removeBtn.addEventListener('click', ()=>{
@@ -963,7 +929,8 @@
       const other = row.querySelector('.stop-merchant-other').value.trim();
       const merchant = sel === '其他' ? other : sel;
       const items = row.querySelector('.stop-items').value.trim();
-      return { merchant, items };
+      const preordered = row.querySelector('.stop-preordered').checked;
+      return { merchant, items, preordered };
     });
   }
 
@@ -1003,6 +970,7 @@
         row.querySelector('.stop-merchant-other').value = s.merchant;
       }
       row.querySelector('.stop-items').value = s.items || '';
+      row.querySelector('.stop-preordered').checked = !!s.preordered;
       updateStopHoursHint(row);
     });
     updateTransferHint();
@@ -1417,164 +1385,6 @@
   // ---------- 地址欄位改為縣市/鄉鎮/路名下拉選單 + 詳細地址 + 備註，組合後同步進隱藏的cAddress欄位供其他既有邏輯使用 ----------
   let deliverableRoadsList = [];
 
-  // ---------- 常用地址：使用瀏覽器 localStorage 儲存，無需登入 ----------
-  const SAVED_ADDRESS_KEY = 'chenggongDeliverySavedAddressesV1';
-  const MAX_SAVED_ADDRESSES = 50;
-
-  function loadSavedAddresses(){
-    try{
-      const raw = localStorage.getItem(SAVED_ADDRESS_KEY);
-      const data = raw ? JSON.parse(raw) : [];
-      return Array.isArray(data) ? data : [];
-    }catch(err){
-      return [];
-    }
-  }
-
-  function saveSavedAddresses(list){
-    try{
-      localStorage.setItem(SAVED_ADDRESS_KEY, JSON.stringify(list.slice(0, MAX_SAVED_ADDRESSES)));
-    }catch(err){
-      // 瀏覽器若禁止 localStorage，不影響正常下單
-    }
-  }
-
-  function getCurrentAddressParts(){
-    return {
-      county: document.getElementById('cAddrCounty').value,
-      township: document.getElementById('cAddrTownship').value,
-      road: document.getElementById('cAddrRoad').value,
-      roadOther: document.getElementById('cAddrRoadOther').value.trim(),
-      detail: document.getElementById('cAddrDetail').value.trim(),
-      note: document.getElementById('cAddrNote').value.trim()
-    };
-  }
-
-  function getSavedAddressLabel(item){
-    const road = item.road === '其他' ? item.roadOther : item.road;
-    return `${item.county || ''}${item.township || ''}${road || ''}${item.detail || ''}`;
-  }
-
-  function fillAddressFromSaved(item){
-    const townshipEl = document.getElementById('cAddrTownship');
-    const roadEl = document.getElementById('cAddrRoad');
-    const roadOtherEl = document.getElementById('cAddrRoadOther');
-
-    document.getElementById('cAddrCounty').value = item.county || '臺東縣';
-    townshipEl.value = item.township || '';
-
-    if(item.road && Array.from(roadEl.options).some(o => o.value === item.road)){
-      roadEl.value = item.road;
-      roadOtherEl.style.display = 'none';
-    }else if(item.road === '其他'){
-      roadEl.value = '其他';
-      roadOtherEl.value = item.roadOther || '';
-      roadOtherEl.style.display = 'block';
-    }else{
-      roadEl.value = '';
-      roadOtherEl.value = '';
-      roadOtherEl.style.display = 'none';
-    }
-
-    document.getElementById('cAddrDetail').value = item.detail || '';
-    document.getElementById('cAddrNote').value = item.note || '';
-    syncAddressField();
-    toast('📍 已帶入常用地址');
-  }
-
-  function renderSavedAddresses(){
-    const listEl = document.getElementById('savedAddressList');
-    const hintEl = document.getElementById('savedAddressHint');
-    const countEl = document.getElementById('savedAddressCount');
-    const pinBtn = document.getElementById('pinAddressBtn');
-    if(!listEl) return;
-
-    const list = loadSavedAddresses();
-    listEl.innerHTML = '';
-    countEl.textContent = list.length ? `已釘選 ${list.length} 個地址` : '';
-
-    if(!list.length){
-      hintEl.style.display = 'block';
-    }else{
-      hintEl.style.display = 'none';
-      list.forEach((item, index)=>{
-        const row = document.createElement('div');
-        row.className = 'saved-address-item';
-
-        const useBtn = document.createElement('button');
-        useBtn.type = 'button';
-        useBtn.className = 'saved-address-use';
-        const title = document.createElement('strong');
-        title.textContent = item.name || `常用地址 ${index + 1}`;
-        const sub = document.createElement('span');
-        sub.textContent = getSavedAddressLabel(item);
-        useBtn.appendChild(title);
-        useBtn.appendChild(sub);
-        useBtn.addEventListener('click', ()=> fillAddressFromSaved(item));
-
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'saved-address-delete';
-        delBtn.textContent = '刪除';
-        delBtn.addEventListener('click', ()=>{
-          const next = loadSavedAddresses();
-          next.splice(index, 1);
-          saveSavedAddresses(next);
-          renderSavedAddresses();
-          toast('已刪除常用地址');
-        });
-
-        row.appendChild(useBtn);
-        row.appendChild(delBtn);
-        listEl.appendChild(row);
-      });
-    }
-
-    const current = getCurrentAddressParts();
-    const hasAddress = !!(current.township && (current.road === '其他' ? current.roadOther : current.road) && current.detail);
-    pinBtn.disabled = !hasAddress;
-    pinBtn.textContent = hasAddress ? '📌 將目前地址加入常用地址' : '📌 請先完成地址';
-  }
-
-  function pinCurrentAddress(){
-    const item = getCurrentAddressParts();
-    const road = item.road === '其他' ? item.roadOther : item.road;
-
-    if(!item.township || !road || !item.detail){
-      toast('請先選擇鄉鎮、路名並填寫門牌號');
-      return;
-    }
-
-    const list = loadSavedAddresses();
-    const normalized = getSavedAddressLabel(item).replace(/\s/g, '');
-
-    // 相同地址直接移到最前面，不重複建立
-    const existingIndex = list.findIndex(x => getSavedAddressLabel(x).replace(/\s/g, '') === normalized);
-    if(existingIndex >= 0) list.splice(existingIndex, 1);
-
-    item.name = item.name || `常用地址`;
-    list.unshift(item);
-    saveSavedAddresses(list);
-    renderSavedAddresses();
-    toast('📌 地址已釘選，下次可直接選擇');
-  }
-
-  function initSavedAddressFeature(){
-    const pinBtn = document.getElementById('pinAddressBtn');
-    if(pinBtn) pinBtn.addEventListener('click', pinCurrentAddress);
-
-    ['cAddrCounty','cAddrTownship','cAddrRoad','cAddrRoadOther','cAddrDetail','cAddrNote']
-      .forEach(id=>{
-        const el = document.getElementById(id);
-        if(el){
-          el.addEventListener('input', renderSavedAddresses);
-          el.addEventListener('change', renderSavedAddresses);
-        }
-      });
-
-    renderSavedAddresses();
-  }
-
   function getRoadValue(){
     const sel = document.getElementById('cAddrRoad').value;
     return sel === '其他' ? document.getElementById('cAddrRoadOther').value.trim() : sel;
@@ -1728,7 +1538,7 @@
     updatePreview();
 
     const openTime = settings['營業開始時間'] || '08:00';
-    const closeTime = settings['營業結束時間'] || '20:00';
+    const closeTime = settings['營業結束時間'] || '22:00';
     businessOpenTime = openTime;
     businessCloseTime = closeTime;
     const hoursEl = document.getElementById('hoursTimeText');
@@ -1878,7 +1688,6 @@
         renderAddressZones(data.addressZones);
         renderDeliverableTownships(data.deliverableTownships);
         renderDeliverableRoads(data.deliverableRoads);
-        renderSavedAddresses();
         renderPaymentAccounts(data.paymentAccounts);
         loadingEl.classList.add('hide');
       })
@@ -1889,7 +1698,6 @@
         loadingEl.style.color = 'var(--coral-dark)';
       });
   }
-  initSavedAddressFeature();
   loadContent();
 
   // 預約日期欄位不能選過去的日期
@@ -2031,7 +1839,7 @@
     const remitName = document.getElementById('cRemitName').value.trim();
     const remitLast5 = document.getElementById('cRemitLast5').value.trim();
 
-    const stopsText = stops.map((s, i) => `【站點${i+1}】${s.merchant || '（尚未填寫）'}：${s.items || '（尚未填寫）'}`).join('\n');
+    const stopsText = stops.map((s, i) => `【站點${i+1}】${s.merchant || '（尚未填寫）'}：${s.items || '（尚未填寫）'}${s.preordered ? '　☎️已電話預購' : ''}`).join('\n');
 
     let text =
 `【代購委託】
@@ -2123,7 +1931,7 @@ ${stopsText}
   function getFormData(){
     const stops = collectStops();
     const merchantNames = stops.map(s => s.merchant).filter(Boolean).join('、');
-    const itemsCombined = stops.map((s, i) => `【站點${i+1}】${s.merchant || '未填商家'}：${s.items || ''}`).join('\n');
+    const itemsCombined = stops.map((s, i) => `【站點${i+1}】${s.merchant || '未填商家'}：${s.items || ''}${s.preordered ? '　☎️已電話預購' : ''}`).join('\n');
 
     const selectedExtras = getSelectedExtraServices();
     const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
