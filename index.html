@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E5B67">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="成功小蜜丰">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <title>成功小蜜丰</title>
 <meta name="description" content="成功鎮在地代購外送社群，價格透明、範圍清楚，一鍵下單通知群組。">
 <meta property="og:type" content="website">
@@ -259,7 +266,23 @@
     border:none; border-radius:999px; width:30px; height:30px; font-size:16px; cursor:pointer;
   }
   .menu-lightbox-close:hover{background:rgba(34,48,46,.9);}
-  .menu-lightbox-panel img{width:100%; max-height:52vh; object-fit:contain; display:block; background:var(--ink);}
+  .menu-lightbox-img-wrap{position:relative; background:var(--ink);}
+  .menu-lightbox-img-wrap img{width:100%; max-height:52vh; object-fit:contain; display:block; background:var(--ink);}
+  .menu-lightbox-nav{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+    background:rgba(34,48,46,.6); color:var(--paper); border:none; border-radius:999px;
+    width:38px; height:38px; font-size:22px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .menu-lightbox-nav:hover{background:rgba(34,48,46,.85);}
+  .menu-lightbox-nav:disabled{opacity:.25; cursor:not-allowed;}
+  .menu-lightbox-nav.prev{left:10px;}
+  .menu-lightbox-nav.next{right:10px;}
+  .menu-lightbox-page-indicator{
+    position:absolute; bottom:8px; left:50%; transform:translateX(-50%); z-index:2;
+    background:rgba(34,48,46,.7); color:var(--paper); font-size:11.5px; font-weight:700;
+    padding:3px 10px; border-radius:999px;
+  }
   .menu-lightbox-body{padding:16px;}
   .menu-lightbox-merchant{font-family:'Noto Serif TC',serif; font-weight:900; font-size:16px; margin-bottom:10px;}
   .menu-lightbox-body textarea{
@@ -470,7 +493,7 @@
   <div class="hero">
     <span class="eyebrow">歡迎加入</span>
     <h1>代買，代送。<br>成功鎮在地代購外送。</h1>
-    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。<br> — 這裡只做代購外送，價格透明、範圍清楚，一起把在地店家和需要的人串連起來。</p>
+    <p>成功鎮外送新選擇，不用下載 App，加入 LINE 社群就能輕鬆點餐。<br> — 我們提供代購外送，價格透明、範圍清楚，一起把在地店家和需要的人串連起來。</p>
   </div>
 
   <div class="status-banner" id="statusBanner"></div>
@@ -546,7 +569,7 @@
   </div>
 
   <div class="section-title"><span class="eyebrow">先看看賣什麼</span><h2>商家菜單</h2></div>
-  <div class="menu-update-hint">📸 菜單陸續更新中</div>
+  <div class="menu-update-hint">📸 菜單陸續更新中<br>未在菜單列表中？歡迎在下方「工具」手動輸入商家資訊，我們一樣幫您跑腿買到家！</div>
   <div class="menu-gallery" id="menuGallery">
     <div class="empty">目前尚無菜單相片，想知道賣什麼可以直接在下方備註詢問。</div>
   </div>
@@ -647,8 +670,8 @@
     <div class="field">
       <label>付款方式</label>
       <div class="zone-toggle">
-        <button type="button" class="pay-btn active" data-pay="現場付款">現場付款</button>
-        <button type="button" class="pay-btn" data-pay="匯款">匯款轉帳</button>
+        <button type="button" class="pay-btn active" data-pay="貨到付款">貨到付款</button>
+        <button type="button" class="pay-btn" data-pay="匯款">線上轉帳</button>
       </div>
       <div class="field" id="remitFields" style="display:none; margin-top:12px; padding:0;">
         <label>匯款帳戶大名</label>
@@ -720,7 +743,12 @@
 <div class="menu-lightbox" id="menuLightbox">
   <div class="menu-lightbox-panel">
     <button class="menu-lightbox-close" id="menuLightboxClose" aria-label="關閉">✕</button>
-    <img id="menuLightboxImg" src="" alt="菜單放大圖">
+    <div class="menu-lightbox-img-wrap">
+      <img id="menuLightboxImg" src="" alt="菜單放大圖">
+      <button type="button" class="menu-lightbox-nav prev" id="menuLightboxPrevBtn" aria-label="上一張" style="display:none;">‹</button>
+      <button type="button" class="menu-lightbox-nav next" id="menuLightboxNextBtn" aria-label="下一張" style="display:none;">›</button>
+      <div class="menu-lightbox-page-indicator" id="menuLightboxPageIndicator" style="display:none;"></div>
+    </div>
     <div class="menu-lightbox-body">
       <div class="menu-lightbox-merchant" id="menuLightboxMerchant"></div>
       <textarea id="menuLightboxItemsInput" placeholder="邊看邊打想買的品項..."></textarea>
@@ -745,7 +773,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsoU2dTmol9_RyAauZOu_268u_QUCWfWkiPn1BpFVtgbW1bAOdTdG_SM6fMMey099Z3w/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -1124,7 +1152,7 @@
         <textarea placeholder="想買的品項..." data-merchant="${escapeHtml(merchant)}"></textarea>
       `;
       item.querySelectorAll('.cri-thumbs img').forEach((img, i) => {
-        img.addEventListener('click', ()=>{ closeCartReview(); openMenuLightbox(merchant, items[i].image); });
+        img.addEventListener('click', ()=>{ closeCartReview(); openMenuLightbox(merchant, items, i); });
       });
       listEl.appendChild(item);
     });
@@ -1204,7 +1232,7 @@
 
       g.order.forEach(merchant => {
         const photos = g.merchants[merchant];
-        photos.forEach(m => {
+        photos.forEach((m, idx) => {
           const cartId = 'cart' + (cartIdCounter++);
           const thumb = document.createElement('div');
           thumb.className = 'thumb';
@@ -1214,7 +1242,7 @@
             <div class="thumb-cap">${escapeHtml(merchant)}</div>
             <button type="button" class="thumb-select-btn" aria-label="加入購物清單"></button>
           `;
-          thumb.querySelector('img').addEventListener('click', ()=>{ openMenuLightbox(merchant, m.image); });
+          thumb.querySelector('img').addEventListener('click', ()=>{ openMenuLightbox(merchant, photos, idx); });
           thumb.querySelector('.thumb-select-btn').addEventListener('click', (e)=>{
             e.stopPropagation();
             toggleCartSelection(cartId, merchant, m.image, thumb);
@@ -1230,19 +1258,59 @@
 
   // ---------- 菜單放大檢視：直接在放大畫面下方輸入品項，按一下就加入訂單 ----------
   const menuLightboxEl = document.getElementById('menuLightbox');
+  let lightboxPhotos = [];
+  let lightboxIndex = 0;
+  let lightboxMerchant = '';
 
-  function openMenuLightbox(merchant, image){
-    document.getElementById('menuLightboxMerchant').textContent = merchant;
-    document.getElementById('menuLightboxImg').src = image;
-    document.getElementById('menuLightboxItemsInput').value = '';
+  function openMenuLightbox(merchant, photos, index){
+    lightboxMerchant = merchant;
+    lightboxPhotos = photos;
+    lightboxIndex = index;
+    renderLightboxPhoto();
     menuLightboxEl.style.display = 'flex';
   }
+
+  function renderLightboxPhoto(){
+    document.getElementById('menuLightboxMerchant').textContent = lightboxMerchant;
+    document.getElementById('menuLightboxImg').src = lightboxPhotos[lightboxIndex].image;
+    document.getElementById('menuLightboxItemsInput').value = '';
+
+    const pageIndicator = document.getElementById('menuLightboxPageIndicator');
+    const prevBtn = document.getElementById('menuLightboxPrevBtn');
+    const nextBtn = document.getElementById('menuLightboxNextBtn');
+    if(lightboxPhotos.length > 1){
+      pageIndicator.textContent = `${lightboxIndex + 1} / ${lightboxPhotos.length}`;
+      pageIndicator.style.display = 'block';
+      prevBtn.style.display = 'flex';
+      nextBtn.style.display = 'flex';
+      prevBtn.disabled = (lightboxIndex === 0);
+      nextBtn.disabled = (lightboxIndex === lightboxPhotos.length - 1);
+    } else {
+      pageIndicator.style.display = 'none';
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+    }
+  }
+
+  document.getElementById('menuLightboxPrevBtn').addEventListener('click', ()=>{
+    if(lightboxIndex > 0){ lightboxIndex--; renderLightboxPhoto(); }
+  });
+  document.getElementById('menuLightboxNextBtn').addEventListener('click', ()=>{
+    if(lightboxIndex < lightboxPhotos.length - 1){ lightboxIndex++; renderLightboxPhoto(); }
+  });
+
   function closeMenuLightbox(){
     menuLightboxEl.style.display = 'none';
   }
   document.getElementById('menuLightboxClose').addEventListener('click', closeMenuLightbox);
   menuLightboxEl.addEventListener('click', (e)=>{
     if(e.target === menuLightboxEl) closeMenuLightbox(); // 點空白背景才關閉，點面板本身不會誤觸關閉
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(menuLightboxEl.style.display !== 'flex') return;
+    if(e.key === 'ArrowLeft') document.getElementById('menuLightboxPrevBtn').click();
+    if(e.key === 'ArrowRight') document.getElementById('menuLightboxNextBtn').click();
+    if(e.key === 'Escape') closeMenuLightbox();
   });
 
   // 共用邏輯：把某個商家的品項加進站點（找同商家的站點優先，沒有就找空白站點，都沒有就新增一個）
@@ -1538,7 +1606,7 @@
     updatePreview();
 
     const openTime = settings['營業開始時間'] || '08:00';
-    const closeTime = settings['營業結束時間'] || '22:00';
+    const closeTime = settings['營業結束時間'] || '20:00';
     businessOpenTime = openTime;
     businessCloseTime = closeTime;
     const hoursEl = document.getElementById('hoursTimeText');
@@ -1828,7 +1896,7 @@
     const contact = document.getElementById('cContact').value.trim() || '（尚未填寫）';
     const schedule = document.getElementById('cSchedule').value;
     const note = document.getElementById('cNote').value.trim();
-    const zoneLabel = fee === 30 ? '鎮內' : '鎮外（小港天后宮～和平國小）';
+    const zoneLabel = fee === 30 ? '鎮內' : '鎮外';
     const selectedExtras = getSelectedExtraServices();
     const extraServiceTotal = selectedExtras.reduce((sum, s) => sum + Number(s.fee || 0), 0);
     const deliveryBase = calculateDeliveryBase(stops, fee, transferFeePerStop);
@@ -2227,6 +2295,13 @@ ${stopsText}
   });
 
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
