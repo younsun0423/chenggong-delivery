@@ -160,6 +160,13 @@
   .order-info .label{flex-shrink:0; color:var(--ocean-dark); opacity:.75; width:60px;}
   .order-info a{color:var(--ocean-dark); text-decoration:underline;}
   .order-info .items-block{white-space:pre-wrap;}
+  .items-line{margin-bottom:4px;}
+  .items-line:last-child{margin-bottom:0;}
+  .preorder-badge{
+    display:inline-flex; align-items:center; gap:5px; background:#06C755; color:#fff;
+    font-size:14px; font-weight:900; padding:6px 14px; border-radius:999px; border:2px solid var(--ink);
+    margin-top:5px; box-shadow:0 2px 0 var(--ink);
+  }
   .remit-check{
     background:var(--gold); border:2px solid var(--ink); border-radius:8px; padding:8px 10px;
     font-size:12.5px; font-weight:700; margin-top:8px; line-height:1.6;
@@ -389,7 +396,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsoU2dTmol9_RyAauZOu_268u_QUCWfWkiPn1BpFVtgbW1bAOdTdG_SM6fMMey099Z3w/exec';
 
   const PIN_STORAGE_KEY = 'mifeng_admin_pin';
 
@@ -882,9 +889,19 @@
     if(isMerchantOrder){
       infoHtml += `<div class="row"><span class="label">來源</span><span>🏪 商家外送委託</span></div>`;
     }
+
+    // 把「☎️已電話預購」標記從品項文字裡抓出來，改成大徽章顯示，不再埋在一般文字裡不明顯
+    const itemsHtml = (order.items || '—').split('\n').map(line => {
+      const hasPreorder = line.includes('☎️已電話預購');
+      const cleanLine = line.replace(/　?☎️已電話預購/g, '').trim();
+      return hasPreorder
+        ? `<div class="items-line">${escapeHtml(cleanLine)}<div class="preorder-badge">☎️ 已電話預購・可直接取餐</div></div>`
+        : `<div class="items-line">${escapeHtml(cleanLine)}</div>`;
+    }).join('');
+
     infoHtml += `
       <div class="row"><span class="label">商家</span><span>${escapeHtml(order.merchant || '—')}</span></div>
-      <div class="row"><span class="label">品項</span><span class="items-block">${escapeHtml(order.items || '—')}</span></div>
+      <div class="row"><span class="label">品項</span><span class="items-block">${itemsHtml}</span></div>
       <div class="row"><span class="label">地址</span><span>${escapeHtml(order.address || '—')}</span></div>
       <div class="row"><span class="label">範圍</span><span>${escapeHtml(order.zone || '—')}　外送費 $${escapeHtml(String(order.fee || '—'))}</span></div>
       <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
