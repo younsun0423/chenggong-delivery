@@ -107,11 +107,20 @@
 
   .lookup-overlay{
     display:none; position:fixed; inset:0; background:rgba(34,48,46,.75); z-index:300;
-    align-items:center; justify-content:center; padding:20px;
+    align-items:center; justify-content:center; padding:16px;
+    overflow:hidden;
   }
   .lookup-box{
     background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
     padding:24px; max-width:380px; width:100%; position:relative; animation:popIn .25s ease;
+    max-height:min(92vh, 900px); overflow-y:auto; -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+  #lookupMapBox{
+    margin-top:12px; padding-bottom:8px;
+  }
+  #lookupMapBox iframe{
+    width:100%; height:220px; max-height:35vh; border:0; display:block;
   }
   .lookup-box h3{margin:0 0 6px; font-size:17px;}
   .lookup-box .hint{font-size:12px; color:var(--ocean-dark); opacity:.8; margin-bottom:16px; line-height:1.6;}
@@ -769,12 +778,13 @@
     </div>
     <button class="copy-btn" id="lookupSubmit" style="width:100%; background:var(--ocean); display:block;">查詢</button>
     <div class="lookup-result" id="lookupResult"></div>
+    <div id="lookupMapBox" style="display:none;"></div>
   </div>
 </div>
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsoU2dTmol9_RyAauZOu_268u_QUCWfWkiPn1BpFVtgbW1bAOdTdG_SM6fMMey099Z3w/exec';
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -1687,8 +1697,8 @@
   }
   function closeLookup(){
     lookupOverlay.style.display = 'none';
-    const oldMap = document.getElementById('lookupMapBox');
-    if(oldMap) oldMap.remove();
+    const mapBox = document.getElementById('lookupMapBox');
+    if(mapBox){ mapBox.style.display = 'none'; mapBox.innerHTML = ''; }
   }
   document.getElementById('progressBanner').addEventListener('click', ()=> openLookup());
   document.getElementById('orderLookupBtn').addEventListener('click', ()=> openLookup());
@@ -1700,8 +1710,8 @@
     const resultEl = document.getElementById('lookupResult');
 
     // 清掉上一筆地圖
-    const oldMap = document.getElementById('lookupMapBox');
-    if(oldMap) oldMap.remove();
+    const mapBox = document.getElementById('lookupMapBox');
+    if(mapBox){ mapBox.style.display = 'none'; mapBox.innerHTML = ''; }
 
     if(!phone){
       toast('請填寫聯絡電話');
@@ -1760,9 +1770,7 @@
           String(data.status || '') === '運送中';
 
         if(canShowMap){
-          const mapBox = document.createElement('div');
-          mapBox.id = 'lookupMapBox';
-          mapBox.style.cssText = 'margin-top:12px;';
+          const mapBox = document.getElementById('lookupMapBox');
           const q = encodeURIComponent(data.lat + ',' + data.lng);
           const updated = data.locationUpdatedAt
             ? `<div style="font-size:11px;opacity:.8;margin-bottom:6px;font-weight:600;">📍 位置更新：${data.locationUpdatedAt}</div>`
@@ -1785,7 +1793,9 @@
               在 Google 地圖開啟 →
             </a>
           `;
-          resultEl.insertAdjacentElement('afterend', mapBox);
+          mapBox.style.display = 'block';
+          // 自動捲到地圖，避免被擋在視窗外
+          setTimeout(()=>{ mapBox.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 100);
         }
       } else {
         resultEl.textContent = '❌ 查無資料，請確認電話號碼是否正確，或稍後再試。';
