@@ -779,10 +779,16 @@
   #sitePageOrder.on-bill-step .hero,
   #sitePageOrder.on-bill-step .progress-banner,
   #sitePageOrder.on-bill-step .wizard-progress,
-  #sitePageOrder.on-bill-step #orderBackGateBtn,
   #sitePageOrder.on-bill-step .section-title{ display:none !important; }
   #sitePageOrder.on-bill-step .composer{ border:none; box-shadow:none; padding-top:8px; }
+  #sitePageOrder.on-bill-step .order-top-nav{ margin-bottom:4px; }
   body.has-cart-float{ padding-bottom:88px; }
+  .order-top-nav .order-back-gate{ margin:0; }
+  .wizard-nav{
+    position:sticky; bottom:72px; z-index:50;
+    background:linear-gradient(to top, var(--paper) 75%, transparent);
+    padding:10px 0 6px;
+  }
 
   .cart-review-panel{max-width:520px;}
   .cart-review-item{
@@ -2894,19 +2900,18 @@
 
   <!-- ===== 第三頁：下單流程 ===== -->
   <div class="site-page" id="sitePageOrder">
-  <button type="button" class="order-back-gate" id="orderBackMenuBtn">← 返回菜單</button>
-  <button type="button" class="order-back-gate" id="orderBackGateBtn" style="margin-left:6px;">公告頁</button>
+  <div class="order-top-nav" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+    <button type="button" class="order-back-gate" id="orderSmartBackBtn">← 返回</button>
+    <span id="orderNavHint" style="font-size:12px;color:var(--ocean-dark);opacity:.8;"></span>
+  </div>
+  <button type="button" id="orderBackMenuBtn" style="display:none;" aria-hidden="true"></button>
+  <button type="button" id="orderBackGateBtn" style="display:none;" aria-hidden="true"></button>
+  <button type="button" id="orderBackMenuLink" style="display:none;" aria-hidden="true"></button>
 
-  <div class="hero">
-    <h1>成功小蜜丰</h1>
-    <p>選店、填地址、送出</p>
-    <div class="hero-cta">
-      <a class="cta-order" href="#orderComposer">🛒 開始下單</a>
-      <button type="button" class="cta-lookup" id="orderBackMenuLink" style="border:2px solid var(--ink);background:var(--gold);color:var(--ink);padding:8px 12px;border-radius:999px;font-weight:700;font-size:12.5px;box-shadow:0 2px 0 var(--ink);cursor:pointer;font-family:inherit;">🍽 回菜單</button>
-    </div>
-    <div class="hero-preorder-tip">
+  <div class="hero" id="orderHeroCompact">
+    <div class="hero-preorder-tip" style="margin:0 0 10px;">
       <span class="tip-icon">☎️</span>
-      <span><strong>想更快吃到？</strong>可先自行致電店家預購，再下單給我們取餐配送，能大幅縮短等候時間。</span>
+      <span><strong>想更快吃到？</strong>可先自行致電店家預購，再下單給我們取餐配送。</span>
     </div>
     <div class="info-blocks">
       <details class="info-block" id="heroExtraFold">
@@ -3015,8 +3020,8 @@
         <div class="extra-service-picker" id="extraServicePicker"></div>
       </div>
       <div class="wizard-nav">
-        <button type="button" class="utility-btn" id="step1BackMenuBtn">← 返回上一步（菜單）</button>
-        <button type="button" class="copy-btn wizard-next" data-goto="2">下一步：送到哪裡 →</button>
+        <button type="button" class="utility-btn" id="step1BackMenuBtn">← 返回菜單</button>
+        <button type="button" class="copy-btn wizard-next" data-goto="2">下一步：地址 →</button>
       </div>
     </div>
 
@@ -3070,7 +3075,7 @@
       </div>
       <div class="wizard-nav">
         <button type="button" class="utility-btn wizard-prev" data-goto="1">← 上一步</button>
-        <button type="button" class="copy-btn wizard-next" data-goto="3">下一步：聯絡方式 →</button>
+        <button type="button" class="copy-btn wizard-next" data-goto="3">下一步：聯絡 →</button>
       </div>
     </div>
 
@@ -3102,7 +3107,7 @@
       </div>
       <div class="wizard-nav">
         <button type="button" class="utility-btn wizard-prev" data-goto="2">← 上一步</button>
-        <button type="button" class="copy-btn wizard-next" data-goto="4">下一步：付款方式 →</button>
+        <button type="button" class="copy-btn wizard-next" data-goto="4">下一步：付款 →</button>
       </div>
     </div>
 
@@ -3133,7 +3138,7 @@
       </div>
       <div class="wizard-nav">
         <button type="button" class="utility-btn wizard-prev" data-goto="3">← 上一步</button>
-        <button type="button" class="copy-btn wizard-next" data-goto="5">下一步：訂單預覽 →</button>
+        <button type="button" class="copy-btn wizard-next" data-goto="5">下一步：預覽確認 →</button>
       </div>
     </div>
 
@@ -3157,7 +3162,7 @@
         <div class="bill-note">送出前請確認商家、品項、地址、電話與付款方式無誤。外送費依範圍計算；商品金額以店家實際金額為準。</div>
         <div class="bill-submit-wrap" style="display:flex; flex-direction:column; gap:10px;">
           <button type="button" class="copy-btn" id="sendLineBtn" style="background:#06C755; width:100%;">✅ 確認訂單，送出訂單</button>
-          <button type="button" class="utility-btn wizard-prev" data-goto="4" id="step5PrevBtn" style="width:100%;">← 返回上一步</button>
+          <button type="button" class="utility-btn wizard-prev" data-goto="4" id="step5PrevBtn" style="width:100%;">← 上一步（付款）</button>
         </div>
       </section>
 
@@ -3926,23 +3931,24 @@
     const onOrderPage = document.getElementById('sitePageOrder') && document.getElementById('sitePageOrder').classList.contains('active');
     const onBill = (typeof wizardCurrentStep !== 'undefined' && wizardCurrentStep === 5)
       || (document.getElementById('sitePageOrder') && document.getElementById('sitePageOrder').classList.contains('on-bill-step'));
-    // 中間：填寫配送資料 — 在菜單頁顯示；已在下單流程則隱藏
+    // 預覽頁整條隱藏
+    if(onBill){
+      bar.classList.remove('show');
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('has-cart-float');
+      return;
+    }
     if(orderBtn){
       if(onOrderPage){
         orderBtn.style.display = 'none';
       } else {
         orderBtn.style.display = 'inline-flex';
-        orderBtn.textContent = '🛒 填寫配送資料';
+        orderBtn.textContent = '🛒 填寫配送';
       }
     }
-    // 右側：跳至訂單預覽 — 最後一頁隱藏
     if(billBtn){
-      if(onBill){
-        billBtn.style.display = 'none';
-      } else {
-        billBtn.style.display = 'inline-flex';
-        billBtn.textContent = '🧾 跳至訂單預覽';
-      }
+      billBtn.style.display = 'inline-flex';
+      billBtn.textContent = '🧾 訂單預覽';
     }
     bar.classList.add('show');
     bar.setAttribute('aria-hidden', 'false');
@@ -3954,26 +3960,37 @@
       openCartReview();
       return;
     }
-    // 站點摘要：在菜單頁→去下單；在下單頁→捲到站點
     const menu = document.getElementById('sitePageMenu');
-    if(menu && menu.classList.contains('active') && typeof goToOrderPage === 'function'){
-      goToOrderPage();
+    if(menu && menu.classList.contains('active')){
+      if(typeof goToOrderPage === 'function') goToOrderPage(1);
       setTimeout(()=>{
         const sc = document.getElementById('stopsContainer');
         if(sc) sc.scrollIntoView({ behavior:'smooth', block:'center' });
-      }, 200);
+      }, 220);
       return;
     }
     if(typeof showStep === 'function') showStep(1);
-    const sc = document.getElementById('stopsContainer');
-    if(sc) sc.scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(()=>{
+      const sc = document.getElementById('stopsContainer');
+      if(sc) sc.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 120);
   });
 
   function jumpToBillPreview(){
     if(typeof requireConsentOrGate === 'function' && !requireConsentOrGate()) return;
-    if(typeof goToOrderPage === 'function') goToOrderPage();
+    if(typeof validateStepBeforeNext === 'function'){
+      const names = {1:'買什麼',2:'地址',3:'聯絡',4:'付款'};
+      for(let s = 1; s <= 4; s++){
+        if(!validateStepBeforeNext(s)){
+          if(typeof goToOrderPage === 'function') goToOrderPage(s);
+          else if(typeof showStep === 'function') showStep(s);
+          return;
+        }
+      }
+    }
+    if(typeof goToOrderPage === 'function') goToOrderPage(5);
+    else if(typeof showStep === 'function') showStep(5);
     if(typeof updatePreview === 'function'){ try{ updatePreview(); }catch(e){} }
-    if(typeof showStep === 'function') showStep(5);
     setTimeout(()=>{
       const bill = document.getElementById('billPreview');
       if(bill){
@@ -6433,16 +6450,54 @@ ${stopsText}
     if(!requireConsentOrGate()) return false;
     try{ sessionStorage.setItem(GATE_CONSENT_KEY, '1'); }catch(e){}
     showSitePage('menu');
+    if(typeof updateCartFloatBar === 'function') updateCartFloatBar();
     return true;
   }
-  function goToOrderPage(){
+  function goToOrderPage(startStep){
     if(!requireConsentOrGate()) return false;
     try{ sessionStorage.setItem(GATE_CONSENT_KEY, '1'); }catch(e){}
     showSitePage('order');
+    const step = Math.min(Math.max(Number(startStep) || 1, 1), 5);
+    if(typeof showStep === 'function') showStep(step);
+    if(typeof updateCartFloatBar === 'function') updateCartFloatBar();
     return true;
   }
   function goToGatePage(){
     showSitePage('gate');
+  }
+  function smartBack(){
+    const order = document.getElementById('sitePageOrder');
+    const menu = document.getElementById('sitePageMenu');
+    if(order && order.classList.contains('active')){
+      if(typeof wizardCurrentStep !== 'undefined' && wizardCurrentStep > 1){
+        showStep(wizardCurrentStep - 1);
+        return;
+      }
+      goToMenuPage();
+      return;
+    }
+    if(menu && menu.classList.contains('active')){
+      goToGatePage();
+      return;
+    }
+    goToGatePage();
+  }
+  function syncOrderNavHint(){
+    const btn = document.getElementById('orderSmartBackBtn');
+    const hint = document.getElementById('orderNavHint');
+    if(!btn) return;
+    if(typeof wizardCurrentStep === 'undefined') return;
+    if(wizardCurrentStep <= 1){
+      btn.textContent = '← 返回菜單';
+      if(hint) hint.textContent = '可再選菜單或加店';
+    } else if(wizardCurrentStep === 5){
+      btn.textContent = '← 上一步（付款）';
+      if(hint) hint.textContent = '確認無誤後送出';
+    } else {
+      const prev = {2:'買什麼',3:'地址',4:'聯絡',5:'付款'}[wizardCurrentStep] || '上一步';
+      btn.textContent = '← 上一步';
+      if(hint) hint.textContent = '回「' + prev + '」';
+    }
   }
   ['cPrivacyConfirm','cLegalConfirm'].forEach(id=>{
     const el = document.getElementById(id);
@@ -6455,9 +6510,11 @@ ${stopsText}
   const cartFloatOrderBtn = document.getElementById('cartFloatOrderBtn');
   if(cartFloatOrderBtn){
     cartFloatOrderBtn.addEventListener('click', ()=>{
-      if(typeof goToOrderPage === 'function') goToOrderPage();
+      if(typeof goToOrderPage === 'function') goToOrderPage(1);
     });
   }
+  const orderSmartBack = document.getElementById('orderSmartBackBtn');
+  if(orderSmartBack) orderSmartBack.addEventListener('click', ()=> smartBack());
   const orderBackMenu = document.getElementById('orderBackMenuBtn');
   if(orderBackMenu) orderBackMenu.addEventListener('click', ()=> goToMenuPage());
   const orderBackMenuLink = document.getElementById('orderBackMenuLink');
@@ -6467,7 +6524,7 @@ ${stopsText}
   document.querySelectorAll('a.cta-order').forEach(a=>{
     a.addEventListener('click', (e)=>{
       e.preventDefault();
-      goToOrderPage();
+      goToOrderPage(1);
     });
   });
   try{
@@ -6500,12 +6557,7 @@ ${stopsText}
     if(stepsEl) stepsEl.textContent = `${wizardCurrentStep} / ${wizardTotalSteps}`;
     const orderPage = document.getElementById('sitePageOrder');
     if(orderPage) orderPage.classList.toggle('on-bill-step', wizardCurrentStep === 5);
-    // 帳單頁：只顯示返回菜單
-    const backMenu = document.getElementById('orderBackMenuBtn');
-    if(backMenu){
-      backMenu.textContent = wizardCurrentStep === 5 ? '← 返回上一步' : '← 返回菜單';
-      // 在帳單頁時「返回菜單」改為回步驟4較直覺，另有 step5Prev；此處維持回菜單可用
-    }
+    if(typeof syncOrderNavHint === 'function') syncOrderNavHint();
     if(wizardCurrentStep === 5 && typeof updatePreview === 'function'){
       try{ updatePreview(); }catch(e){}
     }
