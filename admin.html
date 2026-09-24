@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
+<head> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -40,7 +40,7 @@
   #notifyBtn{padding:8px 12px; font-size:15px;}
   #notifyBtn.on{background:var(--gold); color:var(--ink);}
 
-  main{max-width:560px; margin:0 auto; padding:16px;}
+  main{max-width:560px; margin:0 auto; padding:16px 16px 80px;}
 
   /* ---- 登入畫面 ---- */
   .login-box{
@@ -83,9 +83,28 @@
   }
   .settlement-range-tabs .range-btn.active{background:var(--ocean); color:var(--paper);}
   .settlement-date-picker{margin-bottom:14px;}
+  .settlement-date-picker{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    overflow:hidden;
+  }
   .settlement-date-picker input{
-    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--card);
-    font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink);
+    display:block;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    padding:11px 13px;
+    border:2px solid var(--ink);
+    border-radius:10px;
+    background:var(--card);
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    color:var(--ink);
+    -webkit-appearance:none;
+    appearance:none;
   }
   .settlement-hint{font-size:12px; color:var(--ocean-dark); opacity:.75; margin-bottom:14px; line-height:1.6;}
   .settlement-card-wrap{
@@ -125,6 +144,79 @@
     text-align:center; padding:60px 20px; color:var(--ocean-dark); opacity:.7; font-size:13.5px; line-height:1.8;
   }
 
+  /* ---- 設定：公休日期 ---- */
+  .holiday-form{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 18px; margin-bottom:20px;
+  }
+  .holiday-form label{
+    display:block; font-size:12.5px; font-weight:700; color:var(--ocean-dark); margin:12px 0 6px;
+  }
+  .holiday-form label:first-child{margin-top:0;}
+  .holiday-form input[type="date"],
+  .holiday-form input[type="time"]{
+    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--ink); box-sizing:border-box;
+    -webkit-appearance:none; appearance:none;
+  }
+  .holiday-form .holiday-time-row{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  }
+  .holiday-form .holiday-time-row label{margin-top:12px;}
+  .holiday-card .hc-time{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700;
+    color:var(--ocean); margin-top:4px;
+  }
+  .holiday-form input[type="text"]{
+    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:'Noto Sans TC', sans-serif; font-size:13.5px; color:var(--ink); box-sizing:border-box;
+  }
+  .holiday-form .field-hint{font-size:11.5px; color:var(--ocean-dark); opacity:.7; margin-top:5px; line-height:1.5;}
+  .holiday-form button{
+    width:100%; margin-top:16px; padding:13px; border:2px solid var(--ink); border-radius:999px;
+    background:var(--coral); color:var(--paper); font-weight:700; font-size:14px; cursor:pointer; font-family:inherit;
+  }
+  .holiday-form button:active{filter:brightness(1.1);}
+  .holiday-form button:disabled{opacity:.6;}
+  .holiday-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .holiday-card .hc-dates{font-family:'JetBrains Mono',monospace; font-weight:900; font-size:15px; color:var(--coral-dark);}
+  .holiday-card .hc-note{font-size:12.5px; color:var(--ink); opacity:.8; margin-top:4px; line-height:1.5;}
+  .holiday-card .hc-del{
+    flex-shrink:0; border:2px solid var(--ink); background:var(--ink); color:var(--paper);
+    border-radius:999px; padding:9px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .holiday-card .hc-del:active{filter:brightness(1.3);}
+
+  /* ---- 設定：公告文字框 ---- */
+  .announcement-textarea{
+    width:100%; padding:11px 13px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:'Noto Sans TC', sans-serif; font-size:13.5px; color:var(--ink); box-sizing:border-box; resize:vertical;
+  }
+
+  /* ---- 設定：廣告卡片 ---- */
+  .ad-card{
+    background:var(--card); border:2px solid var(--ink); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px 16px; margin-bottom:14px;
+  }
+  .ad-card label{display:block; font-size:11.5px; font-weight:700; color:var(--ocean-dark); margin:10px 0 4px;}
+  .ad-card label:first-child{margin-top:0;}
+  .ad-card input[type="text"]{
+    width:100%; padding:10px 12px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
+    font-family:'Noto Sans TC', sans-serif; font-size:13px; color:var(--ink); box-sizing:border-box;
+  }
+  .ad-card-actions{display:flex; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap;}
+  .ad-show-toggle{display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--ocean-dark); flex:1;}
+  .ad-show-toggle input{width:16px; height:16px;}
+  .ad-card-actions button{
+    border:2px solid var(--ink); border-radius:999px; padding:9px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .ad-save-btn{background:var(--ocean); color:var(--paper);}
+  .ad-del-btn{background:var(--ink); color:var(--paper);}
+  .ad-save-btn:active, .ad-del-btn:active{filter:brightness(1.2);}
+
   .section-heading{
     font-size:13px; font-weight:700; color:var(--ocean-dark); margin:20px 0 10px; padding-left:2px;
   }
@@ -136,6 +228,7 @@
     padding:16px; margin-bottom:14px;
   }
   .order-card.status-已送達{opacity:.6;}
+  .order-card.status-已取消{opacity:.55;}
   .order-card.merchant-order{border-left:6px solid var(--gold);}
   .order-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;}
   .order-queue{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:900; color:var(--coral-dark); line-height:1;}
@@ -151,8 +244,10 @@
   }
   .status-badge.待處理{background:var(--gold); color:var(--ink);}
   .status-badge.處理中{background:var(--coral); color:var(--paper);}
+  .status-badge.取餐中{background:#c47a12; color:var(--paper);}
   .status-badge.運送中{background:var(--ocean); color:var(--paper);}
   .status-badge.已送達{background:var(--seafoam); color:var(--ink);}
+  .status-badge.已取消{background:#9aa5a4; color:#fff;}
 
   .order-info{font-size:13.5px; line-height:1.9;}
   .order-info b{font-weight:700;}
@@ -160,13 +255,6 @@
   .order-info .label{flex-shrink:0; color:var(--ocean-dark); opacity:.75; width:60px;}
   .order-info a{color:var(--ocean-dark); text-decoration:underline;}
   .order-info .items-block{white-space:pre-wrap;}
-  .items-line{margin-bottom:4px;}
-  .items-line:last-child{margin-bottom:0;}
-  .preorder-badge{
-    display:inline-flex; align-items:center; gap:5px; background:#06C755; color:#fff;
-    font-size:14px; font-weight:900; padding:6px 14px; border-radius:999px; border:2px solid var(--ink);
-    margin-top:5px; box-shadow:0 2px 0 var(--ink);
-  }
   .remit-check{
     background:var(--gold); border:2px solid var(--ink); border-radius:8px; padding:8px 10px;
     font-size:12.5px; font-weight:700; margin-top:8px; line-height:1.6;
@@ -243,7 +331,8 @@
     font-family:inherit; font-size:13px; font-weight:700; color:var(--ink);
   }
 
-  .status-actions{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;}
+  .status-actions{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:14px;}
+  .status-actions button:last-child{grid-column: auto;}
   .status-actions button{
     padding:10px 4px; border:2px solid var(--ink); border-radius:10px; background:var(--paper);
     font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit; color:var(--ink);
@@ -305,24 +394,39 @@
   .search-result-card .label{flex-shrink:0; color:var(--ocean-dark); opacity:.75; width:56px;}
 
 
-  .location-panel{
-    margin-top:12px; padding:12px; border:2px dashed var(--ocean); border-radius:10px;
-    background:rgba(30,91,103,.06);
+  .location-auto-hint{
+    margin-top:12px; padding:10px 12px; border:2px dashed var(--ocean); border-radius:10px;
+    background:rgba(30,91,103,.06); font-size:12px; font-weight:700; color:var(--ocean-dark); line-height:1.5;
   }
-  .location-panel .lp-title{font-size:12px; font-weight:700; color:var(--ocean-dark); margin-bottom:8px;}
-  .location-panel .lp-coords{font-family:'JetBrains Mono',monospace; font-size:12px; margin-bottom:8px; line-height:1.5;}
-  .location-panel .lp-actions{display:flex; gap:8px;}
-  .location-panel .lp-actions button{
-    flex:1; padding:10px 8px; border:2px solid var(--ink); border-radius:10px;
-    font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+  .location-auto-hint.tracking{
+    border-style:solid; border-color:#06C755; background:rgba(6,199,85,.1); color:#0a6b3c;
   }
-  .location-panel .lp-start{background:#06C755; color:#fff;}
-  .location-panel .lp-stop{background:var(--coral); color:#fff;}
-  .location-panel .lp-start:disabled, .location-panel .lp-stop:disabled{opacity:.4; cursor:not-allowed;}
-  .location-panel.tracking{border-style:solid; border-color:#06C755; background:rgba(6,199,85,.08);}
-  .location-panel .lp-hint{font-size:11px; color:var(--ocean-dark); opacity:.8; margin-top:8px; line-height:1.5;}
+  .nav-actions{margin-top:12px;}
+  .nav-btn{
+    width:100%; padding:12px; border:2px solid var(--ink); border-radius:10px;
+    background:var(--ocean); color:var(--paper); font-weight:700; font-size:13.5px;
+    cursor:pointer; font-family:inherit; box-shadow:0 2px 0 var(--ink);
+  }
+  .nav-btn:active{transform:translateY(2px); box-shadow:none;}
+  .nav-btn.pickup{background:#c47a12;}
+  .nav-btn.deliver{background:var(--ocean);}
+  .nav-btn.plan{background:var(--gold); color:var(--ink);}
+  .nav-hint{font-size:11px; color:var(--ocean-dark); opacity:.75; margin-top:6px; line-height:1.5;}
 
   .refresh-hint{text-align:center; font-size:11px; color:var(--ocean-dark); opacity:.6; margin:10px 0 4px;}
+
+  .header-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-end;}
+  #logoutBtn{background:var(--coral) !important; color:var(--paper) !important;}
+  /* 商品金額欄位防溢位 */
+  .order-card{ overflow:hidden; max-width:100%; }
+  .goods-amount-picker, .goods-amount-stops, .goods-amount-total-row{ max-width:100%; min-width:0; }
+  .goods-amount-stop-row{ display:flex; align-items:center; gap:8px; max-width:100%; min-width:0; }
+  .goods-amount-stop-row .gas-label{ flex:0 1 auto; max-width:34%; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .goods-amount-stop-row input, .goods-amount-input{
+    flex:1 1 0 !important; min-width:0 !important; width:0 !important; max-width:100% !important; box-sizing:border-box;
+  }
+  .calc-trigger-btn{ flex:0 0 42px; width:42px; max-width:42px; }
+
 </style>
 </head>
 <body>
@@ -332,17 +436,18 @@
     <h1>🐝 成功小蜜丰・後台管理</h1>
     <div class="sub" id="dateLabel"></div>
   </div>
-  <div style="display:flex; gap:8px;">
+  <div class="header-actions">
     <button id="notifyBtn" title="開啟新訂單通知">🔔</button>
     <button id="refreshBtn">🔄 重新整理</button>
+    <button id="logoutBtn" style="display:none; background:var(--coral);">🚪 登出</button>
   </div>
 </header>
 
 <main>
   <div class="login-box" id="loginBox">
     <h2>🔒 後台登入</h2>
-    <p>請輸入後台管理密碼<br>（在試算表「基本設定」分頁的「後台管理密碼」可查看或修改）</p>
-    <input id="pinInput" type="password" inputmode="numeric" placeholder="••••" maxlength="12" autofocus>
+    <p>請輸入後台管理密碼</p>
+    <input id="pinInput" type="password" placeholder="輸入後台密碼" maxlength="64" autofocus autocomplete="current-password">
     <button id="loginBtn">登入</button>
     <div class="err" id="loginErr">密碼錯誤，請確認後重新輸入</div>
   </div>
@@ -351,6 +456,7 @@
     <div class="view-tabs">
       <button class="active" id="viewOrdersBtn">📦 訂單</button>
       <button id="viewSettlementBtn">💰 結算</button>
+      <button id="viewSettingsBtn">⚙️ 設定</button>
     </div>
 
     <div id="ordersView">
@@ -358,8 +464,10 @@
         <button class="active" data-filter="全部">全部</button>
         <button data-filter="待處理">待處理</button>
         <button data-filter="處理中">處理中</button>
+        <button data-filter="取餐中">取餐中</button>
         <button data-filter="運送中">運送中</button>
         <button data-filter="已送達">已送達</button>
+        <button data-filter="已取消">已取消</button>
       </div>
       <div id="orderList"></div>
       <div class="refresh-hint">下拉頁面或點右上角重新整理，即可看到最新訂單</div>
@@ -376,6 +484,66 @@
       <button type="button" class="order-search-btn" id="openOrderSearchBtn">🔍 用日期或單號查詢訂單明細</button>
       <div class="settlement-hint" id="settlementHint">統計本月「已送達」訂單，依指派的外送員加總外送費</div>
       <div id="settlementList"></div>
+    </div>
+
+    <div id="settingsView" style="display:none;">
+      <div class="section-heading" style="margin-top:0;">🏖️ 新增公休（可全天或僅某時段）</div>
+      <div class="holiday-form">
+        <label for="holidayStart">開始日期</label>
+        <input type="date" id="holidayStart">
+
+        <label for="holidayEnd">結束日期（單日可留空，自動等於開始日期）</label>
+        <input type="date" id="holidayEnd">
+
+        <div class="holiday-time-row">
+          <div>
+            <label for="holidayStartTime">開始時間（選填）</label>
+            <input type="time" id="holidayStartTime">
+          </div>
+          <div>
+            <label for="holidayEndTime">結束時間（選填）</label>
+            <input type="time" id="holidayEndTime">
+          </div>
+        </div>
+        <div class="field-hint">顯示方式例如：09/14 10:00 ～ 09/14 12:00（當日幾小時）、或 09/14 08:00 ～ 09/15 20:00（跨日）。時間留空視為 00:00～23:59（全天）。</div>
+
+        <label for="holidayNote">公休公告文字（選填）</label>
+        <input type="text" id="holidayNote" placeholder="不填會顯示預設的公休文案" maxlength="60">
+        <div class="field-hint">公休時段內會暫停即時下單，也不能預約落在公休時段內的時間。</div>
+
+        <button type="button" id="addHolidayBtn">➕ 新增公休</button>
+      </div>
+
+      <div class="section-heading">📋 目前設定的公休</div>
+      <div id="holidayList"></div>
+
+      <div class="section-heading">📢 首頁公告</div>
+      <div class="holiday-form">
+        <label for="announcementText">公告內容（顯示在網站最上方，留空就不顯示）</label>
+        <textarea id="announcementText" class="announcement-textarea" rows="4" placeholder="例如：中秋節連假營業時間異動，詳見說明"></textarea>
+        <div class="field-hint" id="announcementUpdatedHint">儲存後會自動記錄更新時間，前台可顯示「更新於…」</div>
+        <button type="button" id="saveAnnouncementBtn">💾 儲存公告</button>
+      </div>
+
+      <div class="section-heading">🛍️ 新增廣告</div>
+      <div class="holiday-form">
+        <label for="adMerchant">商家名稱</label>
+        <input type="text" id="adMerchant" placeholder="例如：新港早餐店" maxlength="40">
+
+        <label for="adDesc">廣告文案</label>
+        <input type="text" id="adDesc" placeholder="例如：平日早餐套餐特價中！點這裡看菜單" maxlength="80">
+
+        <label for="adImage">圖片網址（選填，可貼Google雲端硬碟分享連結）</label>
+        <input type="text" id="adImage" placeholder="https://drive.google.com/...">
+
+        <label for="adLink">連結網址（選填，點廣告後開啟的網址）</label>
+        <input type="text" id="adLink" placeholder="https://...">
+
+        <button type="button" id="addAdBtn">➕ 新增廣告</button>
+      </div>
+
+      <div class="section-heading">📋 目前的廣告（可直接編輯欄位後按儲存）</div>
+      <div id="adList"></div>
     </div>
   </div>
 </main>
@@ -414,7 +582,7 @@
 
 <script>
 (function(){
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7AuE33hvg673EuEudSM1jCMGWvW9X4sCcA8Z5ZlgtSGP0qGbUWKTCHCSovlFr-T1T/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXK7quhFmyCyTiKWxCGAkVRJZ7DRy9tEg4uUx5gBmQMr4ctAKg2M698fu6h_SyNf3Vbg/exec';
 
   // ---------- 外送員即時位置（整合在後台） ----------
   let trackingWatchId = null;
@@ -429,9 +597,6 @@
     }
     trackingRowKey = null;
     trackingLastSent = 0;
-    document.querySelectorAll('.location-panel.tracking').forEach(el => el.classList.remove('tracking'));
-    document.querySelectorAll('.lp-start').forEach(b => { b.disabled = false; b.textContent = '📍 開始回報位置'; });
-    document.querySelectorAll('.lp-stop').forEach(b => { b.disabled = true; });
     if(!silent) toast('已停止位置回報');
   }
 
@@ -453,13 +618,6 @@
         order.lat = lat;
         order.lng = lng;
         order.locationUpdatedAt = data.updatedAt || '';
-        const panel = document.querySelector(`.location-panel[data-rowkey="${CSS.escape(order.rowKey)}"]`);
-        if(panel){
-          const coordsEl = panel.querySelector('.lp-coords');
-          if(coordsEl){
-            coordsEl.textContent = `目前：${lat.toFixed(5)}, ${lng.toFixed(5)}` + (order.locationUpdatedAt ? `　更新 ${order.locationUpdatedAt}` : '');
-          }
-        }
       } else {
         toast(data.message || '位置更新失敗');
       }
@@ -469,26 +627,10 @@
   }
 
   function startLocationTracking(order){
-    if(!navigator.geolocation){
-      toast('此裝置不支援定位');
-      return;
-    }
-    // 同時只追蹤一張單
-    if(trackingRowKey && trackingRowKey !== order.rowKey){
-      stopLocationTracking(true);
-    }
+    if(!navigator.geolocation){ toast('此裝置不支援定位'); return; }
+    if(trackingRowKey && trackingRowKey !== order.rowKey) stopLocationTracking(true);
     trackingRowKey = order.rowKey;
     toast('開始回報位置（請允許定位權限）');
-
-    document.querySelectorAll('.location-panel').forEach(el => {
-      const on = el.dataset.rowkey === order.rowKey;
-      el.classList.toggle('tracking', on);
-      const startBtn = el.querySelector('.lp-start');
-      const stopBtn = el.querySelector('.lp-stop');
-      if(startBtn){ startBtn.disabled = on; startBtn.textContent = on ? '📍 回報中…' : '📍 開始回報位置'; }
-      if(stopBtn){ stopBtn.disabled = !on; }
-    });
-
     const onPos = (pos) => {
       if(trackingRowKey !== order.rowKey) return;
       const lat = pos.coords.latitude;
@@ -500,16 +642,14 @@
     };
     const onErr = (err) => {
       let msg = '無法取得定位';
-      if(err.code === 1) msg = '請允許定位權限（設定 → 隱私 → 定位）';
+      if(err.code === 1) msg = '請允許定位權限';
       if(err.code === 2) msg = '無法取得位置，請開啟 GPS';
       if(err.code === 3) msg = '定位逾時，請重試';
       toast(msg);
     };
-
     navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy:true, timeout:15000, maximumAge:5000 });
     trackingWatchId = navigator.geolocation.watchPosition(onPos, onErr, { enableHighAccuracy:true, timeout:15000, maximumAge:5000 });
   }
-
   window.addEventListener('pagehide', ()=> stopLocationTracking(true));
 
 
@@ -651,8 +791,24 @@
   function showDashboard(){
     loginBox.style.display = 'none';
     dashboard.style.display = 'block';
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) logoutBtn.style.display = 'inline-block';
     loadOrders();
     if(!pollTimer) pollTimer = setInterval(()=>{ if(currentPin) loadOrders(); }, 25000);
+  }
+
+  function doLogout(){
+    currentPin = '';
+    try{ localStorage.removeItem(PIN_STORAGE_KEY); }catch(e){}
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+    try{ stopLocationTracking(true); }catch(e){}
+    dashboard.style.display = 'none';
+    loginBox.style.display = 'block';
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) logoutBtn.style.display = 'none';
+    const pinInput = document.getElementById('pinInput');
+    if(pinInput){ pinInput.value = ''; pinInput.focus(); }
+    toast('已登出');
   }
 
   function tryLogin(pin){
@@ -684,6 +840,9 @@
   });
   document.getElementById('pinInput').addEventListener('keydown', (e)=>{
     if(e.key === 'Enter') document.getElementById('loginBtn').click();
+  });
+  document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    if(confirm('確定要登出後台嗎？')) doLogout();
   });
 
   // 網址帶了 ?key= 或瀏覽器之前記住過密碼，就自動嘗試登入，不用手動打字
@@ -720,6 +879,8 @@
           currentPin = '';
           dashboard.style.display = 'none';
           loginBox.style.display = 'block';
+          const lb = document.getElementById('logoutBtn');
+          if(lb) lb.style.display = 'none';
           if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
           return;
         }
@@ -747,25 +908,352 @@
     });
   });
 
-  // ---------- 頁籤切換：訂單／結算 ----------
+  // ---------- 頁籤切換：訂單／結算／設定 ----------
   const ordersView = document.getElementById('ordersView');
   const settlementView = document.getElementById('settlementView');
+  const settingsView = document.getElementById('settingsView');
   const viewOrdersBtn = document.getElementById('viewOrdersBtn');
   const viewSettlementBtn = document.getElementById('viewSettlementBtn');
+  const viewSettingsBtn = document.getElementById('viewSettingsBtn');
 
   viewOrdersBtn.addEventListener('click', ()=>{
     viewOrdersBtn.classList.add('active');
     viewSettlementBtn.classList.remove('active');
+    viewSettingsBtn.classList.remove('active');
     ordersView.style.display = 'block';
     settlementView.style.display = 'none';
+    settingsView.style.display = 'none';
   });
   viewSettlementBtn.addEventListener('click', ()=>{
     viewSettlementBtn.classList.add('active');
     viewOrdersBtn.classList.remove('active');
+    viewSettingsBtn.classList.remove('active');
     ordersView.style.display = 'none';
     settlementView.style.display = 'block';
+    settingsView.style.display = 'none';
     loadSettlement();
   });
+  viewSettingsBtn.addEventListener('click', ()=>{
+    viewSettingsBtn.classList.add('active');
+    viewOrdersBtn.classList.remove('active');
+    viewSettlementBtn.classList.remove('active');
+    ordersView.style.display = 'none';
+    settlementView.style.display = 'none';
+    settingsView.style.display = 'block';
+    loadHolidays();
+    loadContent();
+  });
+
+  // ---------- 設定：公休日期（可全天或僅某時段） ----------
+  let currentHolidays = [];
+
+  /** 統一顯示：09/14 10:00 ～ 09/14 12:00（或跨日 09/14 08:00 ～ 09/15 20:00） */
+  function formatHolidayDateShort(iso){
+    const m = String(iso || '').match(/(\d{4})-(\d{2})-(\d{2})/);
+    if(m) return m[2] + '/' + m[3];
+    return iso || '';
+  }
+  function formatHolidayRange(h){
+    const sd = formatHolidayDateShort(h.start);
+    const ed = formatHolidayDateShort(h.end || h.start);
+    const st = h.startTime || '00:00';
+    const et = h.endTime || '23:59';
+    return `${sd} ${st} ～ ${ed} ${et}`;
+  }
+
+  function renderHolidays(){
+    const list = document.getElementById('holidayList');
+    if(!currentHolidays.length){
+      list.innerHTML = '<div class="empty-state">🏖️ 目前沒有設定任何公休</div>';
+      return;
+    }
+    list.innerHTML = '';
+    currentHolidays.forEach(h => {
+      const card = document.createElement('div');
+      card.className = 'holiday-card';
+      const hasTime = !!(h.startTime || h.endTime);
+      const isFullDay = !hasTime && h.start === (h.end || h.start);
+      card.innerHTML = `
+        <div>
+          <div class="hc-dates">${escapeHtml(formatHolidayRange(h))}</div>
+          ${isFullDay ? '<div class="hc-time">全天</div>' : (hasTime ? '<div class="hc-time">⏱️ 指定時段</div>' : '')}
+          ${h.note ? `<div class="hc-note">${escapeHtml(h.note)}</div>` : ''}
+        </div>
+        <button type="button" class="hc-del">🗑️ 刪除</button>
+      `;
+      card.querySelector('.hc-del').addEventListener('click', ()=> deleteHoliday(h.id));
+      list.appendChild(card);
+    });
+  }
+
+  function loadHolidays(){
+    const list = document.getElementById('holidayList');
+    list.innerHTML = '<div class="empty-state">載入中...</div>';
+    fetch(`${SCRIPT_URL}?action=getHolidays&pin=${encodeURIComponent(currentPin)}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if(data.error){
+          toast('登入已失效，請重新輸入密碼');
+          return;
+        }
+        currentHolidays = data.holidays || [];
+        renderHolidays();
+      })
+      .catch(()=>{
+        toast('讀取公休設定失敗，請檢查網路連線');
+        list.innerHTML = '<div class="empty-state">讀取失敗，請重新整理再試</div>';
+      });
+  }
+
+  document.getElementById('addHolidayBtn').addEventListener('click', ()=>{
+    const startEl = document.getElementById('holidayStart');
+    const endEl = document.getElementById('holidayEnd');
+    const startTimeEl = document.getElementById('holidayStartTime');
+    const endTimeEl = document.getElementById('holidayEndTime');
+    const noteEl = document.getElementById('holidayNote');
+    const start = startEl.value;
+    const end = endEl.value || start;
+    const startTime = (startTimeEl && startTimeEl.value) ? startTimeEl.value : '';
+    const endTime = (endTimeEl && endTimeEl.value) ? endTimeEl.value : '';
+    const note = noteEl.value.trim();
+
+    if(!start){ toast('請選擇開始日期'); return; }
+    if(start === end && startTime && endTime && endTime < startTime){
+      toast('同一天的結束時間不可早於開始時間');
+      return;
+    }
+
+    const btn = document.getElementById('addHolidayBtn');
+    btn.disabled = true;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'addHoliday', pin: currentPin, start, end, startTime, endTime, note })
+    })
+      .then(r => r.json())
+      .then(data => {
+        btn.disabled = false;
+        if(data.result === 'success'){
+          toast('✅ 已新增公休');
+          startEl.value = '';
+          endEl.value = '';
+          if(startTimeEl) startTimeEl.value = '';
+          if(endTimeEl) endTimeEl.value = '';
+          noteEl.value = '';
+          loadHolidays();
+        } else {
+          toast(data.message || '新增失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ btn.disabled = false; toast('新增失敗，請檢查網路連線'); });
+  });
+
+  function deleteHoliday(id){
+    if(!confirm('確定要刪除這筆公休設定嗎？')) return;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'deleteHoliday', pin: currentPin, id })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if(data.result === 'success'){
+          toast('🗑️ 已刪除公休日期');
+          loadHolidays();
+        } else {
+          toast(data.message || '刪除失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ toast('刪除失敗，請檢查網路連線'); });
+  }
+
+  // ---------- 設定：首頁公告與商家廣告 ----------
+  let currentAds = [];
+
+  function loadContent(){
+    fetch(`${SCRIPT_URL}?action=getContent&pin=${encodeURIComponent(currentPin)}&t=${Date.now()}`, { cache:'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if(data.error){
+          toast('登入已失效，請重新輸入密碼');
+          return;
+        }
+        document.getElementById('announcementText').value = data.announcement || '';
+        const updatedHint = document.getElementById('announcementUpdatedHint');
+        if(updatedHint){
+          if(data.announcementUpdatedAt){
+            updatedHint.textContent = '最後更新：' + data.announcementUpdatedAt;
+          } else if(data.announcement){
+            updatedHint.textContent = '尚未記錄更新時間（下次儲存會自動寫入）';
+          } else {
+            updatedHint.textContent = '儲存後會自動記錄更新時間，前台可顯示「更新於…」';
+          }
+        }
+        currentAds = data.ads || [];
+        renderAds();
+      })
+      .catch(()=>{ toast('讀取公告/廣告失敗，請檢查網路連線'); });
+  }
+
+  document.getElementById('saveAnnouncementBtn').addEventListener('click', ()=>{
+    const btn = document.getElementById('saveAnnouncementBtn');
+    const text = document.getElementById('announcementText').value;
+    btn.disabled = true;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'updateAnnouncement', pin: currentPin, text })
+    })
+      .then(r => r.json())
+      .then(data => {
+        btn.disabled = false;
+        if(data.result === 'success'){
+          toast('✅ 公告已更新');
+          const updatedHint = document.getElementById('announcementUpdatedHint');
+          if(updatedHint){
+            if(data.announcementUpdatedAt){
+              updatedHint.textContent = '最後更新：' + data.announcementUpdatedAt;
+            } else {
+              updatedHint.textContent = '儲存後會自動記錄更新時間，前台可顯示「更新於…」';
+            }
+          }
+        } else {
+          toast(data.message || '儲存失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ btn.disabled = false; toast('儲存失敗，請檢查網路連線'); });
+  });
+
+  function renderAds(){
+    const list = document.getElementById('adList');
+    list.innerHTML = '';
+    if(!currentAds.length){
+      list.innerHTML = '<div class="empty-state">🛍️ 目前沒有設定任何廣告</div>';
+      return;
+    }
+    currentAds.forEach(ad => {
+      const card = document.createElement('div');
+      card.className = 'ad-card';
+
+      function addField(labelText, fieldName, value){
+        const label = document.createElement('label');
+        label.textContent = labelText;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ad-field';
+        input.dataset.field = fieldName;
+        input.value = value || '';
+        card.appendChild(label);
+        card.appendChild(input);
+      }
+
+      addField('商家名稱', 'merchant', ad.merchant);
+      addField('廣告文案', 'desc', ad.desc);
+      addField('圖片網址', 'image', ad.image);
+      addField('連結網址', 'link', ad.link);
+
+      const actions = document.createElement('div');
+      actions.className = 'ad-card-actions';
+      actions.innerHTML = `
+        <label class="ad-show-toggle"><input type="checkbox" class="ad-show-checkbox" ${ad.show ? 'checked' : ''}> 顯示中</label>
+        <button type="button" class="ad-save-btn">💾 儲存</button>
+        <button type="button" class="ad-del-btn">🗑️ 刪除</button>
+      `;
+      card.appendChild(actions);
+
+      actions.querySelector('.ad-save-btn').addEventListener('click', ()=> saveAd(ad.id, card));
+      actions.querySelector('.ad-del-btn').addEventListener('click', ()=> deleteAd(ad.id));
+
+      list.appendChild(card);
+    });
+  }
+
+  function saveAd(id, card){
+    const fields = {};
+    card.querySelectorAll('.ad-field').forEach(input => {
+      fields[input.dataset.field] = input.value.trim();
+    });
+    const show = card.querySelector('.ad-show-checkbox').checked;
+    const saveBtn = card.querySelector('.ad-save-btn');
+    saveBtn.disabled = true;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'updateMerchantAd', pin: currentPin, id,
+        merchant: fields.merchant, desc: fields.desc, image: fields.image, link: fields.link, show
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        saveBtn.disabled = false;
+        if(data.result === 'success'){
+          toast('✅ 廣告已更新');
+          loadContent();
+        } else {
+          toast(data.message || '儲存失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ saveBtn.disabled = false; toast('儲存失敗，請檢查網路連線'); });
+  }
+
+  document.getElementById('addAdBtn').addEventListener('click', ()=>{
+    const merchantEl = document.getElementById('adMerchant');
+    const descEl = document.getElementById('adDesc');
+    const imageEl = document.getElementById('adImage');
+    const linkEl = document.getElementById('adLink');
+    const merchant = merchantEl.value.trim();
+    if(!merchant){ toast('請填寫商家名稱'); return; }
+
+    const btn = document.getElementById('addAdBtn');
+    btn.disabled = true;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'addMerchantAd',
+        pin: currentPin,
+        merchant,
+        desc: descEl.value.trim(),
+        image: imageEl.value.trim(),
+        link: linkEl.value.trim()
+      })
+    })
+      .then(r => r.json())
+      .then(data => {
+        btn.disabled = false;
+        if(data.result === 'success'){
+          toast('✅ 已新增廣告');
+          merchantEl.value = '';
+          descEl.value = '';
+          imageEl.value = '';
+          linkEl.value = '';
+          loadContent();
+        } else {
+          toast(data.message || '新增失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ btn.disabled = false; toast('新增失敗，請檢查網路連線'); });
+  });
+
+  function deleteAd(id){
+    if(!confirm('確定要刪除這則廣告嗎？')) return;
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'deleteMerchantAd', pin: currentPin, id })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if(data.result === 'success'){
+          toast('🗑️ 已刪除廣告');
+          loadContent();
+        } else {
+          toast(data.message || '刪除失敗，請重新整理後再試');
+        }
+      })
+      .catch(()=>{ toast('刪除失敗，請檢查網路連線'); });
+  }
 
   // ---------- 結算範圍切換：單日 / 本月 ----------
   let settlementRange = 'day'; // 'day' | 'month'
@@ -983,6 +1471,87 @@
 
   let cardIdCounter = 0;
 
+  // 從品項／商家欄解析多站商家名稱（與客戶端格式一致）
+  function parseOrderStopNames(order){
+    const names = [];
+    const seen = {};
+    const items = String(order.items || '');
+    const re = /【站點\d+】([^：:\n]*)[：:]/g;
+    let m;
+    while((m = re.exec(items)) !== null){
+      const n = String(m[1] || '').trim();
+      if(n && !seen[n]){ seen[n] = true; names.push(n); }
+    }
+    if(!names.length){
+      String(order.merchant || '').split(/[、,，]/).forEach(part => {
+        const n = String(part || '').trim();
+        if(n && !seen[n]){ seen[n] = true; names.push(n); }
+      });
+    }
+    return names;
+  }
+
+  // 一鍵導航：依狀態開啟 Google 地圖
+  // 取餐中 → 商家站點；運送中 → 客戶地址；其他 → 整段規劃（商家→客戶）供參考
+  function buildNavUrl(order){
+    const st = order.status || '待處理';
+    const stops = parseOrderStopNames(order);
+    const custAddr = String(order.address || '').trim();
+    const hasDriver = order.lat != null && order.lng != null && !isNaN(Number(order.lat)) && !isNaN(Number(order.lng));
+    const origin = hasDriver ? `${Number(order.lat)},${Number(order.lng)}` : '';
+
+    function mapsDir(destination, waypoints){
+      const params = new URLSearchParams();
+      params.set('api', '1');
+      params.set('travelmode', 'driving');
+      if(origin) params.set('origin', origin);
+      params.set('destination', destination);
+      if(waypoints && waypoints.length){
+        params.set('waypoints', waypoints.join('|'));
+      }
+      return 'https://www.google.com/maps/dir/?' + params.toString();
+    }
+
+    if(st === '取餐中'){
+      if(!stops.length) return null;
+      if(stops.length === 1){
+        return { url: mapsDir(stops[0]), label: '🗺️ 導航前往取餐：' + stops[0], mode: 'pickup' };
+      }
+      const dest = stops[stops.length - 1];
+      const via = stops.slice(0, -1);
+      return { url: mapsDir(dest, via), label: `🗺️ 導航取餐（${stops.length} 站）`, mode: 'pickup' };
+    }
+
+    if(st === '運送中'){
+      if(!custAddr) return null;
+      return { url: mapsDir(custAddr), label: '🗺️ 導航前往送達地址', mode: 'deliver' };
+    }
+
+    // 其他狀態：提供整段規劃（商家→客戶）方便預覽
+    if(stops.length && custAddr){
+      const via = stops.slice(); // 全部商家當途經
+      return { url: mapsDir(custAddr, via), label: '🗺️ 預覽整段路線（商家→客戶）', mode: 'plan' };
+    }
+    if(custAddr){
+      return { url: mapsDir(custAddr), label: '🗺️ 導航至送達地址', mode: 'plan' };
+    }
+    if(stops.length){
+      const dest = stops[stops.length - 1];
+      const via = stops.slice(0, -1);
+      return { url: mapsDir(dest, via.length ? via : null), label: '🗺️ 導航至商家', mode: 'plan' };
+    }
+    return null;
+  }
+
+  function openOrderNavigation(order){
+    const nav = buildNavUrl(order);
+    if(!nav){
+      toast('沒有足夠的地址／商家資料可以導航');
+      return;
+    }
+    window.open(nav.url, '_blank', 'noopener');
+  }
+
   function createOrderCard(order){
     const card = document.createElement('div');
     card.className = `order-card status-${order.status || '待處理'}`;
@@ -1005,19 +1574,9 @@
     if(isMerchantOrder){
       infoHtml += `<div class="row"><span class="label">來源</span><span>🏪 商家外送委託</span></div>`;
     }
-
-    // 把「☎️已電話預購」標記從品項文字裡抓出來，改成大徽章顯示，不再埋在一般文字裡不明顯
-    const itemsHtml = (order.items || '—').split('\n').map(line => {
-      const hasPreorder = line.includes('☎️已電話預購');
-      const cleanLine = line.replace(/　?☎️已電話預購/g, '').trim();
-      return hasPreorder
-        ? `<div class="items-line">${escapeHtml(cleanLine)}<div class="preorder-badge">☎️ 已電話預購・可直接取餐</div></div>`
-        : `<div class="items-line">${escapeHtml(cleanLine)}</div>`;
-    }).join('');
-
     infoHtml += `
       <div class="row"><span class="label">商家</span><span>${escapeHtml(order.merchant || '—')}</span></div>
-      <div class="row"><span class="label">品項</span><span class="items-block">${itemsHtml}</span></div>
+      <div class="row"><span class="label">品項</span><span class="items-block">${escapeHtml(order.items || '—')}</span></div>
       <div class="row"><span class="label">地址</span><span>${escapeHtml(order.address || '—')}</span></div>
       <div class="row"><span class="label">範圍</span><span>${escapeHtml(order.zone || '—')}　外送費 $${escapeHtml(String(order.fee || '—'))}</span></div>
       <div class="row"><span class="label">電話</span><span><a href="tel:${escapeHtml((order.phone||'').replace(/\D/g,''))}">${escapeHtml(order.phone || '—')}</a></span></div>
@@ -1069,21 +1628,15 @@
       <div class="status-actions">
         <button data-status="待處理" class="${order.status === '待處理' || !order.status ? 'current' : ''}">待處理</button>
         <button data-status="處理中" class="${order.status === '處理中' ? 'current' : ''}">處理中</button>
+        <button data-status="取餐中" class="${order.status === '取餐中' ? 'current' : ''}">取餐中</button>
         <button data-status="運送中" class="${order.status === '運送中' ? 'current' : ''}">運送中</button>
         <button data-status="已送達" class="${order.status === '已送達' ? 'current' : ''}">已送達</button>
+        <button data-status="已取消" class="${order.status === '已取消' ? 'current' : ''}">已取消</button>
       </div>
-      ${order.status === '運送中' ? `
-      <div class="location-panel${trackingRowKey === order.rowKey ? ' tracking' : ''}" data-rowkey="${escapeHtml(order.rowKey)}">
-        <div class="lp-title">🛵 客戶地圖位置回報（運送中）</div>
-        <div class="lp-coords">${order.lat != null && order.lng != null
-          ? `目前：${Number(order.lat).toFixed(5)}, ${Number(order.lng).toFixed(5)}${order.locationUpdatedAt ? '　更新 ' + escapeHtml(String(order.locationUpdatedAt)) : ''}`
-          : '尚未回報座標（按下方開始後，客戶查詢即可看到地圖）'}</div>
-        <div class="lp-actions">
-          <button type="button" class="lp-start" ${trackingRowKey === order.rowKey ? 'disabled' : ''}>${trackingRowKey === order.rowKey ? '📍 回報中…' : '📍 開始回報位置'}</button>
-          <button type="button" class="lp-stop" ${trackingRowKey === order.rowKey ? '' : 'disabled'}>停止回報</button>
-        </div>
-        <div class="lp-hint">請用外送員的手機開啟此後台並允許定位。同時只能回報一張單。</div>
-      </div>` : ''}
+      <div class="nav-actions">
+        <button type="button" class="nav-btn">🗺️ 一鍵導航</button>
+        <div class="nav-hint"></div>
+      </div>
     `;
 
     const confirmBtn = card.querySelector('.confirm-payment-btn');
@@ -1178,13 +1731,25 @@
       btn.addEventListener('click', ()=> updateStatus(order, btn.dataset.status, card));
     });
 
-    const lpStart = card.querySelector('.lp-start');
-    const lpStop = card.querySelector('.lp-stop');
-    if(lpStart){
-      lpStart.addEventListener('click', ()=> startLocationTracking(order));
-    }
-    if(lpStop){
-      lpStop.addEventListener('click', ()=> stopLocationTracking(false));
+    const navBtn = card.querySelector('.nav-btn');
+    const navHint = card.querySelector('.nav-hint');
+    if(navBtn){
+      const nav = buildNavUrl(order);
+      if(nav){
+        navBtn.textContent = nav.label;
+        navBtn.classList.add(nav.mode === 'pickup' ? 'pickup' : (nav.mode === 'deliver' ? 'deliver' : 'plan'));
+        if(navHint){
+          if(nav.mode === 'pickup') navHint.textContent = '依目前狀態導航至商家取餐（多站會依序途經）';
+          else if(nav.mode === 'deliver') navHint.textContent = '依目前狀態導航至客戶送達地址';
+          else navHint.textContent = '預覽路線；切換「取餐中／運送中」後按鈕會對應實際導航目標';
+        }
+        navBtn.addEventListener('click', ()=> openOrderNavigation(order));
+      } else {
+        navBtn.disabled = true;
+        navBtn.style.opacity = '.4';
+        navBtn.textContent = '🗺️ 無地址可導航';
+        if(navHint) navHint.textContent = '請確認訂單有商家或送達地址';
+      }
     }
 
     return card;
@@ -1324,22 +1889,37 @@
     });
   });
 
+  function normalizeStatus(s){
+    return String(s || '待處理').replace(/\u3000/g, ' ').trim() || '待處理';
+  }
+
   function renderOrders(){
     const list = document.getElementById('orderList');
     const filtered = currentFilter === '全部'
       ? currentOrders
-      : currentOrders.filter(o => (o.status || '待處理') === currentFilter);
+      : currentOrders.filter(o => normalizeStatus(o.status) === currentFilter);
 
     if(!filtered.length){
       list.innerHTML = '<div class="empty-state">📭 目前沒有符合條件的訂單</div>';
       return;
     }
 
-    const needsAssignment = filtered.filter(o => o.needsAssignment);
-    const immediate = filtered.filter(o => !o.isReservation && !o.needsAssignment);
+    // 非今日未完成單、或已送達待補指派
+    const openPast = filtered.filter(o => o.isOpenPast && !o.isReservation);
+    const needsAssignment = filtered.filter(o => o.needsAssignment && !o.isOpenPast && !o.isReservation);
+    const immediate = filtered.filter(o => !o.isReservation && !o.needsAssignment && !o.isOpenPast);
     const reservations = filtered.filter(o => o.isReservation);
 
     list.innerHTML = '';
+
+    if(openPast.length){
+      const h = document.createElement('div');
+      h.className = 'section-heading';
+      h.textContent = `⚠️ 未完成・非今日訂單（${openPast.length}）`;
+      h.style.color = 'var(--coral-dark)';
+      list.appendChild(h);
+      openPast.forEach(order => list.appendChild(createOrderCard(order)));
+    }
 
     if(needsAssignment.length){
       const h = document.createElement('div');
@@ -1375,12 +1955,19 @@
     const oldStatus = order.status;
     order.status = newStatus; // 先在畫面上樂觀更新，體感更快
     pendingStatusUpdates[order.rowKey] = newStatus; // 標記這筆「還在等後端回覆」，背景刷新抓到舊資料時不會蓋掉
-    // 離開「運送中」時自動停止該單的位置回報
-    if(oldStatus === '運送中' && newStatus !== '運送中' && trackingRowKey === order.rowKey){
+    const wasSharing = (oldStatus === '取餐中' || oldStatus === '運送中');
+    const stillSharing = (newStatus === '取餐中' || newStatus === '運送中');
+    if(wasSharing && !stillSharing && trackingRowKey === order.rowKey){
       stopLocationTracking(true);
     }
     renderOrders();
     toast(`已更新為「${newStatus}」`);
+
+    // 點選「取餐中」或「運送中」時自動開始回報位置，不用再手動按「開始回報位置」；
+    // 一路回報到按下「已送達」（上面 wasSharing && !stillSharing 那段）才會自動停止
+    if(!wasSharing && stillSharing){
+      startLocationTracking(order);
+    }
 
     fetch(SCRIPT_URL, {
       method: 'POST',
