@@ -760,12 +760,21 @@
     box-shadow:0 3px 0 var(--ink), 0 8px 18px -8px rgba(34,48,46,.45);
   }
   .cart-float-bar #cartFloatBtn{
-    flex:1 1 auto; max-width:280px; background:var(--ink); color:var(--paper);
+    flex:1 1 auto; max-width:220px; background:var(--ink); color:var(--paper);
   }
-  .cart-float-bar #cartFloatBillBtn{
+  .cart-float-bar #cartFloatOrderBtn{
     flex:0 0 auto; background:#06C755; color:#fff; white-space:nowrap;
   }
+  .cart-float-bar #cartFloatBillBtn{
+    flex:0 0 auto; background:var(--gold); color:var(--ink); white-space:nowrap;
+  }
   .cart-float-bar #cartFloatBtn strong{ color:var(--gold); }
+  @media (max-width:420px){
+    .cart-float-bar{ flex-wrap:wrap; }
+    .cart-float-bar #cartFloatBtn{ max-width:none; width:100%; flex:1 1 100%; }
+    .cart-float-bar #cartFloatOrderBtn,
+    .cart-float-bar #cartFloatBillBtn{ flex:1 1 40%; }
+  }
   /* 最後一頁只留帳單：隱藏 hero／進度／雜項 */
   #sitePageOrder.on-bill-step .hero,
   #sitePageOrder.on-bill-step .progress-banner,
@@ -2876,9 +2885,8 @@
     <div class="menu-gallery" id="menuGallery" style="margin-top:12px;">
       <div class="empty">菜單準備中。</div>
     </div>
-    <div style="margin:20px 0 28px; display:flex; flex-direction:column; gap:10px;">
-      <button type="button" class="gate-continue-btn" id="menuGoOrderBtn">🛒 填寫配送資料／下單 →</button>
-      <div class="gate-hint">菜單上沒有的商家，也可直接到下一頁手動填寫店名與品項。</div>
+    <div style="margin:20px 0 28px;">
+      <div class="gate-hint">選好菜單後，請點下方浮動列中間的「🛒 填寫配送資料」繼續。沒有菜單的店家也可直接到配送頁手動填寫。</div>
     </div>
     <!-- 保留空殼供舊程式碼 open 屬性相容 -->
     <details id="menuSection" style="display:none;" open></details>
@@ -3187,6 +3195,7 @@
 
 <div class="cart-float-bar" id="cartFloatBar" aria-hidden="true">
   <button type="button" id="cartFloatBtn">📦 訂單目前共 0 個站點</button>
+  <button type="button" id="cartFloatOrderBtn">🛒 填寫配送資料</button>
   <button type="button" id="cartFloatBillBtn">🧾 跳至訂單預覽</button>
 </div>
 
@@ -3913,10 +3922,21 @@
       btn.innerHTML = `📦 訂單目前共 <strong>${stopCount}</strong> 個站點`;
       btn.dataset.mode = 'stops';
     }
+    const orderBtn = document.getElementById('cartFloatOrderBtn');
+    const onOrderPage = document.getElementById('sitePageOrder') && document.getElementById('sitePageOrder').classList.contains('active');
+    const onBill = (typeof wizardCurrentStep !== 'undefined' && wizardCurrentStep === 5)
+      || (document.getElementById('sitePageOrder') && document.getElementById('sitePageOrder').classList.contains('on-bill-step'));
+    // 中間：填寫配送資料 — 在菜單頁顯示；已在下單流程則隱藏
+    if(orderBtn){
+      if(onOrderPage){
+        orderBtn.style.display = 'none';
+      } else {
+        orderBtn.style.display = 'inline-flex';
+        orderBtn.textContent = '🛒 填寫配送資料';
+      }
+    }
+    // 右側：跳至訂單預覽 — 最後一頁隱藏
     if(billBtn){
-      // 最後一頁已是訂單預覽，不需再顯示「跳至」；其他頁才顯示
-      const onBill = (typeof wizardCurrentStep !== 'undefined' && wizardCurrentStep === 5)
-        || (document.getElementById('sitePageOrder') && document.getElementById('sitePageOrder').classList.contains('on-bill-step'));
       if(onBill){
         billBtn.style.display = 'none';
       } else {
@@ -6432,8 +6452,12 @@ ${stopsText}
   if(gateBtn) gateBtn.addEventListener('click', ()=> goToMenuPage());
   const menuBack = document.getElementById('menuBackGateBtn');
   if(menuBack) menuBack.addEventListener('click', ()=> goToGatePage());
-  const menuGoOrder = document.getElementById('menuGoOrderBtn');
-  if(menuGoOrder) menuGoOrder.addEventListener('click', ()=> goToOrderPage());
+  const cartFloatOrderBtn = document.getElementById('cartFloatOrderBtn');
+  if(cartFloatOrderBtn){
+    cartFloatOrderBtn.addEventListener('click', ()=>{
+      if(typeof goToOrderPage === 'function') goToOrderPage();
+    });
+  }
   const orderBackMenu = document.getElementById('orderBackMenuBtn');
   if(orderBackMenu) orderBackMenu.addEventListener('click', ()=> goToMenuPage());
   const orderBackMenuLink = document.getElementById('orderBackMenuLink');
